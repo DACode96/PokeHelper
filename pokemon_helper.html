@@ -1102,6 +1102,20 @@ footer strong{color:var(--gold);font-weight:500;}
       </div>
     </div>
 
+    <!-- AI API NØGLE SETTINGS -->
+    <div id="settings-ai-section" style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+      <p class="settings-title" style="font-size:1.1em;margin-bottom:12px;">⚙️ AI Scanner Nøgle</p>
+      <p class="settings-desc">Scanneren kræver din egen gratis Gemini API nøgle for at virke. Hent den sikkert & gratis på <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--gold);">Google AI Studio</a>.</p>
+      
+      <label class="settings-label" style="font-size:.7em;letter-spacing:1px;color:rgba(255,255,255,.5);margin-bottom:6px;display:block;text-transform:uppercase;">Din Lokale API Nøgle</label>
+      <input type="password" id="settings-key-input" class="settings-input" placeholder="AIzaSy..." style="width:100%;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);color:#fff;margin-bottom:12px;">
+      
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span id="settings-key-status" class="settings-key-status" style="font-size:.75em;padding:6px 10px;border-radius:4px;background:rgba(192,57,43,.2);color:#f87171;border:1px solid rgba(192,57,43,.3);">❌ Mangler Nøgle</span>
+        <button class="settings-btn primary" onclick="saveApiKey()" style="padding:10px 16px;background:var(--gold);color:#000;border:none;border-radius:6px;font-family:'Bebas Neue',cursive;font-size:1.1em;letter-spacing:1px;cursor:pointer;">GEM NØGLE</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1251,9 +1265,39 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ══ PROFILE MODAL ══
+function saveApiKey() {
+  const val = document.getElementById('settings-key-input').value.trim();
+  if(val) {
+    localStorage.setItem('gemini_api_key', val);
+  } else {
+    localStorage.removeItem('gemini_api_key');
+  }
+  updateKeyStatus();
+}
+
+function updateKeyStatus() {
+  const key = localStorage.getItem('gemini_api_key');
+  const span = document.getElementById('settings-key-status');
+  const inp = document.getElementById('settings-key-input');
+  if(key) {
+    span.style.background = 'rgba(22,163,74,.2)';
+    span.style.color = '#4ade80';
+    span.style.borderColor = 'rgba(22,163,74,.3)';
+    span.textContent = '✅ Nøgle Gemt Lokalt';
+    if(inp) inp.value = key;
+  } else {
+    span.style.background = 'rgba(192,57,43,.2)';
+    span.style.color = '#f87171';
+    span.style.borderColor = 'rgba(192,57,43,.3)';
+    span.textContent = '❌ Mangler Nøgle';
+    if(inp) inp.value = '';
+  }
+}
+
 function openProfile() {
   document.getElementById('profile-modal').classList.add('active');
   document.body.style.overflow = 'hidden';
+  try { updateKeyStatus(); } catch(e){}
 }
 function closeProfile() {
   document.getElementById('profile-modal').classList.remove('active');
@@ -1346,8 +1390,16 @@ async function analyseCard() {
   cvs.getContext('2d').drawImage(img, 0, 0, w, h);
   const smallB64 = cvs.toDataURL('image/jpeg', 0.8).split(',')[1];
 
-  // Gemini Free Tier API Key - Låses til domænet dacode96.github.io for sikkerhed
-  const GEMINI_API_KEY = "AIzaSyAT0oYbVlozByC7YzRRyGnvPevWCSR6l4g";
+  // Henter brugerens egen API nøgle (så vi slipper for leaked keys på github)
+  const GEMINI_API_KEY = localStorage.getItem('gemini_api_key');
+  if(!GEMINI_API_KEY) {
+    setScanState('viewfinder');
+    closeScan();
+    openProfile();
+    alert("VIGTIGT: For at bruge scanneren skal du indsætte din egen gratis Gemini API Nøgle her i profil menuen.");
+    return;
+  }
+  
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
   try {
