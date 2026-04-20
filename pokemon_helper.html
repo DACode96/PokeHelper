@@ -14,14 +14,31 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{background:var(--paper);color:#f3f4f6;font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;}
+body{background:var(--ink);color:#f3f4f6;font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;}
+
+/* ═══ ANIMATIONS & GLOWS ═══ */
+.bg-orbs { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
+.orb { position:absolute; border-radius:50%; filter:blur(90px); opacity:0.1; animation:orbFloat 15s infinite ease-in-out alternate; }
+.orb-1 { width:45vw; height:45vw; background:var(--gold); top:-10%; right:-10%; }
+.orb-2 { width:50vw; height:50vw; background:var(--purple); bottom:-10%; left:-10%; animation-delay:-7s; }
+.orb-3 { width:30vw; height:30vw; background:var(--blue); top:40%; left:30%; animation-delay:-3s; filter:blur(120px); }
+@keyframes orbFloat { 0% { transform:translate(0,0) scale(1); } 100% { transform:translate(-30px, 40px) scale(1.1); } }
+
+@keyframes fadeUp { 0% { opacity:0; transform:translateY(15px); } 100% { opacity:1; transform:translateY(0); } }
+.entry { animation:fadeUp 0.6s ease-out both; }
+.tier_wrapper { animation:fadeUp 0.5s ease-out both; }
+.entry:nth-child(2) { animation-delay: 0.1s; }
+.entry:nth-child(3) { animation-delay: 0.2s; }
+.tier_wrapper:nth-child(2) { animation-delay:0.1s; }
+.tier_wrapper:nth-child(3) { animation-delay:0.2s; }
+.tier_wrapper:nth-child(4) { animation-delay:0.3s; }
 
 /* ═══ NAV ═══ */
 .nav-bar{
   position:sticky;top:0;z-index:900;
-  background:var(--ink);
+  background:rgba(8,8,10,0.65); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
   display:flex;align-items:stretch;
-  border-bottom:2px solid var(--gold);
+  border-bottom:1px solid rgba(255,255,255,0.05);
 }
 .nav-logo{
   font-family:'Bebas Neue',cursive;
@@ -62,7 +79,7 @@ body{background:var(--paper);color:#f3f4f6;font-family:'DM Sans',sans-serif;font
 
 /* ═══ HERO ═══ */
 .hero{
-  background:var(--ink);color:var(--paper);
+  background:transparent;color:var(--paper);
   padding:70px 30px 52px;text-align:center;position:relative;overflow:hidden;
 }
 .hero::before{
@@ -201,6 +218,10 @@ footer strong{color:var(--gold);font-weight:500;}
 .scan-corner.tr{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 4px 0 0;}
 .scan-corner.bl{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 4px;}
 .scan-corner.br{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 4px 0;}
+
+/* Scanner Laser */
+.scan-laser { position:absolute; left:12px; right:12px; height:2px; background:var(--gold); box-shadow:0 0 10px var(--gold); border-radius:50%; animation:laser 2s infinite ease-in-out; pointer-events:none; }
+@keyframes laser { 0% { top:10%; opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { top:90%; opacity:0; } }
 .scan-snap-btn{background:#fff;border:none;border-radius:50%;width:70px;height:70px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.5);transition:transform .1s;}
 .scan-snap-btn:active{transform:scale(.88);}
 .scan-snap-inner{width:52px;height:52px;border-radius:50%;background:var(--ink);border:3px solid rgba(255,255,255,.6);}
@@ -425,6 +446,9 @@ footer strong{color:var(--gold);font-weight:500;}
 </style>
 </head>
 <body>
+
+<!-- ANIMATED BACKGROUND 2.0 -->
+<div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
 
 <!-- ═══ NAV ═══ -->
 <nav class="nav-bar">
@@ -1138,6 +1162,7 @@ footer strong{color:var(--gold);font-weight:500;}
         <div class="scan-frame">
           <div class="scan-corner tl"></div><div class="scan-corner tr"></div>
           <div class="scan-corner bl"></div><div class="scan-corner br"></div>
+          <div class="scan-laser"></div>
         </div>
       </div>
       <p id="scan-cam-error" class="scan-hint" style="display:none;color:#e74c3c;"></p>
