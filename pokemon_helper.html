@@ -431,11 +431,12 @@ footer strong{color:var(--gold);font-weight:500;}
 <nav class="nav-bar">
   <div class="nav-logo">⚡ PokéHelper</div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showPage('guide')" aria-label="Value Guide">📖 Value Guide</button>
-    <button class="nav-tab" onclick="showPage('chart')" aria-label="Rarity Chart">📊 Rarity Chart</button>
-    <button class="nav-tab" onclick="openScan()" aria-label="Scan Card">📷 Scan Card</button>
+    <button class="nav-tab active" onclick="showPage('guide')" aria-label="Value Guide">📖 Guide</button>
+    <button class="nav-tab" onclick="showPage('chart')" aria-label="Rarity Chart">📊 Tiers</button>
+    <button class="nav-tab" id="nav-collection-tab" onclick="showPage('collection')" aria-label="My Collection" style="display:none;">📁 Samling</button>
+    <button class="nav-tab" onclick="openScan()" aria-label="Scan Card" style="color:var(--gold);">📷 Scan</button>
   </div>
-  <button class="nav-settings-btn" onclick="openSettings()" aria-label="Settings">⚙️</button>
+  <button class="nav-settings-btn" id="nav-profile-btn" onclick="openProfile()" aria-label="Profile">👤</button>
 </nav>
 
 <!-- ════════════════════════════════
@@ -1057,28 +1058,53 @@ footer strong{color:var(--gold);font-weight:500;}
 </div><!-- /chart-page -->
 </div><!-- /page-chart -->
 
+<!-- ════════════════════════════════
+     PAGE 3: MY COLLECTION (FIREBASE)
+════════════════════════════════ -->
+<div id="page-collection" class="page">
+  <div class="chart-hero" style="border-bottom:1px solid rgba(255,255,255,.1);">
+    <p style="font-size:.68em;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Din Database</p>
+    <h2>Min <span>Samling</span></h2>
+    <p>Dine scannede og gemte kort, synkroniseret via din Google konto.</p>
+  </div>
+  <div class="container" style="padding-top:30px;min-height:50vh;">
+    <div id="collection-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));gap:12px;padding-bottom:50px;">
+      <!-- Collection cards injected here -->
+      <p style="color:rgba(0,0,0,0.5);width:100%;grid-column:1/-1;text-align:center;padding:40px 0;">Indlæser din samling...</p>
+    </div>
+  </div>
+</div>
 
 <!-- ════════════════════════════════
      SCAN MODAL
 ════════════════════════════════ -->
 <!-- ════════════════════════════════
-     SETTINGS MODAL
+<!-- ════════════════════════════════
+     PROFILE / AUTH MODAL
 ════════════════════════════════ -->
-<div class="settings-modal" id="settings-modal" onclick="handleSettingsBackdrop(event)" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+<div class="settings-modal" id="profile-modal" onclick="handleProfileBackdrop(event)" role="dialog">
   <div class="settings-box">
-    <p class="settings-title" id="settings-modal-title">⚙️ Indstillinger</p>
-    <p class="settings-desc">
-      Scanneren bruger <a href="https://console.anthropic.com/" target="_blank" rel="noopener">Anthropic API (Claude)</a> til at genkende kort.
-      Din nøgle gemmes kun lokalt i din browser og sendes aldrig til andre.
-    </p>
-    <label class="settings-label" for="settings-api-key-input">Anthropic API-nøgle</label>
-    <input id="settings-api-key-input" class="settings-input" type="password" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
-    <p class="settings-key-hint">Find din nøgle på console.anthropic.com → API Keys. Nøglen vises ikke igen efter du forlader siden.</p>
-    <span id="settings-key-status" class="settings-key-status missing">❌ Ingen nøgle gemt</span>
-    <div class="settings-actions">
-      <button class="settings-btn ghost" onclick="closeSettings()" aria-label="Luk indstillinger">Annuller</button>
-      <button class="settings-btn primary" onclick="saveApiKey()" aria-label="Gem API-nøgle">💾 Gem nøgle</button>
+    <p class="settings-title" id="profile-modal-title">👤 Min Profil</p>
+    
+    <div id="profile-logged-out">
+      <p class="settings-desc">
+        Log ind med Google for at gemme dine scannede kort i skyen. Det er gratis og kræver ingen yderligere oprettelse.
+      </p>
+      <div class="settings-actions" style="justify-content:flex-start;margin-top:20px;">
+        <button class="settings-btn primary" onclick="firebaseSignIn()">🔵 Log ind med Google</button>
+      </div>
     </div>
+
+    <div id="profile-logged-in" style="display:none;">
+      <p class="settings-desc">
+        Logget ind som: <br><strong id="profile-user-email" style="color:var(--gold);font-size:1.1em;display:inline-block;margin-top:6px;">...</strong>
+      </p>
+      <div class="settings-actions" style="justify-content:space-between;margin-top:20px;">
+        <button class="settings-btn ghost" onclick="firebaseSignOut()">Log af</button>
+        <button class="settings-btn primary" onclick="closeProfile()">Luk</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1130,10 +1156,11 @@ footer strong{color:var(--gold);font-weight:500;}
           <p class="scan-result-conf" id="scan-result-conf"></p>
         </div>
         <div class="scan-search-btns">
-          <a id="scan-tcg-btn" href="#" target="_blank" class="scan-search-btn tcg">🔍 Search TCGplayer</a>
-          <a id="scan-pc-btn" href="#" target="_blank" class="scan-search-btn pc">💰 PriceCharting</a>
+          <a id="scan-tcg-btn" href="#" target="_blank" class="scan-search-btn tcg" style="flex:1;">🔍 TCGplayer</a>
+          <a id="scan-pc-btn" href="#" target="_blank" class="scan-search-btn pc" style="flex:1;">💰 PriceCharting</a>
         </div>
-        <button class="scan-action-btn outline" style="margin:12px auto;display:block;" onclick="retakePhoto()">📷 Scan another card</button>
+        <button id="scan-save-btn" class="scan-action-btn primary" style="width:100%;margin-top:10px;font-size:1em;display:none;" onclick="saveCurrentCard()">💾 GEM I SAMLING</button>
+        <button class="scan-action-btn outline" style="margin:12px auto;display:block;" onclick="retakePhoto()">📷 Scan et nyt kort</button>
       </div>
       <div id="scan-result-manual" style="display:none;">
         <p class="scan-hint" id="scan-manual-msg" style="text-align:center;margin-bottom:14px;"></p>
@@ -1175,11 +1202,17 @@ footer strong{color:var(--gold);font-weight:500;}
 // ══ NAVIGATION ══
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+}
   document.getElementById('page-' + id).classList.add('active');
-  const idx = ['guide','chart'].indexOf(id);
-  if (idx >= 0) document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+  const tabs = document.querySelectorAll('.nav-tab');
+  const idx = ['guide', 'chart', 'collection'].indexOf(id);
+  // Ensure the third tab (collection) toggles correctly if visible
+  if (idx === 0) tabs[0].classList.add('active');
+  if (idx === 1) tabs[1].classList.add('active');
+  if (idx === 2) tabs[2].classList.add('active');
+  
   window.scrollTo(0, 0);
+  if (id === 'collection' && window.loadCollection) window.loadCollection();
 }
 
 // ══ RARITY TIERS ══
@@ -1203,7 +1236,7 @@ function closeLightbox() {
   document.getElementById('lightbox').classList.remove('active');
   document.body.style.overflow = '';
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLightbox(); closeScan(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLightbox(); closeScan(); closeProfile(); } });
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.entry-images img, .img-card img').forEach(img => {
     img.addEventListener('click', () => {
@@ -1215,50 +1248,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ══ SETTINGS ══
-function getApiKey() { return localStorage.getItem('pokehelper_api_key') || ''; }
-
-function updateKeyStatus() {
-  const key = getApiKey();
-  const el = document.getElementById('settings-key-status');
-  if (!el) return;
-  if (key && key.startsWith('sk-')) {
-    el.textContent = '✅ Nøgle gemt';
-    el.className = 'settings-key-status saved';
-  } else {
-    el.textContent = '❌ Ingen nøgle gemt';
-    el.className = 'settings-key-status missing';
-  }
-}
-
-function openSettings() {
-  const modal = document.getElementById('settings-modal');
-  const input = document.getElementById('settings-api-key-input');
-  input.value = getApiKey();
-  updateKeyStatus();
-  modal.classList.add('active');
+// ══ PROFILE MODAL ══
+function openProfile() {
+  document.getElementById('profile-modal').classList.add('active');
   document.body.style.overflow = 'hidden';
-  setTimeout(() => input.focus(), 50);
 }
-
-function closeSettings() {
-  document.getElementById('settings-modal').classList.remove('active');
+function closeProfile() {
+  document.getElementById('profile-modal').classList.remove('active');
   document.body.style.overflow = '';
 }
-
-function handleSettingsBackdrop(e) {
-  if (e.target === document.getElementById('settings-modal')) closeSettings();
-}
-
-function saveApiKey() {
-  const val = document.getElementById('settings-api-key-input').value.trim();
-  if (!val) {
-    localStorage.removeItem('pokehelper_api_key');
-  } else {
-    localStorage.setItem('pokehelper_api_key', val);
-  }
-  updateKeyStatus();
-  closeSettings();
+function handleProfileBackdrop(e) {
+  if (e.target === document.getElementById('profile-modal')) closeProfile();
 }
 
 // ══ SCAN ══
@@ -1326,63 +1326,53 @@ function retakePhoto() {
   startCamera();
 }
 
+let currentScannedCard = null;
+
 async function analyseCard() {
   if (!capturedB64) return;
   setScanState('processing');
 
-  // Resize image to max 1000px wide to keep payload small
+  // Skaler billedet ned til max 800px bredde for lynhurtigt Gemini upload
   const img = new Image();
   img.src = 'data:image/jpeg;base64,' + capturedB64;
   await new Promise(r => { img.onload = r; });
-  const maxW = 1000;
+  const maxW = 800;
   let w = img.width, h = img.height;
   if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
   const cvs = document.createElement('canvas');
   cvs.width = w; cvs.height = h;
   cvs.getContext('2d').drawImage(img, 0, 0, w, h);
-  const smallB64 = cvs.toDataURL('image/jpeg', 0.85).split(',')[1];
+  const smallB64 = cvs.toDataURL('image/jpeg', 0.8).split(',')[1];
 
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    setScanState('result');
-    showError('Ingen API-nøgle gemt. Tryk på ⚙️ i menuen for at tilføje din Anthropic API-nøgle.');
-    return;
-  }
+  // Gemini Free Tier API Key - Låses til domænet dacode96.github.io for sikkerhed
+  const GEMINI_API_KEY = "AIzaSyAT0oYbVlozByC7YzRRyGnvPevWCSR6l4g";
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-  let httpStatus = null;
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch(endpoint, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'anthropic-version': '2023-06-01',
-        'x-api-key': apiKey,
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 200,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: smallB64 } },
-            { type: 'text', text: 'You are a Pokémon TCG expert. Identify this card.\nReturn ONLY raw JSON, no markdown:\n{"name":"Charizard","set":"Base Set","number":"4/102","confidence":"high"}\nRules: name=Pokémon name as printed incl. suffix (EX GX V VMAX ex VSTAR). set=set name or "". number=card number or "". confidence=high|medium|low. If no card: {"name":"","set":"","number":"","confidence":"low"}' }
+        contents: [{
+          parts: [
+            { text: "You are a Pokémon TCG app. Identify this card.\nReturn ONLY raw JSON, no markdown formatting at all.\nFormat:\n{\"name\":\"Charizard\",\"set\":\"Base Set\",\"number\":\"4/102\",\"confidence\":\"high\"}\nRules: name=Pokémon name incl suffix (EX GX V VMAX). set=Set name or empty. number=Card number or empty. confidence=high|medium|low." },
+            { inlineData: { mimeType: "image/jpeg", data: smallB64 } }
           ]
-        }]
+        }],
+        generationConfig: { temperature: 0.1 }
       })
     });
-    httpStatus = res.status;
+    
     const data = await res.json();
 
-    // Detect API-level error (e.g. 401, 403, 529)
     if (!res.ok || data.error) {
-      const errMsg = data.error?.message || `HTTP ${httpStatus}`;
+      const errMsg = data.error?.message || "Fejl fra Gemini API";
       setScanState('result');
-      showError(`API error: ${errMsg}`);
+      showError(`AI Server Fejl: ${errMsg}`);
       return;
     }
 
-    const raw = data.content?.find(b => b.type === 'text')?.text || '';
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     let parsed;
     try { parsed = JSON.parse(raw.replace(/```json|```/g,'').trim()); }
     catch { parsed = { name: '', confidence: 'low' }; }
@@ -1392,21 +1382,61 @@ async function analyseCard() {
       const label = parsed.set
         ? `${parsed.name} (${parsed.set}${parsed.number ? ' · ' + parsed.number : ''})`
         : parsed.name;
+      
       document.getElementById('scan-result-name').textContent = label;
       const cc = { high:'#27ae60', medium:'#e67e22', low:'#c0392b' }[parsed.confidence] || '#555';
-      const ct = { high:'✅ High confidence', medium:'🟡 Medium confidence', low:'🔴 Low confidence' }[parsed.confidence] || '';
+      const ct = { high:'✅ Høj sikkerhed', medium:'🟡 Middel sikkerhed', low:'🔴 Lav sikkerhed' }[parsed.confidence] || '';
       document.getElementById('scan-result-conf').textContent = ct;
       document.getElementById('scan-result-conf').style.color = cc;
+      
       buildLinks(parsed.name);
+      
+      // Gør klar til at gemme i Firebase
+      currentScannedCard = {  name: parsed.name, set: parsed.set || '', number: parsed.number || '', label: label, imageBase64: smallB64, id: Date.now().toString() };
+      
+      // Vis Gem-knappen hvis bruger er logget ind
+      document.getElementById('scan-save-btn').style.display = window.currentUser ? 'block' : 'none';
+      if(!window.currentUser) {
+        document.getElementById('scan-save-btn').style.display = 'block';
+        document.getElementById('scan-save-btn').textContent = '🔒 LOG IND FOR AT GEMME';
+        document.getElementById('scan-save-btn').onclick = () => { closeScan(); openProfile(); };
+      } else {
+        document.getElementById('scan-save-btn').textContent = '💾 GEM I SAMLING';
+        document.getElementById('scan-save-btn').onclick = saveCurrentCard;
+      }
+
       document.getElementById('scan-result-manual').style.display = 'none';
       document.getElementById('scan-result-found').style.display = 'block';
     } else {
-      showManualSearch('', '🤔 Could not identify the card. Try again with better lighting, or search manually:');
+      showManualSearch('', '🤔 Kunne ikke helt genkende kortet. Prøv med bedre lys eller beskær baggrunden fra:');
     }
 
   } catch(e) {
     setScanState('result');
-    showError(`Network error: ${e.message}`);
+    showError(`Netværksfejl: ${e.message}`);
+  }
+}
+
+async function saveCurrentCard() {
+  if (!currentScannedCard || !window.firebaseSaveCard) return;
+  const btn = document.getElementById('scan-save-btn');
+  btn.textContent = '⏳ Gemmer...';
+  btn.disabled = true;
+  
+  const success = await window.firebaseSaveCard(currentScannedCard);
+  if (success) {
+    btn.textContent = '✅ GEMT!';
+    btn.style.background = '#27ae60';
+    setTimeout(() => {
+      btn.textContent = '💾 GEM I SAMLING';
+      btn.style.background = '';
+      btn.disabled = false;
+      closeScan();
+      showPage('collection');
+    }, 1500);
+  } else {
+    btn.textContent = '❌ Fejl! Prøv igen';
+    btn.disabled = false;
   }
 }
 
@@ -1440,15 +1470,138 @@ function buildLinks(q) {
   if (ep2) ep2.href = 'https://www.pricecharting.com/search-products?q=' + p;
 }
 
-// Escape also closes settings
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSettings(); });
-// Init key status indicator on load
-document.addEventListener('DOMContentLoaded', updateKeyStatus);
+// Escape also closes settings/profile
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProfile(); });
 
 function manualSearch() {
   const q = document.getElementById('scan-manual-input').value.trim();
   if (q) buildLinks(q);
 }
+</script>
+
+<!-- ════════════════════════════════
+     FIREBASE & AUTH LOGIC (ES MODULE)
+════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, orderBy, getDocs, deleteDoc, doc, Timestamp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD9cKWS5Jjgwyrq6Fq1N-w9ssaXdkY9oQk",
+  authDomain: "pokehelperda.firebaseapp.com",
+  projectId: "pokehelperda",
+  storageBucket: "pokehelperda.firebasestorage.app",
+  messagingSenderId: "170392416464",
+  appId: "1:170392416464:web:24c52dce1b7a8573536ed5",
+  measurementId: "G-YWP9LJ2L8P"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+// Bind global functions from module scope
+window.firebaseSignIn = async () => {
+  try {
+    await signInWithPopup(auth, provider);
+    closeProfile();
+  } catch(e) { console.error("Login Fejl:", e); alert("Kunne ikke logge ind."); }
+};
+
+window.firebaseSignOut = () => { signOut(auth); closeProfile(); showPage('guide'); };
+
+// Save scanned card
+window.firebaseSaveCard = async (cardData) => {
+  if(!auth.currentUser) return false;
+  try {
+    const userRef = collection(db, "users", auth.currentUser.uid, "cards");
+    await addDoc(userRef, {
+      name: cardData.name,
+      set: cardData.set,
+      number: cardData.number,
+      label: cardData.label,
+      imageBase64: cardData.imageBase64,
+      timestamp: Timestamp.now()
+    });
+    return true;
+  } catch(e) {
+    console.error("Save Fejl:", e);
+    return false;
+  }
+};
+
+window.firebaseDeleteCard = async (docId) => {
+  if(!auth.currentUser || !confirm('Er du sikker på du vil slette dette kort?')) return;
+  try {
+    await deleteDoc(doc(db, "users", auth.currentUser.uid, "cards", docId));
+    window.loadCollection();
+  } catch(e) { console.error("Fejl v/ sletning:", e); }
+};
+
+// Load collection
+window.loadCollection = async () => {
+  const grid = document.getElementById('collection-grid');
+  if(!auth.currentUser) {
+    grid.innerHTML = '<div style="text-align:center;grid-column:1/-1;padding:40px;"><p style="margin-bottom:12px;color:rgba(0,0,0,.6);">Du skal være logget ind for at se din samling.</p><button class="scan-action-btn primary" onclick="openProfile()">Log ind her</button></div>';
+    return;
+  }
+  
+  grid.innerHTML = '<p style="color:var(--gold);grid-column:1/-1;text-align:center;padding:40px 0;letter-spacing:2px;font-family:\'Bebas Neue\',cursive;font-size:1.2em;">INDLÆSER DATA...</p>';
+  
+  try {
+    const q = query(collection(db, "users", auth.currentUser.uid, "cards"), orderBy("timestamp", "desc"));
+    const snap = await getDocs(q);
+    
+    if(snap.empty) {
+      grid.innerHTML = '<p style="color:rgba(0,0,0,.5);grid-column:1/-1;text-align:center;padding:40px 0;">Ingen kort i samlingen endnu. Scan et kort for at gemme det!</p>';
+      return;
+    }
+    
+    let html = '';
+    snap.forEach(doc => {
+      const d = doc.data();
+      const imgData = d.imageBase64 ? `data:image/jpeg;base64,${d.imageBase64}` : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      html += `
+        <div class="img-card" style="position:relative;width:100%;background:#fff;border-radius:6px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.05);transition:transform 0.15s;">
+          <button onclick="firebaseDeleteCard('${doc.id}')" style="position:absolute;top:4px;right:4px;width:24px;height:24px;background:var(--red);color:#fff;border:none;border-radius:50%;font-weight:bold;cursor:pointer;opacity:0.8;z-index:2;">✕</button>
+          <img src="${imgData}" style="width:100%;height:130px;object-fit:contain;padding:8px;background:var(--cream);" alt="${d.name}">
+          <div style="padding:8px 6px;text-align:center;border-top:1px solid var(--border);">
+            <div style="font-family:'DM Serif Display',serif;font-size:0.85em;line-height:1.2;color:var(--ink);">${d.name}</div>
+            <div style="font-size:0.6em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;">${d.set}</div>
+          </div>
+        </div>
+      `;
+    });
+    grid.innerHTML = html;
+  } catch(e) {
+    console.error("Load Fejl:", e);
+    grid.innerHTML = '<p style="color:var(--red);grid-column:1/-1;text-align:center;padding:40px 0;">Kunne ikke indlæse samling pga. serverfejl eller manglende Firestore tilladelser.</p>';
+  }
+};
+
+onAuthStateChanged(auth, user => {
+  window.currentUser = user;
+  const colTab = document.getElementById('nav-collection-tab');
+  const loggedInDiv = document.getElementById('profile-logged-in');
+  const loggedOutDiv = document.getElementById('profile-logged-out');
+  const emailSpan = document.getElementById('profile-user-email');
+  
+  if (user) {
+    colTab.style.display = 'block';
+    loggedInDiv.style.display = 'block';
+    loggedOutDiv.style.display = 'none';
+    emailSpan.textContent = user.email;
+  } else {
+    colTab.style.display = 'none';
+    loggedInDiv.style.display = 'none';
+    loggedOutDiv.style.display = 'block';
+    if(document.getElementById('page-collection') && document.getElementById('page-collection').classList.contains('active')) {
+      showPage('guide');
+    }
+  }
+});
 </script>
 </body>
 </html>
