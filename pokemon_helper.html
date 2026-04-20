@@ -1224,14 +1224,14 @@ footer strong{color:var(--gold);font-weight:500;}
 // ══ NAVIGATION ══
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-}
-  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  
+  const el = document.getElementById('page-' + id);
+  if (el) el.classList.add('active');
+
   const tabs = document.querySelectorAll('.nav-tab');
   const idx = ['guide', 'chart', 'collection'].indexOf(id);
-  // Ensure the third tab (collection) toggles correctly if visible
-  if (idx === 0) tabs[0].classList.add('active');
-  if (idx === 1) tabs[1].classList.add('active');
-  if (idx === 2) tabs[2].classList.add('active');
+  if (idx >= 0 && tabs[idx]) tabs[idx].classList.add('active');
   
   window.scrollTo(0, 0);
   if (id === 'collection' && window.loadCollection) window.loadCollection();
