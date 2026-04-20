@@ -8,13 +8,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink:#0d0d0d; --paper:#f5f0e8; --cream:#ede8dc;
-  --red:#c0392b; --gold:#c8973a; --muted:#7a7060; --border:#d4cfc3;
-  --blue:#2563eb; --purple:#7c3aed; --green:#16a34a;
+  --ink:#08080a; --paper:#111114; --cream:#1a1a1f; /* Dark Mode base */
+  --red:#f87171; --gold:#e2bb71; --muted:#8b8b99; --border:rgba(255,255,255,0.08);
+  --blue:#60a5fa; --purple:#a78bfa; --green:#34d399;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;}
+body{background:var(--paper);color:#f3f4f6;font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;}
 
 /* ═══ NAV ═══ */
 .nav-bar{
@@ -85,19 +85,20 @@ body{background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;f
 .section-label span{font-size:.66em;letter-spacing:5px;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
 
 /* ═══ ENTRIES ═══ */
-.entry{background:#fff;border:1px solid var(--border);margin-bottom:2px;transition:box-shadow .25s;}
-.entry:hover{box-shadow:0 6px 32px rgba(0,0,0,.09);position:relative;z-index:1;}
-.entry-inner{display:grid;grid-template-columns:68px 1fr auto;grid-template-rows:auto auto;}
+.entry{background:var(--cream);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;transition:box-shadow .25s, transform .2s; overflow:hidden;}
+.entry:hover{box-shadow:0 8px 30px rgba(0,0,0,.3);transform:translateY(-2px);position:relative;z-index:1; border-color:rgba(255,255,255,0.15);}
+.entry-inner{display:grid;grid-template-columns:80px 1fr auto;grid-template-rows:auto auto;}
 .entry-num{
-  background:var(--ink);color:var(--paper);
+  background:rgba(0,0,0,0.3);color:rgba(255,255,255,0.2);
   display:flex;align-items:center;justify-content:center;
-  font-family:'Bebas Neue',cursive;font-size:1.8em;letter-spacing:1px;
-  writing-mode:vertical-rl;padding:18px 0;min-height:130px;grid-row:1/3;
+  font-family:'Bebas Neue',cursive;font-size:2em;letter-spacing:1px;
+  padding:0;min-height:130px;grid-row:1/3;
+  border-right:1px solid var(--border);
 }
-.entry-num.gold{background:var(--gold);}
-.entry-num.red{background:var(--red);}
-.entry-body{padding:20px 22px;border-right:1px solid var(--border);grid-column:2;grid-row:1;}
-.entry-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px;}
+.entry-num.gold{color:var(--gold);}
+.entry-num.red{color:var(--red);}
+.entry-body{padding:24px 28px;border-right:1px solid var(--border);grid-column:2;grid-row:1;}
+.entry-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
 .tag{font-size:.6em;letter-spacing:2px;text-transform:uppercase;font-weight:700;padding:3px 8px;border-radius:2px;}
 .tag-era{background:var(--cream);color:var(--muted);border:1px solid var(--border);}
 .tag-hot{background:var(--red);color:#fff;}
@@ -110,11 +111,11 @@ body{background:var(--paper);color:var(--ink);font-family:'DM Sans',sans-serif;f
 .entry-value small{font-family:'DM Sans',sans-serif;font-size:.44em;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;font-weight:400;}
 
 /* Desktop images */
-.entry-images{display:flex;flex-direction:column;width:175px;min-width:175px;grid-column:3;grid-row:1/3;}
-.entry-images img{width:100%;height:100px;object-fit:contain;background:var(--cream);border-bottom:1px solid var(--border);padding:5px;cursor:zoom-in;transition:transform .2s;}
+.entry-images{display:flex;flex-direction:column;width:175px;min-width:175px;grid-column:3;grid-row:1/3;background:#050505;}
+.entry-images img{width:100%;height:140px;object-fit:contain;border-bottom:1px solid var(--border);padding:10px;cursor:zoom-in;transition:transform .2s;}
 .entry-images img:hover{transform:scale(1.05);position:relative;z-index:2;}
 .entry-images img:last-child{border-bottom:none;flex:1;}
-.img-caption{font-size:.58em;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:center;padding:4px;background:var(--cream);border-bottom:1px solid var(--border);}
+.img-caption{font-size:.6em;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:center;padding:6px;background:#0a0a0c;border-bottom:1px solid var(--border);}
 
 /* Mobile images strip */
 .entry-images-mobile{display:none;}
@@ -227,75 +228,69 @@ footer strong{color:var(--gold);font-weight:500;}
 #scan-canvas{display:none;}
 
 /* ═══════════════════════════════════════
-   PAGE 2 — RARITY CHART
+   PAGE 2 — RARITY CHART MODERNISED
 ═══════════════════════════════════════ */
 .chart-page{background:var(--ink);min-height:100vh;padding:0 0 60px;}
 .chart-hero{
   background:linear-gradient(135deg,#0d0d0d 0%,#1a0a2e 50%,#0d0d0d 100%);
   padding:52px 24px 40px;text-align:center;
-  border-bottom:1px solid rgba(200,151,58,.3);
+  border-bottom:1px solid rgba(255,255,255,0.05);
 }
 .chart-hero h2{font-family:'Bebas Neue',cursive;font-size:clamp(2.5em,7vw,4.5em);letter-spacing:4px;color:#fff;margin-bottom:10px;}
 .chart-hero h2 span{color:var(--gold);}
 .chart-hero p{color:rgba(255,255,255,.5);font-size:.85em;max-width:480px;margin:0 auto;line-height:1.6;}
 
-/* Pyramid wrapper */
-.rarity-wrap{max-width:720px;margin:0 auto;padding:40px 16px 0;}
+/* Modern Grid Wrapper */
+.rarity-wrap{max-width:880px;margin:0 auto;padding:40px 20px;}
 
-/* Each tier row */
+.tier-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:16px; margin-bottom:40px; }
+
+/* Each tier card */
 .tier{
-  display:flex;align-items:stretch;
-  margin-bottom:3px;
-  border-radius:4px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:12px;
   overflow:hidden;
   cursor:pointer;
-  transition:transform .15s;
-  position:relative;
+  transition:all .2s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
 }
-.tier:hover{transform:scale(1.01);z-index:2;}
+.tier:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.4);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);}
 
 .tier-bar{
-  height:56px;
-  display:flex;align-items:center;justify-content:flex-start;
-  padding:0 14px;
+  display:flex;
+  flex-direction:column;
+  padding:18px;
   gap:10px;
-  flex:1;
-  position:relative;
-  overflow:hidden;
-  min-width:0;
 }
-.tier-bar::after{
-  content:'';position:absolute;right:0;top:0;bottom:0;width:40px;
-  background:linear-gradient(to right,transparent,rgba(0,0,0,.2));
+.tier-bar-top{
+  display:flex; justify-content:space-between; align-items:flex-start; width:100%;
 }
 .tier-rank{
   font-family:'Bebas Neue',cursive;
-  font-size:1.5em;letter-spacing:2px;
-  color:rgba(255,255,255,.3);
-  min-width:24px;
-  flex-shrink:0;
+  font-size:1.8em;letter-spacing:2px;
+  color:rgba(255,255,255,.15);
+  line-height:1;
 }
 .tier-name{
   font-family:'Bebas Neue',cursive;
-  font-size:1.1em;letter-spacing:1.5px;
+  font-size:1.3em;letter-spacing:1.5px;
   color:#fff;
-  flex:1;
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
+  margin-top:4px;
 }
 .tier-price{
-  font-family:'Bebas Neue',cursive;
-  font-size:1em;letter-spacing:1px;
-  color:rgba(255,255,255,.55);
-  white-space:nowrap;
-  margin-right:4px;
-  flex-shrink:0;
+  font-family:'DM Sans',sans-serif;font-weight:700;
+  font-size:0.8em;letter-spacing:1px;
+  color:var(--gold);
+  background:rgba(226,187,113,0.1);
+  padding:4px 8px; border-radius:4px;
+  display:inline-block; margin-top:8px;
 }
 .tier-icons{
-  display:flex;gap:4px;align-items:center;
-  flex-shrink:0;
+  display:flex;gap:6px;align-items:center;
+  margin-top:12px; flex-wrap:wrap;
+  min-height:32px;
 }
 .tier-icon{
   width:28px;height:28px;border-radius:50%;
@@ -445,12 +440,12 @@ footer strong{color:var(--gold);font-weight:500;}
 <div id="page-guide" class="page active">
 
 <div class="hero">
-  <p class="hero-eyebrow">Pokémon TCG · Card Value Guide</p>
-  <h1>The <span>Hidden</span><br>Treasures</h1>
-  <p class="hero-sub">15 card types worth knowing before you sell anything for a dollar.</p>
-  <div class="hero-meta"><span>15 Card Types</span><span>All Eras</span><span>Updated Prices</span></div>
+  <p class="hero-eyebrow">Pokémon Portefølje Tracker</p>
+  <h1>De <span>Skjulte</span><br>Skatte</h1>
+  <p class="hero-sub">15 korttyper du SKAL kende, før du sælger dit guld for en tier i skolegården.</p>
+  <div class="hero-meta"><span>Dansk Marked</span><span>Live Priser</span><span>DEX Klar</span></div>
 </div>
-<div class="alert-strip">⚠ Always verify current prices on PriceCharting.com or TCGplayer before buying or selling</div>
+<div class="alert-strip">⚠ Tjek altid den præcise stand på Cardmarket / TCGplayer før du handler over nettet</div>
 
 <div class="container">
 
@@ -861,196 +856,181 @@ footer strong{color:var(--gold);font-weight:500;}
 <div class="chart-page">
 
   <div class="chart-hero">
-    <p style="font-size:.68em;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Visual Reference</p>
-    <h2>Pokémon Card <span>Rarity</span> Tiers</h2>
-    <p>A complete visual overview of how cards are ranked and priced — from bulk commons to million-dollar legendaries.</p>
+    <p style="font-size:.68em;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Visuel Reference</p>
+    <h2>Markedsværdi <span>Tiers</span></h2>
+    <p>En komplet visuel guide til at bedømme dine korts markedsværdi — fra basiskort til ubetalelige skatte.</p>
   </div>
 
   <div class="rarity-wrap">
+    <div class="tier-grid">
 
-    <!-- S Tier -->
-    <div class="tier" onclick="toggleTier('s')">
-      <div class="tier-bar t-s" style="clip-path:polygon(0 0,100% 0,96% 100%,4% 100%);">
-        <span class="tier-rank">S</span>
-        <span class="tier-name">Trophy / Ultra Legendary</span>
-        <span class="tier-price">$10,000+</span>
-        <div class="tier-icons">
-          <div class="tier-icon">🏆</div><div class="tier-icon">💎</div>
+      <!-- S Tier -->
+      <div class="tier_wrapper" style="display:contents;">
+        <div class="tier" onclick="toggleTier('s')">
+          <div class="tier-bar">
+            <div class="tier-bar-top">
+              <span class="tier-rank" style="color:#f1c40f;font-size:2.5em;">S</span>
+              <div class="tier-icons" style="font-size:1.5em;">🏆 💎</div>
+            </div>
+            <span class="tier-name">Trophy / Legendær</span>
+            <span class="tier-price">Markedsværdi: Over 70.000 kr.</span>
+          </div>
+        </div>
+        <div class="tier-detail" id="detail-s" style="grid-column:1/-1;">
+          <h4>S TIER — Det absolutte topniveau</h4>
+          <div class="tier-cards">
+            <div class="tier-card-chip"><span class="chip-name">Pikachu Illustrator</span><span class="chip-type">Trophy Card · 1998</span><span class="chip-price">3.500.000+ kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">Charizard 1st Ed. (Thick)</span><span class="chip-type">Base Set PSA 10</span><span class="chip-price">2.800.000+ kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">STAFF Turnerings Promos</span><span class="chip-type">Kun til personale</span><span class="chip-price">7.000–350.000 kr.</span></div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="tier-detail" id="detail-s">
-      <h4>S TIER — The Absolute Pinnacle</h4>
-      <div class="tier-cards">
-        <div class="tier-card-chip"><span class="chip-name">Pikachu Illustrator</span><span class="chip-type">Trophy Card · 1998</span><span class="chip-price">$500,000+</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Charizard 1st Ed. Thick Stamp</span><span class="chip-type">Base Set PSA 10</span><span class="chip-price">$400,000+</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Prerelease Raichu</span><span class="chip-type">Error Promo · ~10 exist</span><span class="chip-price">$15,000+</span></div>
-        <div class="tier-card-chip"><span class="chip-name">STAFF Stamped Promos</span><span class="chip-type">Tournament Staff Only</span><span class="chip-price">$1,000–$50,000</span></div>
-      </div>
-    </div>
 
-    <!-- A Tier -->
-    <div class="tier" onclick="toggleTier('a')">
-      <div class="tier-bar t-a" style="clip-path:polygon(2% 0,98% 0,95% 100%,5% 100%);">
-        <span class="tier-rank">A</span>
-        <span class="tier-name">1st Edition Holos / Key Shadowless</span>
-        <span class="tier-price">$500–$10k</span>
-        <div class="tier-icons">
-          <div class="tier-icon">✨</div><div class="tier-icon">⭐</div>
+      <!-- A Tier -->
+      <div class="tier_wrapper" style="display:contents;">
+        <div class="tier" onclick="toggleTier('a')">
+          <div class="tier-bar">
+            <div class="tier-bar-top">
+              <span class="tier-rank" style="color:#e74c3c;font-size:2em;">A</span>
+              <div class="tier-icons" style="font-size:1.5em;">✨ ⭐</div>
+            </div>
+            <span class="tier-name">Premium Investering</span>
+            <span class="tier-price">Markedsværdi: 3.500 – 70.000 kr.</span>
+          </div>
+        </div>
+        <div class="tier-detail" id="detail-a" style="grid-column:1/-1;">
+          <h4>A TIER — Historiske Samlerobjekter</h4>
+          <div class="tier-cards">
+            <div class="tier-card-chip"><span class="chip-name">1st Ed. Charizard</span><span class="chip-type">Base Set · Holo Rare</span><span class="chip-price">10.000–70.000 kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">Shadowless Charizard</span><span class="chip-type">Base Set · Holo Rare</span><span class="chip-price">2.000–15.000 kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">Skyridge Charizard (Holo)</span><span class="chip-type">E-Reader Era</span><span class="chip-price">2.000–6.000 kr.</span></div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="tier-detail" id="detail-a">
-      <h4>A TIER — Investment-Grade Vintage</h4>
-      <div class="tier-cards">
-        <div class="tier-card-chip"><span class="chip-name">1st Ed. Charizard (normal stamp)</span><span class="chip-type">Base Set · Holo Rare</span><span class="chip-price">$1,500–$10,000</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Shadowless Charizard</span><span class="chip-type">Base Set · Holo Rare</span><span class="chip-price">$300–$2,000</span></div>
-        <div class="tier-card-chip"><span class="chip-name">1st Ed. Blastoise / Venusaur</span><span class="chip-type">Base Set · Holo Rare</span><span class="chip-price">$200–$1,500</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Skyridge Charizard (Holo)</span><span class="chip-type">E-Reader Era</span><span class="chip-price">$300–$800</span></div>
-      </div>
-    </div>
 
-    <!-- B Tier -->
-    <div class="tier" onclick="toggleTier('b')">
-      <div class="tier-bar t-b" style="clip-path:polygon(3% 0,97% 0,94% 100%,6% 100%);">
-        <span class="tier-rank">B</span>
-        <span class="tier-name">Modern Secrets / Vintage Holos</span>
-        <span class="tier-price">$50–$500</span>
-        <div class="tier-icons">
-          <div class="tier-icon">🌈</div><div class="tier-icon">⚡</div>
+      <!-- B Tier -->
+      <div class="tier_wrapper" style="display:contents;">
+        <div class="tier" onclick="toggleTier('b')">
+          <div class="tier-bar">
+            <div class="tier-bar-top">
+              <span class="tier-rank" style="color:#3498db;font-size:2em;">B</span>
+              <div class="tier-icons" style="font-size:1.5em;">🌈 ⚡</div>
+            </div>
+            <span class="tier-name">Eftertragtede Hits</span>
+            <span class="tier-price">Markedsværdi: 350 – 3.500 kr.</span>
+          </div>
+        </div>
+        <div class="tier-detail" id="detail-b" style="grid-column:1/-1;">
+          <h4>B TIER — Populære Chase Cards</h4>
+          <div class="tier-cards">
+            <div class="tier-card-chip"><span class="chip-name">Charizard EX (Special Art)</span><span class="chip-type">Paldean Fates</span><span class="chip-price">600–1.200 kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">Rainbow Rare GX</span><span class="chip-type">Sun & Moon era</span><span class="chip-price">300–1.500 kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">Base Set Holo (God Stand)</span><span class="chip-type">Original 1999</span><span class="chip-price">250–1.000 kr.</span></div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="tier-detail" id="detail-b">
-      <h4>B TIER — Strong Collector / Tournament Value</h4>
-      <div class="tier-cards">
-        <div class="tier-card-chip"><span class="chip-name">Charizard EX (Special Art)</span><span class="chip-type">Scarlet & Violet</span><span class="chip-price">$80–$250</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Iono Full Art</span><span class="chip-type">Paldea Evolved</span><span class="chip-price">$30–$80</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Rainbow Rare GX (key Pokémon)</span><span class="chip-type">Sun & Moon era</span><span class="chip-price">$40–$200</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Base Set Holo Rare (NM)</span><span class="chip-type">Shadowless / Unlimited</span><span class="chip-price">$30–$150</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Lugia LEGEND (complete pair)</span><span class="chip-type">HGSS · Triumphant</span><span class="chip-price">$60–$120</span></div>
-      </div>
-    </div>
 
-    <!-- C Tier -->
-    <div class="tier" onclick="toggleTier('c')">
-      <div class="tier-bar t-c" style="clip-path:polygon(4% 0,96% 0,93% 100%,7% 100%);">
-        <span class="tier-rank">C</span>
-        <span class="tier-name">EX / GX / V / VMAX Holos</span>
-        <span class="tier-price">$5–$50</span>
-        <div class="tier-icons">
-          <div class="tier-icon">💠</div><div class="tier-icon">🔮</div>
+      <!-- C Tier -->
+      <div class="tier_wrapper" style="display:contents;">
+        <div class="tier" onclick="toggleTier('c')">
+          <div class="tier-bar">
+            <div class="tier-bar-top">
+              <span class="tier-rank" style="color:#2ecc71;font-size:2em;">C</span>
+              <div class="tier-icons" style="font-size:1.5em;">💠 🔮</div>
+            </div>
+            <span class="tier-name">Moderne Holos / Full Art</span>
+            <span class="tier-price">Markedsværdi: 35 – 350 kr.</span>
+          </div>
+        </div>
+        <div class="tier-detail" id="detail-c" style="grid-column:1/-1;">
+          <h4>C TIER — Gode Fund</h4>
+          <div class="tier-cards">
+            <div class="tier-card-chip"><span class="chip-name">Charizard VMAX (Standard)</span><span class="chip-type">Sword & Shield</span><span class="chip-price">150–400 kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">Full Art Trainers</span><span class="chip-type">Diverse serier</span><span class="chip-price">35–600 kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">EX / V / GX Kort</span><span class="chip-type">Standard pulls</span><span class="chip-price">35–150 kr.</span></div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="tier-detail" id="detail-c">
-      <h4>C TIER — Solid Value Cards</h4>
-      <div class="tier-cards">
-        <div class="tier-card-chip"><span class="chip-name">Charizard VMAX (Alt Art)</span><span class="chip-type">Sword & Shield era</span><span class="chip-price">$20–$60</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Prime Cards (key Pokémon)</span><span class="chip-type">HGSS series</span><span class="chip-price">$6–$50</span></div>
-        <div class="tier-card-chip"><span class="chip-name">LV.X Cards</span><span class="chip-type">Diamond & Pearl</span><span class="chip-price">$8–$60</span></div>
-        <div class="tier-card-chip"><span class="chip-name">EX Holos (key Pokémon)</span><span class="chip-type">Ruby & Sapphire era</span><span class="chip-price">$5–$40</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Full Art Trainers</span><span class="chip-type">SM / SWSH / SV</span><span class="chip-price">$5–$80</span></div>
-      </div>
-    </div>
 
-    <!-- D Tier -->
-    <div class="tier" onclick="toggleTier('d')">
-      <div class="tier-bar t-d" style="clip-path:polygon(5% 0,95% 0,92% 100%,8% 100%);">
-        <span class="tier-rank">D</span>
-        <span class="tier-name">Reverse Holo / Holo Rare</span>
-        <span class="tier-price">$1–$10</span>
-        <div class="tier-icons">
-          <div class="tier-icon">✦</div><div class="tier-icon">🃏</div>
+      <!-- D Tier -->
+      <div class="tier_wrapper" style="display:contents;">
+        <div class="tier" onclick="toggleTier('d')">
+          <div class="tier-bar">
+            <div class="tier-bar-top">
+              <span class="tier-rank" style="color:#95a5a6;font-size:2em;">D</span>
+              <div class="tier-icons" style="font-size:1.5em;">✦ 🃏</div>
+            </div>
+            <span class="tier-name">Reverse Holo / Rare</span>
+            <span class="tier-price">Markedsværdi: 5 – 70 kr.</span>
+          </div>
+        </div>
+        <div class="tier-detail" id="detail-d" style="grid-column:1/-1;">
+          <h4>D TIER — Pænt men typisk</h4>
+          <div class="tier-cards">
+            <div class="tier-card-chip"><span class="chip-name">Holo Rare (Modern)</span><span class="chip-type">Glimmer på billedet</span><span class="chip-price">5–50 kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">Tournament Staples</span><span class="chip-type">Spilbare Item kort</span><span class="chip-price">10–100 kr.</span></div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="tier-detail" id="detail-d">
-      <h4>D TIER — Worth Keeping, Not Worth Much Individually</h4>
-      <div class="tier-cards">
-        <div class="tier-card-chip"><span class="chip-name">Reverse Holo (non-popular)</span><span class="chip-type">Modern era</span><span class="chip-price">$0.50–$3</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Holo Rare (standard)</span><span class="chip-type">Modern era</span><span class="chip-price">$1–$8</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Tournament Trainer Staples</span><span class="chip-type">SV era</span><span class="chip-price">$2–$15</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Delta Species Commons</span><span class="chip-type">EX era</span><span class="chip-price">$1–$5</span></div>
-      </div>
-    </div>
 
-    <!-- E Tier -->
-    <div class="tier" onclick="toggleTier('e')">
-      <div class="tier-bar t-e" style="clip-path:polygon(7% 0,93% 0,90% 100%,10% 100%);">
-        <span class="tier-rank">E</span>
-        <span class="tier-name">Commons / Uncommons / Bulk</span>
-        <span class="tier-price">$0.01–$1</span>
-        <div class="tier-icons">
-          <div class="tier-icon">📦</div>
-        </div>
-      </div>
-    </div>
-    <div class="tier-detail" id="detail-e">
-      <h4>E TIER — Bulk Cards</h4>
-      <div class="tier-cards">
-        <div class="tier-card-chip"><span class="chip-name">Modern Commons</span><span class="chip-type">Bulk — pennies each</span><span class="chip-price">$0.02–$0.25</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Modern Uncommons</span><span class="chip-type">Bulk</span><span class="chip-price">$0.05–$0.50</span></div>
-        <div class="tier-card-chip"><span class="chip-name">Old WOTC Commons (played)</span><span class="chip-type">Base–Skyridge</span><span class="chip-price">$0.10–$1</span></div>
-      </div>
-    </div>
-
+    </div><!-- /tier-grid -->
+    
     <!-- tap hint -->
-    <p style="text-align:center;color:rgba(255,255,255,.3);font-size:.72em;letter-spacing:2px;text-transform:uppercase;margin-top:10px;">Tap any tier to expand examples</p>
+    <p style="text-align:center;color:rgba(255,255,255,.3);font-size:.72em;letter-spacing:2px;text-transform:uppercase;margin-top:10px;">Tryk på et niveau for at se eksempler</p>
   </div>
 
   <!-- CARD ANATOMY -->
   <div class="anatomy-wrap">
-    <h3 class="anatomy-title">Card <span style="color:var(--gold);">Anatomy</span></h3>
-    <p class="anatomy-sub">What to check on every single card you pick up</p>
+    <h3 class="anatomy-title">Kort <span style="color:var(--gold);">Anatomi</span></h3>
+    <p class="anatomy-sub">Tjekliste til når du samler et kort op</p>
     <div class="anatomy-grid">
       <div class="anatomy-item">
         <div class="anatomy-num">1</div>
-        <div class="anatomy-text"><h5>Card Name</h5><p>Top of the card. Is it a Pokémon, Trainer, or Energy? Check for suffixes: EX, GX, V, VMAX, ex, VSTAR.</p></div>
+        <div class="anatomy-text"><h5>Navn på Kortet</h5><p>Øverst. Er det en Pokémon eller Trainer? Hold øje med: EX, GX, V, VMAX, ex, VSTAR.</p></div>
       </div>
       <div class="anatomy-item">
         <div class="anatomy-num">2</div>
-        <div class="anatomy-text"><h5>HP Number</h5><p>Top right. Higher HP generally = newer, stronger card. 300+ HP = modern era VMAX/ex.</p></div>
+        <div class="anatomy-text"><h5>HP Nummer</h5><p>Øverst til højre. Mere HP = oftest et nyere kort. 300+ HP = moderne VMAX/ex æra.</p></div>
       </div>
       <div class="anatomy-item">
         <div class="anatomy-num">3</div>
-        <div class="anatomy-text"><h5>Set Symbol + Number</h5><p>Bottom right. e.g. "4/102". Star = promo. The set symbol identifies exactly which set it belongs to.</p></div>
+        <div class="anatomy-text"><h5>Set Symbol + Nummer</h5><p>Nederst til højre. f.eks. "4/102". En stjerne betyder sjælden. Symbolet afslører serien.</p></div>
       </div>
       <div class="anatomy-item">
         <div class="anatomy-num">4</div>
-        <div class="anatomy-text"><h5>Copyright Year</h5><p>Bottom of the card. 1995, 96, 98, 99 = Base Set era. Older year ≠ always more valuable.</p></div>
+        <div class="anatomy-text"><h5>Årstal</h5><p>Nederst på kortet. 1995, 96, 98, 99 = Base Set æra. (Ældre betyder dog ikke altid dyrere).</p></div>
       </div>
       <div class="anatomy-item">
         <div class="anatomy-num">5</div>
-        <div class="anatomy-text"><h5>Rarity Symbol</h5><p>Next to the card number. ● = common, ◆ = uncommon, ★ = rare, ★★ = ultra rare, ★★★ = secret rare.</p></div>
+        <div class="anatomy-text"><h5>Sjældenhed</h5><p>Ved siden af kortnummeret. ● = Almindelig, ◆ = Ualmindelig, ★ = Sjælden, ★★ = Secret Rare.</p></div>
       </div>
       <div class="anatomy-item">
         <div class="anatomy-num">6</div>
-        <div class="anatomy-text"><h5>1st Edition / Stamp</h5><p>Left side below the image. Small black stamp with "1" = 1st Edition. Gold "STAFF" stamp = tournament staff card.</p></div>
+        <div class="anatomy-text"><h5>1st Edition / Frimærke</h5><p>Under billedet til venstre. Sort "1" frimærke = 1st Edition. Guld "STAFF" = turneringskort.</p></div>
       </div>
       <div class="anatomy-item">
         <div class="anatomy-num">7</div>
-        <div class="anatomy-text"><h5>Shadow on Frame</h5><p>Does the image have a drop shadow on the right/bottom edge? No shadow = Shadowless = valuable first print.</p></div>
+        <div class="anatomy-text"><h5>Shadowless Ramme</h5><p>Er der en skygge på højre/bund kant af billedet? Ingen skygge = Shadowless = Værdifuldt.</p></div>
       </div>
       <div class="anatomy-item">
         <div class="anatomy-num">8</div>
-        <div class="anatomy-text"><h5>Card Finish</h5><p>Is the image shiny? Entire card rainbow? Gold border? Or plain paper? See the finish guide below.</p></div>
+        <div class="anatomy-text"><h5>Finish (Overflade)</h5><p>Er det skinnende? En regnbue? Guld kant? Se overflade-guiden nedenfor.</p></div>
       </div>
     </div>
   </div>
 
   <!-- FINISH TYPES -->
   <div class="finish-wrap">
-    <h3 class="finish-title">Card <span style="color:var(--gold);">Finish</span> Types</h3>
-    <p class="finish-sub">From least to most valuable — what the surface of the card looks like</p>
+    <h3 class="finish-title">Kort <span style="color:var(--gold);">Glimmer</span> Typer</h3>
+    <p class="finish-sub">De typiske typer af skinnende kort (fra mindst til mest værdifuld)</p>
     <div class="finish-grid">
-      <div class="finish-chip fc-normal"><div class="fc-icon">🃏</div><div class="fc-name">Normal</div><div class="fc-desc">Flat, matte. Commons & uncommons. Bulk value.</div></div>
-      <div class="finish-chip fc-holo"><div class="fc-icon">✨</div><div class="fc-name">Holo</div><div class="fc-desc">Shiny image panel only. The classic rare card.</div></div>
-      <div class="finish-chip fc-reverse"><div class="fc-icon">✦</div><div class="fc-name">Reverse Holo</div><div class="fc-desc">Shiny everywhere except the image. Any card can have this.</div></div>
-      <div class="finish-chip fc-full"><div class="fc-icon">🖼</div><div class="fc-name">Full Art</div><div class="fc-desc">Artwork covers entire card. No white border. Usually trainers or rare Pokémon.</div></div>
-      <div class="finish-chip fc-rainbow"><div class="fc-icon">🌈</div><div class="fc-name">Rainbow Rare</div><div class="fc-desc">Entire card has rainbow texture with white streaks. Sun & Moon era secret rare.</div></div>
-      <div class="finish-chip fc-gold"><div class="fc-icon">🟡</div><div class="fc-name">Gold Card</div><div class="fc-desc">Textured gold border and surface. Usually items or energy in secret rare slots.</div></div>
-      <div class="finish-chip fc-hyper"><div class="fc-icon">💎</div><div class="fc-name">Special Art / Hyper Rare</div><div class="fc-desc">Unique illustrated full art. Most expensive modern cards. SV era "Special Illustration Rare".</div></div>
+      <div class="finish-chip fc-normal"><div class="fc-icon">🃏</div><div class="fc-name">Normal (Bulk)</div><div class="fc-desc">Mat på hele kortet. Ingen værdi uden det er Base Set.</div></div>
+      <div class="finish-chip fc-holo"><div class="fc-icon">✨</div><div class="fc-name">Holo</div><div class="fc-desc">Kun baggrunden bag selve Pokémonen skinner.</div></div>
+      <div class="finish-chip fc-reverse"><div class="fc-icon">✦</div><div class="fc-name">Reverse Holo</div><div class="fc-desc">Alt på kortet skinner, UNDTAGEN selve billedet.</div></div>
+      <div class="finish-chip fc-full"><div class="fc-icon">🖼</div><div class="fc-name">Full Art</div><div class="fc-desc">Billedet dækker hele kortet (ingen grå kanter). Oftest Trainers.</div></div>
+      <div class="finish-chip fc-rainbow"><div class="fc-icon">🌈</div><div class="fc-name">Rainbow Rare</div><div class="fc-desc">Kortet har en vild regnbue textur med streger. Sun & Moon æra.</div></div>
+      <div class="finish-chip fc-gold"><div class="fc-icon">🟡</div><div class="fc-name">Gold Card</div><div class="fc-desc">Rig textur med guldkant. Typisk genstande eller energi fra nye sæt.</div></div>
+      <div class="finish-chip fc-hyper"><div class="fc-icon">💎</div><div class="fc-name">Special Art (SIR)</div><div class="fc-desc">Unik, håndtegnet 'Full art'. Næsten altid det dyreste man kan trække.</div></div>
     </div>
   </div>
 
@@ -1127,14 +1107,14 @@ footer strong{color:var(--gold);font-weight:500;}
 
 <div class="scan-modal" id="scan-modal">
   <div class="scan-header">
-    <span class="scan-header-title">📷 SCAN CARD</span>
-    <button class="scan-close-btn" onclick="closeScan()" aria-label="Luk scanner">✕ CLOSE</button>
+    <span class="scan-header-title">📷 SCAN KORT</span>
+    <button class="scan-close-btn" onclick="closeScan()" aria-label="Luk scanner">✕ LUK</button>
   </div>
   <div class="scan-body">
 
     <!-- Step 1: Viewfinder -->
     <div id="scan-viewfinder-wrap">
-      <p class="scan-hint">Point the camera at the card so the <strong>card name at the top</strong> is clearly visible, then press the button.</p>
+      <p class="scan-hint">Sigt kameraet så <strong>teksten i toppen af kortet</strong> kan ses klart og tydeligt, og tryk derefter på knappen.</p>
       <div class="scan-viewfinder">
         <video id="scan-video" autoplay playsinline muted></video>
         <div class="scan-frame">
@@ -1150,18 +1130,18 @@ footer strong{color:var(--gold);font-weight:500;}
 
     <!-- Step 2: Preview -->
     <div id="scan-preview-wrap" style="display:none;">
-      <p class="scan-hint">Is the card clearly visible? Press <strong>Analyse</strong> or retake.</p>
+      <p class="scan-hint">Er al tekst på kortet tydelig? Tryk <strong>Analyser</strong> eller tag om.</p>
       <div class="scan-preview-img-wrap"><img id="scan-preview-img" src="" alt="Preview"></div>
       <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;">
-        <button class="scan-action-btn outline" onclick="retakePhoto()">↩ Retake</button>
-        <button class="scan-action-btn primary" onclick="analyseCard()">🔍 Analyse Card</button>
+        <button class="scan-action-btn outline" onclick="retakePhoto()">↩ Tag om</button>
+        <button class="scan-action-btn primary" onclick="analyseCard()">🔍 Analyser Kort</button>
       </div>
     </div>
 
     <!-- Step 3: Processing -->
     <div id="scan-processing" style="display:none;flex-direction:column;align-items:center;padding:30px 0;gap:14px;">
       <div class="scan-spinner"></div>
-      <p class="scan-hint" style="text-align:center;">AI is identifying the card…</p>
+      <p class="scan-hint" style="text-align:center;">AI søger direkte i Cardmarket... vent venligst</p>
     </div>
 
     <!-- Step 4: Result -->
