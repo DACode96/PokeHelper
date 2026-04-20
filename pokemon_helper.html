@@ -1059,18 +1059,35 @@ footer strong{color:var(--gold);font-weight:500;}
 </div><!-- /page-chart -->
 
 <!-- ════════════════════════════════
-     PAGE 3: MY COLLECTION (FIREBASE)
+     PAGE 3: MY COLLECTION (FIREBASE DEX)
 ════════════════════════════════ -->
 <div id="page-collection" class="page">
-  <div class="chart-hero" style="border-bottom:1px solid rgba(255,255,255,.1);">
-    <p style="font-size:.68em;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Din Database</p>
+  <div class="chart-hero" style="border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:30px;">
+    <p style="font-size:.68em;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Din Portefølje</p>
     <h2>Min <span>Samling</span></h2>
-    <p>Dine scannede og gemte kort, synkroniseret via din Google konto.</p>
+    
+    <!-- DASHBOARD -->
+    <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:12px; margin:20px auto 0; padding:20px; max-width:400px; display:flex; justify-content:space-around;">
+      <div style="text-align:center;">
+        <span style="display:block; font-size:0.6em; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:2px; margin-bottom:4px;">Samlet Værdi</span>
+        <strong id="portfolio-total-value" style="font-family:'Bebas Neue',cursive; font-size:2em; color:var(--gold);">0 kr.</strong>
+      </div>
+      <div style="width:1px; background:rgba(255,255,255,0.1);"></div>
+      <div style="text-align:center;">
+        <span style="display:block; font-size:0.6em; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:2px; margin-bottom:4px;">Antal Kort</span>
+        <strong id="portfolio-total-cards" style="font-family:'Bebas Neue',cursive; font-size:2em; color:#fff;">0</strong>
+      </div>
+    </div>
   </div>
+  
   <div class="container" style="padding-top:30px;min-height:50vh;">
-    <div id="collection-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));gap:12px;padding-bottom:50px;">
-      <!-- Collection cards injected here -->
-      <p style="color:rgba(0,0,0,0.5);width:100%;grid-column:1/-1;text-align:center;padding:40px 0;">Indlæser din samling...</p>
+    <div id="collection-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));gap:12px;">
+      <p style="color:rgba(0,0,0,0.5);width:100%;grid-column:1/-1;text-align:center;padding:40px 0;">Indlæser jeres skatkammer...</p>
+    </div>
+    
+    <!-- GOOGLE ADSENSE SLOT -->
+    <div class="ad-slot" style="grid-column:1/-1; margin:40px auto; width:100%; max-width:720px; height:90px; background:rgba(0,0,0,0.03); border:1px dashed rgba(0,0,0,0.15); display:flex; align-items:center; justify-content:center; color:rgba(0,0,0,0.3); text-transform:uppercase; font-size:0.7em; letter-spacing:1px;">
+      [ Google AdSense Banner Placering ]
     </div>
   </div>
 </div>
@@ -1165,14 +1182,19 @@ footer strong{color:var(--gold);font-weight:500;}
       <div id="scan-result-manual" style="display:none;">
         <p class="scan-hint" id="scan-manual-msg" style="text-align:center;margin-bottom:14px;"></p>
         <div class="scan-manual-wrap">
-          <input id="scan-manual-input" class="scan-manual-input" type="text" placeholder="Type card name, e.g. Charizard Base Set" oninput="manualSearch()">
+          <input id="scan-manual-input" class="scan-manual-input" type="text" placeholder="Skriv fuldt navn, eks. Charizard Base Set" oninput="manualSearch()">
         </div>
         <div class="scan-search-btns" style="margin-top:10px;">
-          <a id="scan-tcg-btn2" href="#" target="_blank" class="scan-search-btn tcg">🔍 Search TCGplayer</a>
-          <a id="scan-pc-btn2" href="#" target="_blank" class="scan-search-btn pc">💰 PriceCharting</a>
+          <a id="scan-tcg-btn2" href="#" target="_blank" class="scan-search-btn tcg" style="flex:1;">🔍 TCGplayer</a>
+          <a id="scan-pc-btn2" href="#" target="_blank" class="scan-search-btn pc" style="flex:1;">💰 PriceCharting</a>
         </div>
-        <button class="scan-action-btn outline" style="margin:14px auto;display:block;" onclick="retakePhoto()">📷 Try again</button>
+        <button class="scan-action-btn outline" style="margin:14px auto;display:block;" onclick="retakePhoto()">📷 Prøv igen</button>
       </div>
+    </div>
+
+    <!-- GOOGLE ADSENSE SLOT PÅ SCANNER -->
+    <div class="ad-slot" style="margin:20px auto; width:100%; max-width:320px; height:50px; background:rgba(255,255,255,0.05); border:1px dashed rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.3); text-transform:uppercase; font-size:0.6em; letter-spacing:1px;">
+      [ AdSense Placering ]
     </div>
 
     <canvas id="scan-canvas" style="display:none;"></canvas>
@@ -1379,29 +1401,82 @@ async function analyseCard() {
 
     setScanState('result');
     if (parsed.name && parsed.confidence !== 'low') {
-      const label = parsed.set
-        ? `${parsed.name} (${parsed.set}${parsed.number ? ' · ' + parsed.number : ''})`
+      let label = parsed.set 
+        ? `${parsed.name} (${parsed.set}${parsed.number ? ' · ' + parsed.number : ''})` 
         : parsed.name;
       
+      // 2. SLÅ OP PÅ POKEMON TCG API FOR EUROPEISK CARDMARKET PRIS + HD BILLEDE
+      let priceDKK = null;
+      let finalImageUrl = "data:image/jpeg;base64," + smallB64; // Default kamera hvis der fejles
+      let apiCardUrl = null;
+
+      try {
+        let searchQuery = encodeURIComponent(`name:"${parsed.name}"`);
+        if(parsed.number) searchQuery += encodeURIComponent(` number:"${parsed.number.replace(/\D.*$/,'')}"`); // Extracts just the number part
+        
+        document.getElementById('scan-result-conf').innerHTML = "Søger kortdatabase efter priser... <span class='scan-spinner' style='width:12px;height:12px;display:inline-block;border-width:2px;margin-left:5px;'></span>";
+        document.getElementById('scan-result-conf').style.color = "var(--gold)";
+
+        const dbRes = await fetch(`https://api.pokemontcg.io/v2/cards?q=${searchQuery}&pageSize=5`);
+        const dbData = await dbRes.json();
+
+        if(dbData && dbData.data && dbData.data.length > 0) {
+          // Tag det mest relevante match. Hvis set er angivet, prøv at matche det
+          let bestMatch = dbData.data[0];
+          if(parsed.set) {
+            const setMatch = dbData.data.find(c => c.set && c.set.name && c.set.name.toLowerCase().includes(parsed.set.toLowerCase()));
+            if(setMatch) bestMatch = setMatch;
+          }
+          
+          finalImageUrl = bestMatch.images?.small || finalImageUrl;
+          document.getElementById('scan-preview-img').src = finalImageUrl; // Opdatér skærmen m. flot kort
+          
+          // Udlæs EUR pris på Cardmarket, gang m. ~7.46
+          const eur = bestMatch.cardmarket?.prices?.averageSellPrice || bestMatch.cardmarket?.prices?.trendPrice;
+          if(eur) {
+            priceDKK = Math.round(eur * 7.46);
+          }
+          apiCardUrl = bestMatch.cardmarket?.url;
+        }
+      } catch(err) {
+        console.error("Kunne ikke finde prisen fra databasen:", err);
+      }
+
       document.getElementById('scan-result-name').textContent = label;
-      const cc = { high:'#27ae60', medium:'#e67e22', low:'#c0392b' }[parsed.confidence] || '#555';
-      const ct = { high:'✅ Høj sikkerhed', medium:'🟡 Middel sikkerhed', low:'🔴 Lav sikkerhed' }[parsed.confidence] || '';
-      document.getElementById('scan-result-conf').textContent = ct;
-      document.getElementById('scan-result-conf').style.color = cc;
+      
+      if(priceDKK !== null) {
+        document.getElementById('scan-result-conf').innerHTML = `💸 Markedsværdi: <strong style="font-size:1.4em;font-family:'Bebas Neue',cursive;">${priceDKK} kr.</strong> <span style="font-size:0.8em;opacity:0.7;">(Cardmarket)</span>`;
+        document.getElementById('scan-result-conf').style.color = '#fff';
+      } else {
+        const cc = { high:'#27ae60', medium:'#e67e22', low:'#c0392b' }[parsed.confidence] || '#555';
+        const ct = { high:'✅ Identificeret', medium:'🟡 Identificeret (Usikker)', low:'🔴 Prøv Igen' }[parsed.confidence] || '';
+        document.getElementById('scan-result-conf').textContent = `${ct} — Pris ikke fundet`;
+        document.getElementById('scan-result-conf').style.color = cc;
+      }
       
       buildLinks(parsed.name);
       
-      // Gør klar til at gemme i Firebase
-      currentScannedCard = {  name: parsed.name, set: parsed.set || '', number: parsed.number || '', label: label, imageBase64: smallB64, id: Date.now().toString() };
+      // Gør klar til at gemme porteføljekort i Firebase (med HD kort + pris)
+      currentScannedCard = {  
+        name: parsed.name, 
+        set: parsed.set || '', 
+        number: parsed.number || '', 
+        label: label, 
+        imageBase64: finalImageUrl.startsWith('http') ? null : smallB64, 
+        imageUrl: finalImageUrl.startsWith('http') ? finalImageUrl : null,
+        priceDKK: priceDKK || 0,
+        cardmarketUrl: apiCardUrl,
+        id: Date.now().toString() 
+      };
       
       // Vis Gem-knappen hvis bruger er logget ind
       document.getElementById('scan-save-btn').style.display = window.currentUser ? 'block' : 'none';
       if(!window.currentUser) {
         document.getElementById('scan-save-btn').style.display = 'block';
-        document.getElementById('scan-save-btn').textContent = '🔒 LOG IND FOR AT GEMME';
+        document.getElementById('scan-save-btn').textContent = '🔒 LOG IND FOR AT OPRETTE PORTEFØLJE';
         document.getElementById('scan-save-btn').onclick = () => { closeScan(); openProfile(); };
       } else {
-        document.getElementById('scan-save-btn').textContent = '💾 GEM I SAMLING';
+        document.getElementById('scan-save-btn').innerHTML = `💾 GEM I PORTEFØLJE <span style="font-size:0.8em;opacity:0.7;">${priceDKK !== null ? '('+priceDKK+' kr.)' : ''}</span>`;
         document.getElementById('scan-save-btn').onclick = saveCurrentCard;
       }
 
@@ -1522,7 +1597,10 @@ window.firebaseSaveCard = async (cardData) => {
       set: cardData.set,
       number: cardData.number,
       label: cardData.label,
-      imageBase64: cardData.imageBase64,
+      imageUrl: cardData.imageUrl || null,
+      imageBase64: cardData.imageBase64 || null,
+      priceDKK: cardData.priceDKK || 0,
+      cardmarketUrl: cardData.cardmarketUrl || null,
       timestamp: Timestamp.now()
     });
     return true;
@@ -1540,11 +1618,15 @@ window.firebaseDeleteCard = async (docId) => {
   } catch(e) { console.error("Fejl v/ sletning:", e); }
 };
 
-// Load collection
 window.loadCollection = async () => {
   const grid = document.getElementById('collection-grid');
+  const dVal = document.getElementById('portfolio-total-value');
+  const dCnt = document.getElementById('portfolio-total-cards');
+  
   if(!auth.currentUser) {
-    grid.innerHTML = '<div style="text-align:center;grid-column:1/-1;padding:40px;"><p style="margin-bottom:12px;color:rgba(0,0,0,.6);">Du skal være logget ind for at se din samling.</p><button class="scan-action-btn primary" onclick="openProfile()">Log ind her</button></div>';
+    grid.innerHTML = '<div style="text-align:center;grid-column:1/-1;padding:40px;"><p style="margin-bottom:12px;color:rgba(0,0,0,.6);">Du skal være logget ind for at se din portefølje.</p><button class="scan-action-btn primary" onclick="openProfile()">Opret / Log ind gratis</button></div>';
+    dVal.textContent = '0 kr.';
+    dCnt.textContent = '0';
     return;
   }
   
@@ -1555,29 +1637,55 @@ window.loadCollection = async () => {
     const snap = await getDocs(q);
     
     if(snap.empty) {
-      grid.innerHTML = '<p style="color:rgba(0,0,0,.5);grid-column:1/-1;text-align:center;padding:40px 0;">Ingen kort i samlingen endnu. Scan et kort for at gemme det!</p>';
+      grid.innerHTML = '<p style="color:rgba(0,0,0,.5);grid-column:1/-1;text-align:center;padding:40px 0;">Ingen kort i din DEX endnu. Scan et kort for at begynde!</p>';
+      dVal.textContent = '0 kr.';
+      dCnt.textContent = '0';
       return;
     }
     
     let html = '';
-    snap.forEach(doc => {
+    let totalDkk = 0;
+    let totalCards = 0;
+    
+    snap.forEach((doc, idx) => {
       const d = doc.data();
-      const imgData = d.imageBase64 ? `data:image/jpeg;base64,${d.imageBase64}` : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      totalCards++;
+      totalDkk += (d.priceDKK || 0);
+
+      const priceHtml = d.priceDKK ? `<div style="font-family:'Bebas Neue',cursive;font-size:1.2em;color:var(--gold);margin-top:4px;">${d.priceDKK} kr</div>` : '<div style="font-size:0.7em;color:var(--muted);margin-top:4px;">Pris ukendt</div>';
+      const imgData = d.imageUrl ? d.imageUrl : (d.imageBase64 ? `data:image/jpeg;base64,${d.imageBase64}` : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
+      const clickAction = d.cardmarketUrl ? `onclick="window.open('${d.cardmarketUrl}', '_blank')"` : ``;
+      
       html += `
-        <div class="img-card" style="position:relative;width:100%;background:#fff;border-radius:6px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.05);transition:transform 0.15s;">
-          <button onclick="firebaseDeleteCard('${doc.id}')" style="position:absolute;top:4px;right:4px;width:24px;height:24px;background:var(--red);color:#fff;border:none;border-radius:50%;font-weight:bold;cursor:pointer;opacity:0.8;z-index:2;">✕</button>
-          <img src="${imgData}" style="width:100%;height:130px;object-fit:contain;padding:8px;background:var(--cream);" alt="${d.name}">
-          <div style="padding:8px 6px;text-align:center;border-top:1px solid var(--border);">
-            <div style="font-family:'DM Serif Display',serif;font-size:0.85em;line-height:1.2;color:var(--ink);">${d.name}</div>
-            <div style="font-size:0.6em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;">${d.set}</div>
+        <div class="img-card" style="position:relative;width:100%;max-width:180px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.08);transition:transform 0.15s;cursor:pointer;" ${clickAction}>
+          <!-- Delete knap overskriver klik på kortet -->
+          <button onclick="event.stopPropagation(); firebaseDeleteCard('${doc.id}')" style="position:absolute;top:6px;right:6px;width:26px;height:26px;background:rgba(192,57,43,0.9);color:#fff;border:none;border-radius:50%;font-weight:bold;cursor:pointer;opacity:0.8;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,0.3);">✕</button>
+          
+          <img src="${imgData}" style="width:100%;height:180px;object-fit:contain;padding:12px;background:var(--cream);" alt="${d.name}">
+          
+          <div style="padding:10px;text-align:center;border-top:1px solid var(--border);background:#fff;">
+            <div style="font-family:'DM Serif Display',serif;font-size:0.9em;line-height:1.1;color:var(--ink);">${d.name}</div>
+            <div style="font-size:0.65em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:5px;">${d.set}</div>
+            ${priceHtml}
           </div>
         </div>
       `;
+
+      // Indsæt en AdSense slot automatisk efter 8 kort (for at holde en fin frekvens)
+      if((idx+1) % 8 === 0) {
+        html += `<div class="ad-slot" style="grid-column:1/-1; width:100%; height:90px; background:rgba(0,0,0,0.03); border:1px dashed rgba(0,0,0,0.15); display:flex; align-items:center; justify-content:center; color:rgba(0,0,0,0.3); text-transform:uppercase; font-size:0.7em; letter-spacing:1px;">[ AdSense Banner Placering ]</div>`;
+      }
     });
+
     grid.innerHTML = html;
+    
+    // Formatér tal med punktum ved tusinder
+    dVal.textContent = totalDkk.toLocaleString("da-DK") + ' kr.';
+    dCnt.textContent = totalCards.toString();
+
   } catch(e) {
     console.error("Load Fejl:", e);
-    grid.innerHTML = '<p style="color:var(--red);grid-column:1/-1;text-align:center;padding:40px 0;">Kunne ikke indlæse samling pga. serverfejl eller manglende Firestore tilladelser.</p>';
+    grid.innerHTML = '<p style="color:var(--red);grid-column:1/-1;text-align:center;padding:40px 0;">Kunne ikke indlæse samling pga. serverfejl.</p>';
   }
 };
 
