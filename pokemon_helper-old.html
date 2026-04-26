@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PokéHelper — Card Value Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#08080a; --paper:#111114; --cream:#1a1a1f; /* Dark Mode base */
+  --red:#f87171; --gold:#e2bb71; --muted:#8b8b99; --border:rgba(255,255,255,0.08);
+  --blue:#60a5fa; --purple:#a78bfa; --green:#34d399;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--ink);color:#f3f4f6;font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;}
+
+/* ═══ ANIMATIONS & GLOWS ═══ */
+.bg-orbs { position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
+.orb { position:absolute; border-radius:50%; filter:blur(90px); opacity:0.1; animation:orbFloat 15s infinite ease-in-out alternate; }
+.orb-1 { width:45vw; height:45vw; background:var(--gold); top:-10%; right:-10%; }
+.orb-2 { width:50vw; height:50vw; background:var(--purple); bottom:-10%; left:-10%; animation-delay:-7s; }
+.orb-3 { width:30vw; height:30vw; background:var(--blue); top:40%; left:30%; animation-delay:-3s; filter:blur(120px); }
+@keyframes orbFloat { 0% { transform:translate(0,0) scale(1); } 100% { transform:translate(-30px, 40px) scale(1.1); } }
+
+@keyframes fadeUp { 0% { opacity:0; transform:translateY(15px); } 100% { opacity:1; transform:translateY(0); } }
+.entry { animation:fadeUp 0.6s ease-out both; }
+.tier_wrapper { animation:fadeUp 0.5s ease-out both; }
+.entry:nth-child(2) { animation-delay: 0.1s; }
+.entry:nth-child(3) { animation-delay: 0.2s; }
+.tier_wrapper:nth-child(2) { animation-delay:0.1s; }
+.tier_wrapper:nth-child(3) { animation-delay:0.2s; }
+.tier_wrapper:nth-child(4) { animation-delay:0.3s; }
+
+/* ═══ NAV ═══ */
+.nav-bar{
+  position:sticky;top:0;z-index:900;
+  background:rgba(8,8,10,0.65); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  display:flex;align-items:stretch;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.nav-logo{
+  font-family:'Bebas Neue',cursive;
+  font-size:1.25em;letter-spacing:3px;
+  color:var(--gold);
+  padding:0 20px;
+  display:flex;align-items:center;
+  border-right:1px solid rgba(255,255,255,0.1);
+  white-space:nowrap;
+}
+.nav-tabs{display:flex;flex:1;overflow-x:auto;scrollbar-width:none;}
+.nav-settings-btn{
+  background:none;border:none;color:rgba(255,255,255,0.45);cursor:pointer;
+  padding:0 16px;font-size:1.15em;display:flex;align-items:center;
+  border-left:1px solid rgba(255,255,255,0.1);
+  transition:color 0.15s;
+  flex-shrink:0;
+}
+.nav-settings-btn:hover{color:var(--gold);}
+.nav-tabs::-webkit-scrollbar{display:none;}
+.nav-tab{
+  flex:0 0 auto;
+  padding:14px 16px;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.72em;letter-spacing:1.5px;text-transform:uppercase;font-weight:500;
+  color:rgba(255,255,255,0.45);
+  background:none;border:none;cursor:pointer;
+  border-bottom:3px solid transparent;
+  transition:color 0.15s,border-color 0.15s;
+  white-space:nowrap;
+}
+.nav-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.nav-tab:hover:not(.active){color:rgba(255,255,255,0.75);}
+
+/* ═══ PAGES ═══ */
+.page{display:none;}
+.page.active{display:block;}
+
+/* ═══ HERO ═══ */
+.hero{
+  background:transparent;color:var(--paper);
+  padding:70px 30px 52px;text-align:center;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(255,255,255,0.015) 40px,rgba(255,255,255,0.015) 80px);
+}
+.hero-eyebrow{font-size:0.68em;letter-spacing:6px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
+.hero h1{font-family:'Bebas Neue',cursive;font-size:clamp(3em,9vw,6.5em);letter-spacing:4px;line-height:.9;margin-bottom:20px;}
+.hero h1 span{color:var(--gold);}
+.hero-sub{font-family:'DM Serif Display',serif;font-style:italic;font-size:clamp(.95em,2.5vw,1.25em);color:rgba(245,240,232,.65);max-width:520px;margin:0 auto 32px;line-height:1.55;}
+.hero-meta{display:inline-flex;gap:28px;border-top:1px solid rgba(255,255,255,.12);border-bottom:1px solid rgba(255,255,255,.12);padding:13px 28px;font-size:.7em;letter-spacing:3px;text-transform:uppercase;color:rgba(245,240,232,.4);}
+.alert-strip{background:var(--red);color:#fff;text-align:center;padding:14px 20px;font-size:.78em;letter-spacing:1.5px;text-transform:uppercase;font-weight:500;}
+
+/* ═══ CONTAINER ═══ */
+.container{max-width:960px;margin:0 auto;padding:0 20px;}
+
+/* ═══ SECTION LABEL ═══ */
+.section-label{display:flex;align-items:center;gap:14px;padding:44px 0 18px;}
+.section-label::before,.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.section-label span{font-size:.66em;letter-spacing:5px;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+
+/* ═══ ENTRIES ═══ */
+.entry{background:var(--cream);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;transition:box-shadow .25s, transform .2s; overflow:hidden;}
+.entry:hover{box-shadow:0 8px 30px rgba(0,0,0,.3);transform:translateY(-2px);position:relative;z-index:1; border-color:rgba(255,255,255,0.15);}
+.entry-inner{display:grid;grid-template-columns:80px 1fr auto;grid-template-rows:auto auto;}
+.entry-num{
+  background:rgba(0,0,0,0.3);color:rgba(255,255,255,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',cursive;font-size:2em;letter-spacing:1px;
+  padding:0;min-height:130px;grid-row:1/3;
+  border-right:1px solid var(--border);
+}
+.entry-num.gold{color:var(--gold);}
+.entry-num.red{color:var(--red);}
+.entry-body{padding:24px 28px;border-right:1px solid var(--border);grid-column:2;grid-row:1;}
+.entry-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.tag{font-size:.6em;letter-spacing:2px;text-transform:uppercase;font-weight:700;padding:3px 8px;border-radius:2px;}
+.tag-era{background:rgba(255,255,255,0.1);color:var(--muted);border:1px solid var(--border);}
+.tag-hot{background:var(--red);color:#fff;}
+.tag-gold{background:var(--gold);color:#000;}
+.tag-rare{background:var(--gold);color:#000;}
+.entry-title{font-family:'DM Serif Display',serif;font-size:1.22em;line-height:1.2;margin-bottom:7px;}
+.entry-desc{font-size:.84em;color:rgba(255,255,255,0.75);line-height:1.6;margin-bottom:10px;}
+.entry-tip{font-size:.77em;font-weight:500;color:var(--red);border-left:2px solid var(--red);padding-left:8px;font-style:italic;}
+.entry-value{margin-top:12px;font-family:'Bebas Neue',cursive;font-size:1.25em;letter-spacing:2px;}
+.entry-value small{font-family:'DM Sans',sans-serif;font-size:.44em;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;font-weight:400;}
+
+/* Desktop images */
+.entry-images{display:flex;flex-direction:column;width:175px;min-width:175px;grid-column:3;grid-row:1/3;background:#050505;}
+.entry-images img{width:100%;height:140px;object-fit:contain;border-bottom:1px solid var(--border);padding:10px;cursor:zoom-in;transition:transform .2s;}
+.entry-images img:hover{transform:scale(1.05);position:relative;z-index:2;}
+.entry-images img:last-child{border-bottom:none;flex:1;}
+.img-caption{font-size:.6em;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:center;padding:6px;background:#0a0a0c;border-bottom:1px solid var(--border);}
+
+/* Mobile images strip */
+.entry-images-mobile{display:none;}
+
+/* Staff visual */
+.staff-visual{width:100%;height:100px;background:var(--ink);display:flex;align-items:center;justify-content:center;}
+.staff-badge{font-family:'Bebas Neue',cursive;color:var(--gold);font-size:1.5em;letter-spacing:5px;border:2px solid var(--gold);padding:4px 14px;text-shadow:0 0 12px rgba(200,151,58,.5);}
+
+/* ═══ REF TABLE ═══ */
+.ref-table{width:100%;border-collapse:collapse;font-size:.82em;margin-bottom:40px;}
+.ref-table th{background:rgba(0,0,0,0.5);color:#fff;font-family:'Bebas Neue',cursive;letter-spacing:3px;font-size:1.05em;padding:11px 14px;text-align:left;font-weight:400;}
+.ref-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:rgba(255,255,255,0.8);}
+.ref-table tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+.ref-table .val{font-weight:700;color:var(--gold);}
+
+/* ═══ FOOTER ═══ */
+footer{background:var(--ink);color:rgba(245,240,232,.38);text-align:center;padding:36px 20px;font-size:.73em;letter-spacing:1px;line-height:2;margin-top:60px;}
+footer strong{color:var(--gold);font-weight:500;}
+
+/* ═══ LIGHTBOX ═══ */
+.lightbox{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);align-items:center;justify-content:center;padding:20px;}
+.lightbox.active{display:flex;}
+.lb-inner{position:relative;max-width:380px;width:100%;text-align:center;}
+.lb-img{max-width:100%;max-height:72vh;object-fit:contain;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.6);}
+.lb-caption{color:rgba(255,255,255,.6);font-size:.75em;letter-spacing:1px;text-transform:uppercase;margin:12px 0 16px;}
+.lb-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.lb-btn{padding:10px 18px;border-radius:6px;font-size:.77em;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-decoration:none;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:opacity .15s;}
+.lb-btn:active{opacity:.75;}
+.lb-btn-tcg{background:#e74c3c;color:#fff;}
+.lb-btn-pc{background:var(--gold);color:#fff;}
+.lb-btn-close{position:absolute;top:-14px;right:-14px;width:34px;height:34px;background:#fff;border:none;border-radius:50%;font-size:1.1em;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.4);color:var(--ink);font-weight:700;z-index:1;}
+
+/* Zoom cursor on all card images */
+.entry-images img,.img-card img{cursor:zoom-in;}
+
+/* ═══ SETTINGS MODAL ═══ */
+.settings-modal{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.85);align-items:center;justify-content:center;padding:20px;}
+.settings-modal.active{display:flex;}
+.settings-box{background:var(--ink);border:1px solid var(--gold);border-radius:12px;padding:28px 28px 24px;width:100%;max-width:440px;}
+.settings-title{font-family:'Bebas Neue',cursive;color:var(--gold);font-size:1.4em;letter-spacing:3px;margin-bottom:6px;}
+.settings-desc{font-size:.78em;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:18px;}
+.settings-desc a{color:var(--gold);text-underline-offset:3px;}
+.settings-label{font-size:.68em;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:6px;display:block;}
+.settings-input{width:100%;padding:12px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);color:#fff;font-family:'DM Sans',sans-serif;font-size:.88em;margin-bottom:6px;}
+.settings-input::placeholder{color:rgba(255,255,255,.25);}
+.settings-input:focus{outline:none;border-color:var(--gold);}
+.settings-key-hint{font-size:.68em;color:rgba(255,255,255,.3);margin-bottom:18px;line-height:1.5;}
+.settings-key-status{display:inline-block;font-size:.72em;letter-spacing:1px;border-radius:4px;padding:3px 9px;margin-bottom:16px;}
+.settings-key-status.saved{background:rgba(22,163,74,.2);color:#4ade80;border:1px solid rgba(22,163,74,.35);}
+.settings-key-status.missing{background:rgba(192,57,43,.2);color:#f87171;border:1px solid rgba(192,57,43,.35);}
+.settings-actions{display:flex;gap:8px;justify-content:flex-end;}
+.settings-btn{padding:10px 18px;border-radius:7px;font-family:'Bebas Neue',cursive;font-size:.95em;letter-spacing:2px;cursor:pointer;border:none;transition:opacity .15s;}
+.settings-btn:active{opacity:.75;}
+.settings-btn.primary{background:var(--gold);color:#fff;}
+.settings-btn.ghost{background:transparent;color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.2);}
+
+/* ═══ SCAN FAB ═══ */
+.scan-fab{
+  position:fixed;bottom:22px;right:18px;z-index:800;
+  background:var(--ink);color:var(--paper);
+  border:2px solid var(--gold);border-radius:50px;
+  padding:12px 18px;font-family:'Bebas Neue',cursive;font-size:.95em;letter-spacing:3px;
+  cursor:pointer;display:flex;align-items:center;gap:7px;
+  box-shadow:0 6px 24px rgba(0,0,0,.35);transition:transform .15s,box-shadow .15s;
+}
+.scan-fab:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,0,0,.4);}
+.scan-fab:active{transform:scale(.96);}
+
+/* ═══ SCAN MODAL ═══ */
+.scan-modal{display:none;position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.96);flex-direction:column;align-items:center;}
+.scan-modal.active{display:flex;}
+.scan-header{width:100%;background:var(--ink);border-bottom:1px solid rgba(255,255,255,.1);padding:15px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.scan-header-title{font-family:'Bebas Neue',cursive;color:var(--gold);font-size:1.2em;letter-spacing:3px;}
+.scan-close-btn{background:none;border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:6px;padding:6px 12px;font-size:.74em;letter-spacing:1px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.scan-body{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;overflow-y:auto;padding:18px 16px;gap:14px;}
+.scan-hint{color:rgba(255,255,255,.6);font-size:.82em;text-align:center;max-width:340px;line-height:1.6;}
+.scan-hint strong{color:rgba(255,255,255,.9);}
+.scan-viewfinder{position:relative;width:100%;max-width:380px;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:3/4;}
+#scan-video{width:100%;height:100%;object-fit:cover;display:block;}
+.scan-frame{position:absolute;inset:12px;pointer-events:none;}
+.scan-corner{position:absolute;width:22px;height:22px;border-color:var(--gold);border-style:solid;}
+.scan-corner.tl{top:0;left:0;border-width:3px 0 0 3px;border-radius:4px 0 0 0;}
+.scan-corner.tr{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 4px 0 0;}
+.scan-corner.bl{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 4px;}
+.scan-corner.br{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 4px 0;}
+
+/* Scanner Laser */
+.scan-laser { position:absolute; left:12px; right:12px; height:2px; background:var(--gold); box-shadow:0 0 10px var(--gold); border-radius:50%; animation:laser 2s infinite ease-in-out; pointer-events:none; }
+@keyframes laser { 0% { top:10%; opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { top:90%; opacity:0; } }
+.scan-snap-btn{background:#fff;border:none;border-radius:50%;width:70px;height:70px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.5);transition:transform .1s;}
+.scan-snap-btn:active{transform:scale(.88);}
+.scan-snap-inner{width:52px;height:52px;border-radius:50%;background:var(--ink);border:3px solid rgba(255,255,255,.6);}
+.scan-preview-img-wrap{width:100%;max-width:380px;border-radius:12px;overflow:hidden;border:2px solid rgba(255,255,255,.15);}
+.scan-preview-img-wrap img{width:100%;display:block;max-height:320px;object-fit:contain;background:#111;}
+.scan-action-btn{padding:12px 22px;border-radius:8px;font-family:'Bebas Neue',cursive;font-size:1.1em;letter-spacing:2px;cursor:pointer;border:none;transition:transform .1s,opacity .15s;}
+.scan-action-btn:active{transform:scale(.96);}
+.scan-action-btn.primary{background:var(--gold);color:#fff;}
+.scan-action-btn.outline{background:transparent;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.25);}
+.scan-spinner{width:44px;height:44px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.scan-result-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:16px 20px;margin-bottom:12px;width:100%;max-width:400px;}
+.scan-result-label{font-size:.64em;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.scan-result-name{font-family:'DM Serif Display',serif;font-size:1.4em;color:#fff;line-height:1.2;margin-bottom:5px;}
+.scan-result-conf{font-size:.75em;font-weight:600;}
+.scan-search-btns{display:flex;gap:8px;flex-wrap:wrap;width:100%;max-width:400px;}
+.scan-search-btn{flex:1;min-width:130px;padding:13px 10px;border-radius:8px;font-size:.79em;font-weight:700;text-decoration:none;text-align:center;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;display:block;transition:opacity .15s;}
+.scan-search-btn:active{opacity:.8;}
+.scan-search-btn.tcg{background:#e74c3c;color:#fff;}
+.scan-search-btn.pc{background:var(--gold);color:#fff;}
+.scan-manual-wrap{width:100%;max-width:400px;}
+.scan-manual-input{width:100%;padding:13px 16px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-family:'DM Sans',sans-serif;font-size:.9em;}
+.scan-manual-input::placeholder{color:rgba(255,255,255,.3);}
+.scan-manual-input:focus{outline:none;border-color:var(--gold);}
+#scan-canvas{display:none;}
+
+/* ═══════════════════════════════════════
+   PAGE 2 — RARITY CHART MODERNISED
+═══════════════════════════════════════ */
+.chart-page{background:var(--ink);min-height:100vh;padding:0 0 60px;}
+.chart-hero{
+  background:linear-gradient(135deg,#0d0d0d 0%,#1a0a2e 50%,#0d0d0d 100%);
+  padding:52px 24px 40px;text-align:center;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.chart-hero h2{font-family:'Bebas Neue',cursive;font-size:clamp(2.5em,7vw,4.5em);letter-spacing:4px;color:#fff;margin-bottom:10px;}
+.chart-hero h2 span{color:var(--gold);}
+.chart-hero p{color:rgba(255,255,255,.5);font-size:.85em;max-width:480px;margin:0 auto;line-height:1.6;}
+
+/* Modern Grid Wrapper */
+.rarity-wrap{max-width:880px;margin:0 auto;padding:40px 20px;}
+
+.tier-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:16px; margin-bottom:40px; }
+
+/* Each tier card */
+.tier{
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:12px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:all .2s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.tier:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.4);border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);}
+
+.tier-bar{
+  display:flex;
+  flex-direction:column;
+  padding:18px;
+  gap:10px;
+}
+.tier-bar-top{
+  display:flex; justify-content:space-between; align-items:flex-start; width:100%;
+}
+.tier-rank{
+  font-family:'Bebas Neue',cursive;
+  font-size:1.8em;letter-spacing:2px;
+  color:rgba(255,255,255,.15);
+  line-height:1;
+}
+.tier-name{
+  font-family:'Bebas Neue',cursive;
+  font-size:1.3em;letter-spacing:1.5px;
+  color:#fff;
+  margin-top:4px;
+}
+.tier-price{
+  font-family:'DM Sans',sans-serif;font-weight:700;
+  font-size:0.8em;letter-spacing:1px;
+  color:var(--gold);
+  background:rgba(226,187,113,0.1);
+  padding:4px 8px; border-radius:4px;
+  display:inline-block; margin-top:8px;
+}
+.tier-icons{
+  display:flex;gap:6px;align-items:center;
+  margin-top:12px; flex-wrap:wrap;
+  min-height:32px;
+}
+.tier-icon{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7em;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.15);
+}
+
+/* Tier colours */
+.t-s  { background:linear-gradient(135deg,#b8860b,#ffd700,#b8860b); }
+.t-a  { background:linear-gradient(135deg,#7c3aed,#a855f7); }
+.t-b  { background:linear-gradient(135deg,#dc2626,#ef4444); }
+.t-c  { background:linear-gradient(135deg,#2563eb,#3b82f6); }
+.t-d  { background:linear-gradient(135deg,#059669,#10b981); }
+.t-e  { background:linear-gradient(135deg,#374151,#6b7280); }
+
+/* Expand panel */
+.tier-detail{
+  display:none;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-top:none;
+  border-radius:0 0 8px 8px;
+  padding:20px;
+  margin-top:-3px;
+  margin-bottom:12px;
+  position:relative;z-index:1;
+}
+.tier-detail.open{display:block;}
+.tier-detail h4{
+  font-family:'Bebas Neue',cursive;
+  font-size:1em;letter-spacing:3px;
+  color:var(--gold);margin-bottom:12px;
+}
+.tier-cards{display:flex;gap:10px;flex-wrap:wrap;}
+.tier-card-chip{
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:6px;padding:8px 12px;
+  display:flex;flex-direction:column;gap:2px;
+  min-width:130px;flex:1;
+}
+.chip-name{font-size:.8em;font-weight:600;color:#fff;}
+.chip-type{font-size:.65em;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.4);}
+.chip-price{font-family:'Bebas Neue',cursive;font-size:1em;letter-spacing:1px;color:var(--gold);}
+
+/* Card anatomy diagram */
+.anatomy-wrap{max-width:720px;margin:48px auto 0;padding:0 16px;}
+.anatomy-title{font-family:'Bebas Neue',cursive;font-size:1.6em;letter-spacing:3px;color:#fff;text-align:center;margin-bottom:6px;}
+.anatomy-sub{text-align:center;color:rgba(255,255,255,.4);font-size:.8em;margin-bottom:28px;line-height:1.5;}
+
+.anatomy-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.anatomy-item{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:8px;
+  padding:14px 16px;
+  display:flex;gap:12px;align-items:flex-start;
+}
+.anatomy-num{
+  font-family:'Bebas Neue',cursive;
+  font-size:1.8em;color:var(--gold);
+  line-height:1;flex-shrink:0;width:28px;
+}
+.anatomy-text h5{font-size:.82em;font-weight:700;color:#fff;margin-bottom:3px;}
+.anatomy-text p{font-size:.72em;color:rgba(255,255,255,.45);line-height:1.5;}
+
+/* Finish types */
+.finish-wrap{max-width:720px;margin:40px auto 0;padding:0 16px;}
+.finish-title{font-family:'Bebas Neue',cursive;font-size:1.6em;letter-spacing:3px;color:#fff;text-align:center;margin-bottom:6px;}
+.finish-sub{text-align:center;color:rgba(255,255,255,.4);font-size:.8em;margin-bottom:24px;}
+.finish-grid{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.finish-chip{
+  padding:12px 16px;border-radius:8px;text-align:center;
+  min-width:110px;flex:1;max-width:160px;
+}
+.finish-chip .fc-icon{font-size:1.6em;margin-bottom:5px;}
+.finish-chip .fc-name{font-family:'Bebas Neue',cursive;font-size:.95em;letter-spacing:2px;color:#fff;margin-bottom:3px;}
+.finish-chip .fc-desc{font-size:.67em;color:rgba(255,255,255,.5);line-height:1.4;}
+.fc-normal{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);}
+.fc-holo{background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(147,51,234,.2));border:1px solid rgba(147,51,234,.3);}
+.fc-reverse{background:linear-gradient(135deg,rgba(234,179,8,.15),rgba(239,68,68,.15));border:1px solid rgba(234,179,8,.3);}
+.fc-full{background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(59,130,246,.2));border:1px solid rgba(16,185,129,.3);}
+.fc-rainbow{background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(234,179,8,.2),rgba(34,197,94,.2),rgba(59,130,246,.2),rgba(147,51,234,.2));border:1px solid rgba(255,255,255,.2);}
+.fc-gold{background:linear-gradient(135deg,rgba(200,151,58,.25),rgba(255,215,0,.15));border:1px solid rgba(200,151,58,.4);}
+.fc-hyper{background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(200,151,58,.2));border:1px solid rgba(239,68,68,.3);}
+
+/* ═══ MOBILE ═══ */
+@media(max-width:640px){
+  .hero{padding:44px 20px 34px;}
+  .hero-meta{flex-direction:column;gap:6px;padding:12px 18px;}
+  .nav-logo{font-size:.95em;padding:0 10px;letter-spacing:2px;}
+  .nav-tab{padding:14px 12px;font-size:.65em;letter-spacing:1px;}
+  .section-label span{white-space:normal;text-align:center;font-size:.6em;letter-spacing:3px;}
+  .entry-inner{grid-template-columns:50px 1fr;grid-template-rows:auto auto;}
+  .entry-num{font-size:1.35em;min-height:unset;grid-row:1;grid-column:1;}
+  .entry-body{grid-column:2;grid-row:1;border-right:none;padding:14px 14px 10px;}
+  .entry-images{display:none;}
+  .entry-images-mobile{
+    display:flex;flex-direction:row;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    scroll-snap-type:x mandatory;
+    grid-column:1/3;grid-row:2;
+    border-top:1px solid var(--border);background:var(--cream);
+  }
+  .entry-images-mobile::-webkit-scrollbar{height:3px;}
+  .entry-images-mobile::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+  .img-card{flex:0 0 auto;width:128px;scroll-snap-align:start;border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;}
+  .img-card:last-child{border-right:none;}
+  .img-card img{width:128px;height:108px;object-fit:contain;padding:7px;background:var(--cream);}
+  .img-card .img-caption{width:100%;border-bottom:none;border-top:1px solid var(--border);padding:4px;font-size:.56em;text-align:center;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+  .staff-visual{height:108px;width:128px;}
+  .entry-images-mobile::after{content:'';flex:0 0 14px;}
+  .ref-table th:nth-child(3),.ref-table td:nth-child(3){display:none;}
+  .ref-table th,.ref-table td{padding:8px 10px;font-size:.79em;}
+  .tier-grid { grid-template-columns: 1fr; gap: 12px; }
+  .tier-bar { height:auto; padding:16px; flex-direction:column; }
+  .tier-bar-top { width: 100%; margin-bottom: 8px; }
+  .tier-rank { font-size: 2.2em; min-width: 40px; }
+  .tier-name { font-size: 1.05em; letter-spacing: 1px; white-space: normal; line-height: 1.2; }
+  .tier-price { display: block; font-size: 0.8em; opacity: 0.7; margin-top: 4px; }
+  .tier-icons { display: block; font-size: 1.3em; margin-left: auto; }
+  .tier-card-chip { flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px; }
+  .tier-card-chip .chip-price { align-self: flex-start; margin-top: 4px; }
+  .anatomy-grid{grid-template-columns:1fr;}
+  .scan-fab{bottom:16px;right:14px;padding:11px 15px;font-size:.88em;}
+}
+</style>
+</head>
+<body>
+
+<!-- ANIMATED BACKGROUND 2.0 -->
+<div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav-bar">
+  <div class="nav-logo">⚡ PokéHelper</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('guide')" aria-label="Value Guide">📖 Guide</button>
+    <button class="nav-tab" onclick="showPage('chart')" aria-label="Rarity Chart">📊 Tiers</button>
+    <button class="nav-tab" id="nav-collection-tab" onclick="showPage('collection')" aria-label="My Collection" style="display:none;">📁 Samling</button>
+    <button class="nav-tab" onclick="openScan()" aria-label="Scan Card" style="color:var(--gold);">📷 Scan</button>
+  </div>
+  <button class="nav-settings-btn" id="nav-profile-btn" onclick="openProfile()" aria-label="Profile">👤</button>
+</nav>
+
+<!-- ════════════════════════════════
+     PAGE 1: VALUE GUIDE
+════════════════════════════════ -->
+<div id="page-guide" class="page active">
+
+<div class="hero">
+  <p class="hero-eyebrow">Pokémon Portefølje Tracker</p>
+  <h1>De <span>Skjulte</span><br>Skatte</h1>
+  <p class="hero-sub">15 korttyper du SKAL kende, før du sælger dit guld for en tier i skolegården.</p>
+  <div class="hero-meta"><span>Dansk Marked</span><span>Live Priser</span><span>DEX Klar</span></div>
+</div>
+<div class="alert-strip">⚠ Tjek altid den præcise stand på Cardmarket / TCGplayer før du handler over nettet</div>
+
+<div class="container">
+
+  <div class="section-label"><span>Del 1 — De Gamle Klassikere (1999–2003)</span></div>
+
+  <!-- 1. Shadowless -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num gold">01</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-era">Base Set 1999</span><span class="tag tag-hot">Highly Sought</span></div>
+        <h2 class="entry-title">"Shadowless" — No Shadow Print</h2>
+        <p class="entry-desc">The very first Base Set print run has no drop shadow on the right and lower edge of the card's picture frame. Compared to later prints the artwork looks "floating". Applies to <em>every</em> card in the set — even commons like Rattata are worth more.</p>
+        <p class="entry-tip">➤ Tilt the card in light — no shadow along the image border? SHADOWLESS.</p>
+        <div class="entry-value">$5–$500+<small>per card, even commons</small></div>
+      </div>
+      <div class="entry-images">
+        <img src="https://images.pokemontcg.io/base1/4_hires.png" alt="Shadowless Charizard" loading="lazy"><div class="img-caption">Charizard #4/102</div>
+        <img src="https://images.pokemontcg.io/base1/2_hires.png" alt="Shadowless Blastoise" loading="lazy"><div class="img-caption">Blastoise #2/102</div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/4_hires.png" alt="Charizard" loading="lazy"><div class="img-caption">Charizard #4</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/2_hires.png" alt="Blastoise" loading="lazy"><div class="img-caption">Blastoise #2</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/3_hires.png" alt="Venusaur" loading="lazy"><div class="img-caption">Venusaur #15</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/10_hires.png" alt="Mewtwo" loading="lazy"><div class="img-caption">Mewtwo #10</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 1st Edition -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num red">02</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-era">Base Set 1999</span><span class="tag tag-rare">Ultra Rare</span></div>
+        <h2 class="entry-title">"1st Edition" Stamp</h2>
+        <p class="entry-desc">A small circular stamp with a stylised "1" on the left side of the card, below the image. The smallest ever print run. Every card type including commons is significantly more valuable with this stamp.</p>
+        <p class="entry-tip">➤ The stamp is tiny and subtle — use your phone camera to zoom in.</p>
+        <div class="entry-value">+500–1000%<small>price increase vs. normal print</small></div>
+      </div>
+      <div class="entry-images">
+        <img src="https://images.pokemontcg.io/base1/4_hires.png" alt="1st Edition Charizard" loading="lazy"><div class="img-caption">Charizard (1st Ed.)</div>
+        <img src="https://images.pokemontcg.io/base1/10_hires.png" alt="1st Edition Mewtwo" loading="lazy"><div class="img-caption">Mewtwo #10/102</div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/4_hires.png" alt="Charizard 1st Ed" loading="lazy"><div class="img-caption">Charizard</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/10_hires.png" alt="Mewtwo 1st Ed" loading="lazy"><div class="img-caption">Mewtwo</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/2_hires.png" alt="Blastoise 1st Ed" loading="lazy"><div class="img-caption">Blastoise</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/1_hires.png" alt="Alakazam 1st Ed" loading="lazy"><div class="img-caption">Alakazam</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Pikachu Red Cheeks -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num">03</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-era">Base Set 1999</span><span class="tag tag-gold">Error Variant</span></div>
+        <h2 class="entry-title">Pikachu "Red Cheeks"</h2>
+        <p class="entry-desc">Card #58/102. The normal version has yellow cheeks. The rare Shadowless/1st Edition version has <strong>red</strong> cheeks — a printing error from the earliest sheets. The difference is visible in daylight.</p>
+        <p class="entry-tip">➤ Find card #58/102. Yellow cheeks = normal. Red cheeks = don't sell for a dollar.</p>
+        <div class="entry-value">$15–$60<small>shadowless red cheeks</small></div>
+      </div>
+      <div class="entry-images">
+        <img src="https://images.pokemontcg.io/base1/58_hires.png" alt="Pikachu Red Cheeks" loading="lazy"><div class="img-caption">Pikachu #58/102</div>
+        <img src="https://images.pokemontcg.io/base2/27_hires.png" alt="Pikachu Jungle" loading="lazy"><div class="img-caption">Pikachu (Jungle)</div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/58_hires.png" alt="Pikachu Red Cheeks" loading="lazy"><div class="img-caption">Pikachu #58</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/base2/27_hires.png" alt="Pikachu Jungle" loading="lazy"><div class="img-caption">Jungle Set</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/basep/1_hires.png" alt="Pikachu Promo" loading="lazy"><div class="img-caption">Promo Pikachu</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Thick Stamp -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num">04</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-era">Base Set 1999</span><span class="tag tag-gold">Print Variant</span></div>
+        <h2 class="entry-title">"Thick Stamp" 1st Edition</h2>
+        <p class="entry-desc">The very first 1st Edition cards were printed with a larger, thicker stamp than subsequent prints. The difference is subtle but well documented. The "Thick Stamp" Charizard is one of the most expensive Pokémon cards in the world.</p>
+        <p class="entry-tip">➤ Compare the stamp width vs. a regular 1st Ed. card of the same set.</p>
+        <div class="entry-value">Up to $500,000+<small>Charizard Thick Stamp PSA 10</small></div>
+      </div>
+      <div class="entry-images">
+        <img src="https://images.pokemontcg.io/base1/4_hires.png" alt="Charizard Base Set" loading="lazy"><div class="img-caption">Charizard #4/102</div>
+        <img src="https://images.pokemontcg.io/base1/1_hires.png" alt="Alakazam Base Set" loading="lazy"><div class="img-caption">Alakazam #1/102</div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/4_hires.png" alt="Charizard" loading="lazy"><div class="img-caption">Charizard #4</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/1_hires.png" alt="Alakazam" loading="lazy"><div class="img-caption">Alakazam #1</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/2_hires.png" alt="Blastoise" loading="lazy"><div class="img-caption">Blastoise #2</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Black Star Promos -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num">05</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-era">WOTC 1999–2003</span><span class="tag tag-hot">Sought After</span></div>
+        <h2 class="entry-title">Black Star Promos</h2>
+        <p class="entry-desc">Cards with a black star instead of a set number — e.g. "★ 9". Distributed at cinemas during Pokémon films, through Nintendo Power magazine and Pokémon League events in the early 2000s. Mew #9, Togepi #30 and Ancient Mew are among the most wanted.</p>
+        <p class="entry-tip">➤ Check the corner — a black star with a number = promo card.</p>
+        <div class="entry-value">$8–$80<small>depending on card and condition</small></div>
+      </div>
+      <div class="entry-images">
+        <img src="https://images.pokemontcg.io/basep/9_hires.png" alt="Mew Black Star Promo" loading="lazy"><div class="img-caption">Mew ★9</div>
+        <img src="https://images.pokemontcg.io/basep/30_hires.png" alt="Togepi Black Star Promo" loading="lazy"><div class="img-caption">Togepi ★30</div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><img src="https://images.pokemontcg.io/basep/9_hires.png" alt="Mew Promo" loading="lazy"><div class="img-caption">Mew ★9</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/basep/30_hires.png" alt="Togepi Promo" loading="lazy"><div class="img-caption">Togepi ★30</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/basep/3_hires.png" alt="Mewtwo Promo" loading="lazy"><div class="img-caption">Mewtwo ★3</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/basep/11_hires.png" alt="Eevee Promo" loading="lazy"><div class="img-caption">Eevee ★11</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. E-reader -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num">06</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-era">Expedition–Skyridge 2002–03</span><span class="tag tag-gold">Underrated</span></div>
+        <h2 class="entry-title">E-Reader Cards</h2>
+        <p class="entry-desc">Cards from Expedition, Aquapolis and Skyridge have a wide left edge packed with tiny dot-codes (for the Game Boy Advance e-Reader accessory). Skyridge Charizard is among the most expensive WOTC holos. Even commons from these sets hold value.</p>
+        <p class="entry-tip">➤ Wide left edge with rows of tiny dots = e-Reader set.</p>
+        <div class="entry-value">$5–$300+<small>commons to Skyridge holos</small></div>
+      </div>
+      <div class="entry-images">
+        <img src="https://images.pokemontcg.io/ecard3/H6_hires.png" alt="Charizard Skyridge" loading="lazy"><div class="img-caption">Charizard (Skyridge)</div>
+        <img src="https://images.pokemontcg.io/ecard2/H2_hires.png" alt="Blissey Aquapolis" loading="lazy"><div class="img-caption">Blissey (Aquapolis)</div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><img src="https://images.pokemontcg.io/ecard3/H6_hires.png" alt="Charizard Skyridge" loading="lazy"><div class="img-caption">Charizard (Sky)</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/ecard2/H2_hires.png" alt="Blissey Aquapolis" loading="lazy"><div class="img-caption">Blissey (Aqua)</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/ecard1/1_hires.png" alt="Expedition" loading="lazy"><div class="img-caption">Expedition</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/ecard2/H8_hires.png" alt="Feraligatr" loading="lazy"><div class="img-caption">Feraligatr</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label"><span>Del 2 — Mellem æraen (2004–2011)</span></div>
+
+  <!-- 7. Delta Species -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num">07</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-era">EX Series 2005–2007</span></div>
+        <h2 class="entry-title">δ Delta Species</h2>
+        <p class="entry-desc">Pokémon with the wrong element type carry a δ symbol in the top right corner. A Metal-type Pikachu, a Dark-type Mewtwo. This rare mechanic only appeared in three sets: Delta Species, Legend Maker, and Holon Phantoms.</p>
+        <p class="entry-tip">➤ Look for the δ symbol — a wrong type for that Pokémon = delta variant.</p>
+        <div class="entry-value">$5–$50<small>e.g. Rayquaza δ and Mewtwo δ</small></div>
+      </div>
+      <div class="entry-images">
+        <img src="https://images.pokemontcg.io/ex13/12_hires.png" alt="Mewtwo Delta Species" loading="lazy"><div class="img-caption">Mewtwo δ</div>
+        <img src="https://images.pokemontcg.io/ex13/3_hires.png" alt="Rayquaza Delta Species" loading="lazy"><div class="img-caption">Rayquaza δ</div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><img src="https://images.pokemontcg.io/ex13/12_hires.png" alt="Mewtwo Delta" loading="lazy"><div class="img-caption">Mewtwo δ</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/ex13/3_hires.png" alt="Rayquaza Delta" loading="lazy"><div class="img-caption">Rayquaza δ</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/ex14/6_hires.png" alt="Charizard Delta" loading="lazy"><div class="img-caption">Charizard δ</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. LV.X -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num">08</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-era">Diamond & Pearl 2007–2009</span><span class="tag tag-hot">Nostalgic Hit</span></div>
+        <h2 class="entry-title">LV.X Cards</h2>
+        <p class="entry-desc">Large "level up" cards with a semi-transparent upper panel. They play on top of an existing Pokémon in a battle. Garchomp Lv.X and Palkia Lv.X are among the most sought after. The partial-transparency look makes them instantly recognisable.</p>
+        <p class="entry-tip">➤ Larger than normal, semi-transparent top panel, "LV.X" in the name.</p>
+        <div class="entry-value">$8–$60<small>depending on the Pokémon</small></div>
+      </div>
+      <div class="entry-images">
+        <img src="https://images.pokemontcg.io/dp3/120_hires.png" alt="Lucario LVX" loading="lazy"><div class="img-caption">Lucario LV.X</div>
+        <img src="https://images.pokemontcg.io/dp1/117_hires.png" alt="Dialga LVX" loading="lazy"><div class="img-caption">Dialga LV.X</div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><img src="https://images.pokemontcg.io/dp3/120_hires.png" alt="Lucario LVX" loading="lazy"><div class="img-caption">Lucario LV.X</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/dp1/117_hires.png" alt="Dialga LVX" loading="lazy"><div class="img-caption">Dialga LV.X</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/dp4/98_hires.png" alt="Garchomp LVX" loading="lazy"><div class="img-caption">Garchomp LV.X</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/dp1/118_hires.png" alt="Palkia LVX" loading="lazy"><div class="img-caption">Palkia LV.X</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Prime -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num">09</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-era">HeartGold SoulSilver 2010</span></div>
+        <h2 class="entry-title">Prime Cards</h2>
+        <p class="entry-desc">Gold-bordered cards from the HGSS series with a distinctive "cut corner" in the upper right. Dark backgrounds and dramatic artwork make them instantly recognisable. Tyranitar Prime and Gengar Prime are particularly popular.</p>
+        <p class="entry-tip">➤ Gold border + clipped upper right corner = Prime.</p>
+        <div class="entry-value">$6–$50<small>e.g. Gengar Prime, Mewtwo Prime</small></div>
+      </div>
+      <div class="entry-images">
+        <img src="https://images.pokemontcg.io/hgss3/97_hires.png" alt="Tyranitar Prime" loading="lazy"><div class="img-caption">Tyranitar Prime</div>
+        <img src="https://images.pokemontcg.io/hgss3/96_hires.png" alt="Gengar Prime" loading="lazy"><div class="img-caption">Gengar Prime</div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><img src="https://images.pokemontcg.io/hgss3/97_hires.png" alt="Tyranitar Prime" loading="lazy"><div class="img-caption">Tyranitar</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/hgss3/96_hires.png" alt="Gengar Prime" loading="lazy"><div class="img-caption">Gengar</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/hgss4/98_hires.png" alt="Mewtwo Prime" loading="lazy"><div class="img-caption">Mewtwo</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/hgss4/97_hires.png" alt="Celebi Prime" loading="lazy"><div class="img-caption">Celebi</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. LEGEND -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num">10</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-era">HGSS 2010–2011</span><span class="tag tag-gold">Unique Format</span></div>
+        <h2 class="entry-title">LEGEND Cards (Split Cards)</h2>
+        <p class="entry-desc">These cards show one image split across <em>two</em> separate cards — played side by side. One half alone is worth almost nothing. Both halves in good condition? That's real money. Lugia LEGEND and Ho-Oh LEGEND top the rankings.</p>
+        <p class="entry-tip">➤ "LEGEND" text + the artwork is only half a picture = find the other half!</p>
+        <div class="entry-value">$10–$100<small>per complete pair in good condition</small></div>
+      </div>
+      <div class="entry-images">
+        <img src="https://images.pokemontcg.io/hgss3/113_hires.png" alt="Lugia Legend Top" loading="lazy"><div class="img-caption">Lugia LEGEND (top)</div>
+        <img src="https://images.pokemontcg.io/hgss3/114_hires.png" alt="Lugia Legend Bottom" loading="lazy"><div class="img-caption">Lugia LEGEND (btm)</div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><img src="https://images.pokemontcg.io/hgss3/113_hires.png" alt="Lugia top" loading="lazy"><div class="img-caption">Lugia (top)</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/hgss3/114_hires.png" alt="Lugia btm" loading="lazy"><div class="img-caption">Lugia (btm)</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/hgss2/111_hires.png" alt="Ho-Oh top" loading="lazy"><div class="img-caption">Ho-Oh (top)</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/hgss2/112_hires.png" alt="Ho-Oh btm" loading="lazy"><div class="img-caption">Ho-Oh (btm)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label"><span>Part 3 — Modern Era (2017–Now)</span></div>
+
+  <!-- 11. Full Art Trainer -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num">11</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-era">Sun & Moon – Now</span><span class="tag tag-hot">Tournament Card</span></div>
+        <h2 class="entry-title">Full Art Trainer Cards</h2>
+        <p class="entry-desc">Trainer cards where the artwork fills the entire card with no white border. A Lillie Full Art or Marnie Full Art can look boring at first glance, but check the price before selling. Iono Full Art sells for $30–$80.</p>
+        <p class="entry-tip">➤ No white border on a trainer card = Full Art. Check name on TCGplayer.</p>
+        <div class="entry-value">$5–$80<small>depending on tournament relevance</small></div>
+      </div>
+      <div class="entry-images">
+        <img src="https://images.pokemontcg.io/sv3pt5/235_hires.png" alt="Iono Full Art" loading="lazy"><div class="img-caption">Iono Full Art</div>
+        <img src="https://images.pokemontcg.io/swsh1/199_hires.png" alt="Marnie Full Art" loading="lazy"><div class="img-caption">Marnie Full Art</div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><img src="https://images.pokemontcg.io/sv3pt5/235_hires.png" alt="Iono Full Art" loading="lazy"><div class="img-caption">Iono</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/swsh1/199_hires.png" alt="Marnie Full Art" loading="lazy"><div class="img-caption">Marnie</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/sm9/191_hires.png" alt="Lillie Full Art" loading="lazy"><div class="img-caption">Lillie</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/swsh4/208_hires.png" alt="Boss Orders" loading="lazy"><div class="img-caption">Boss's Orders</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. Rainbow Rare -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num">12</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-era">Sun & Moon 2017–2019</span><span class="tag tag-gold">Visual Treasure</span></div>
+        <h2 class="entry-title">Rainbow Rare</h2>
+        <p class="entry-desc">A card covered in a rainbow texture with white streaks across the entire surface, including behind the illustration. These look almost "overprinted" but this is the intended format. Charizard GX and Pikachu GX in Rainbow are among the most expensive modern cards.</p>
+        <p class="entry-tip">➤ Rainbow surface on the entire card — not just the image.</p>
+        <div class="entry-value">$10–$150<small>depending on the Pokémon</small></div>
+      </div>
+      <div class="entry-images">
+        <img src="https://images.pokemontcg.io/sm35/69_hires.png" alt="Pikachu GX Rainbow" loading="lazy"><div class="img-caption">Pikachu GX Rainbow</div>
+        <img src="https://images.pokemontcg.io/sm115/73_hires.png" alt="Charizard GX Rainbow" loading="lazy"><div class="img-caption">Charizard GX Rainbow</div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><img src="https://images.pokemontcg.io/sm35/69_hires.png" alt="Pikachu GX Rainbow" loading="lazy"><div class="img-caption">Pikachu GX</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/sm115/73_hires.png" alt="Charizard GX Rainbow" loading="lazy"><div class="img-caption">Charizard GX</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/sm75/70_hires.png" alt="Mewtwo Rainbow" loading="lazy"><div class="img-caption">Mewtwo</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/sm12/214_hires.png" alt="Umbreon GX Rainbow" loading="lazy"><div class="img-caption">Umbreon GX</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13. Tournament Trainers -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num">13</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-era">Scarlet & Violet 2023–Now</span><span class="tag tag-hot">Tournament Staple</span></div>
+        <h2 class="entry-title">Tournament-Playable Trainers</h2>
+        <p class="entry-desc">Plain-looking paper cards like <em>Buddy-Buddy Poffin, Nest Ball, Ultra Ball, Colress's Experiment</em>. They look like nothing but are used in every serious tournament deck. Even a regular Nest Ball in good condition sells for $3–$8.</p>
+        <p class="entry-tip">➤ Google the card name + "price" — you'll be surprised.</p>
+        <div class="entry-value">$2–$15<small>per piece for tournament staples</small></div>
+      </div>
+      <div class="entry-images">
+        <img src="https://images.pokemontcg.io/sv3pt5/140_hires.png" alt="Buddy-Buddy Poffin" loading="lazy"><div class="img-caption">Buddy-Buddy Poffin</div>
+        <img src="https://images.pokemontcg.io/sv3pt5/131_hires.png" alt="Nest Ball" loading="lazy"><div class="img-caption">Nest Ball (SV)</div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><img src="https://images.pokemontcg.io/sv3pt5/140_hires.png" alt="Buddy-Buddy Poffin" loading="lazy"><div class="img-caption">B-B Poffin</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/sv3pt5/131_hires.png" alt="Nest Ball" loading="lazy"><div class="img-caption">Nest Ball</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/sv3pt5/235_hires.png" alt="Iono" loading="lazy"><div class="img-caption">Iono</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/swsh4/172_hires.png" alt="Quick Ball" loading="lazy"><div class="img-caption">Quick Ball</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label"><span>Part 4 — Special Categories</span></div>
+
+  <!-- 14. STAFF -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num red">14</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-rare">Extremely Rare</span><span class="tag tag-gold">Tournament Artefact</span></div>
+        <h2 class="entry-title">STAFF Stamp</h2>
+        <p class="entry-desc">A gold stamp reading "STAFF" is given to tournament staff at official regional and international Pokémon Championships. These cards exist in very limited quantities and rarely surface. Any Pokémon card with a STAFF stamp is a top-tier collector's item.</p>
+        <p class="entry-tip">➤ Gold/black stamp literally saying STAFF — never sell for a dollar.</p>
+        <div class="entry-value">$50–$1000+<small>depending on card and event</small></div>
+      </div>
+      <div class="entry-images">
+        <div class="staff-visual"><div class="staff-badge">STAFF</div></div>
+        <div class="img-caption">Gold STAFF stamp</div>
+        <div class="staff-visual" style="background:#1a1a2e;flex:1;height:auto;">
+          <div style="text-align:center;color:rgba(200,151,58,.7);font-size:.7em;letter-spacing:1px;padding:10px;font-family:'DM Sans',sans-serif;">Typically below the card number</div>
+        </div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><div class="staff-visual" style="width:128px;height:108px;"><div class="staff-badge">STAFF</div></div><div class="img-caption">STAFF stamp</div></div>
+        <div class="img-card"><div style="width:128px;height:108px;background:#1a1a2e;display:flex;align-items:center;justify-content:center;"><div style="color:rgba(200,151,58,.8);font-size:.68em;padding:10px;text-align:center;font-family:'DM Sans',sans-serif;">Below card number</div></div><div class="img-caption">Position</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 15. Miscuts -->
+  <div class="entry">
+    <div class="entry-inner">
+      <div class="entry-num">15</div>
+      <div class="entry-body">
+        <div class="entry-tags"><span class="tag tag-era">All Sets</span><span class="tag tag-gold">Error Card</span></div>
+        <h2 class="entry-title">Miscuts & Error Cards</h2>
+        <p class="entry-desc">Cards cut wrong — you can see the edge of an adjacent card, or the card is clearly off-centre. The more dramatic the error, the more interesting to error card collectors. Other errors: wrong back face, blank card (no ink), double print.</p>
+        <p class="entry-tip">➤ Visible edge of a neighbouring card, or clearly skewed centering.</p>
+        <div class="entry-value">$10–$500+<small>dramatic miscuts are extremely rare</small></div>
+      </div>
+      <div class="entry-images">
+        <img src="https://images.pokemontcg.io/base1/46_hires.png" alt="Weepinbell" loading="lazy"><div class="img-caption">Example: off-center</div>
+        <img src="https://images.pokemontcg.io/base1/55_hires.png" alt="Snorlax" loading="lazy"><div class="img-caption">Check centering</div>
+      </div>
+      <div class="entry-images-mobile">
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/46_hires.png" alt="Miscut example" loading="lazy"><div class="img-caption">Off-center</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/55_hires.png" alt="Snorlax" loading="lazy"><div class="img-caption">Check centering</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/base1/4_hires.png" alt="Charizard error" loading="lazy"><div class="img-caption">Error = collectible</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK REF -->
+  <div class="section-label"><span>Hurtig Reference Guide</span></div>
+  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:40px;">
+  <table class="ref-table" style="margin-bottom:0;">
+    <thead><tr><th>#</th><th>Kort Type</th><th>Hvad du skal kigge efter</th><th>Løs Værdi</th></tr></thead>
+    <tbody>
+      <tr><td>01</td><td>Shadowless</td><td>Ingen printskygge ved billedkanten</td><td class="val">35–3500+ kr.</td></tr>
+      <tr><td>02</td><td>1st Edition</td><td>Lille cirkel-stempel på venstre side</td><td class="val">+500–1000%</td></tr>
+      <tr><td>03</td><td>Pikachu Red Cheeks</td><td>#58/102, Pikachu med røde kinder</td><td class="val">100–400 kr.</td></tr>
+      <tr><td>04</td><td>Thick Stamp</td><td>Tyk 1st Ed. stempel tekst</td><td class="val">Op til 3,5M kr.</td></tr>
+      <tr><td>05</td><td>Black Star Promos</td><td>★ + et nummer i hjørnet</td><td class="val">50–550 kr.</td></tr>
+      <tr><td>06</td><td>E-Reader Kort</td><td>Bred venstre kant med prik-koder</td><td class="val">35–2000+ kr.</td></tr>
+      <tr><td>07</td><td>Delta Species</td><td>δ symbol + en unaturlig type</td><td class="val">35–350 kr.</td></tr>
+      <tr><td>08</td><td>LV.X Kort</td><td>Halv-gennemsigtig overkant</td><td class="val">50–400 kr.</td></tr>
+      <tr><td>09</td><td>Prime Kort</td><td>Guldkant + afskåret hjørne</td><td class="val">40–350 kr.</td></tr>
+      <tr><td>10</td><td>LEGEND Kort</td><td>LEGEND tekst, kun et halvt billede</td><td class="val">70–700 kr.</td></tr>
+      <tr><td>11</td><td>Full Art Trainers</td><td>Ingen hvid ramme (Full art kant)</td><td class="val">35–550 kr.</td></tr>
+      <tr><td>12</td><td>Rainbow Rare</td><td>Regnbue tekstur på hele kortet</td><td class="val">70–1000 kr.</td></tr>
+      <tr><td>13</td><td>Turneringskort</td><td>Spilbare Item / Supporter kort</td><td class="val">15–100 kr.</td></tr>
+      <tr><td>14</td><td>STAFF Stempel</td><td>Guld STAFF ikon stempel</td><td class="val">350–7000+ kr.</td></tr>
+      <tr><td>15</td><td>Miscuts / Fejl</td><td>Synlig kant fra et nabokort / Fejltryk</td><td class="val">70–3500+ kr.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  <p>Kortbilleder via <strong>pokemontcg.io</strong> — officiel åben kort database api.</p>
+  <p>Markedsdata er live fra det europæiske marked via <strong>Cardmarket.com</strong> udregnet til DKK.</p>
+  <p style="margin-top:10px;font-size:.85em;">Pokémon and related names are trademarks of Nintendo / Creatures Inc. / GAME FREAK inc.</p>
+</footer>
+</div><!-- /page-guide -->
+
+
+<!-- ════════════════════════════════
+     PAGE 2: RARITY CHART
+════════════════════════════════ -->
+<div id="page-chart" class="page">
+<div class="chart-page">
+
+  <div class="chart-hero">
+    <p style="font-size:.68em;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Visuel Reference</p>
+    <h2>Markedsværdi <span>Tiers</span></h2>
+    <p>En komplet visuel guide til at bedømme dine korts markedsværdi — fra basiskort til ubetalelige skatte.</p>
+  </div>
+
+  <div class="rarity-wrap">
+    <div class="tier-grid">
+
+      <!-- S Tier -->
+      <div class="tier_wrapper" style="display:contents;">
+        <div class="tier" onclick="toggleTier('s')">
+          <div class="tier-bar">
+            <div class="tier-bar-top">
+              <span class="tier-rank" style="color:#f1c40f;font-size:2.5em;">S</span>
+              <div class="tier-icons" style="font-size:1.5em;">🏆 💎</div>
+            </div>
+            <span class="tier-name">Trophy / Legendær</span>
+            <span class="tier-price">Markedsværdi: Over 70.000 kr.</span>
+          </div>
+        </div>
+        <div class="tier-detail" id="detail-s" style="grid-column:1/-1;">
+          <h4>S TIER — Det absolutte topniveau</h4>
+          <div class="tier-cards">
+            <div class="tier-card-chip"><span class="chip-name">Pikachu Illustrator</span><span class="chip-type">Trophy Card · 1998</span><span class="chip-price">3.500.000+ kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">Charizard 1st Ed. (Thick)</span><span class="chip-type">Base Set PSA 10</span><span class="chip-price">2.800.000+ kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">STAFF Turnerings Promos</span><span class="chip-type">Kun til personale</span><span class="chip-price">7.000–350.000 kr.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- A Tier -->
+      <div class="tier_wrapper" style="display:contents;">
+        <div class="tier" onclick="toggleTier('a')">
+          <div class="tier-bar">
+            <div class="tier-bar-top">
+              <span class="tier-rank" style="color:#e74c3c;font-size:2em;">A</span>
+              <div class="tier-icons" style="font-size:1.5em;">✨ ⭐</div>
+            </div>
+            <span class="tier-name">Premium Investering</span>
+            <span class="tier-price">Markedsværdi: 3.500 – 70.000 kr.</span>
+          </div>
+        </div>
+        <div class="tier-detail" id="detail-a" style="grid-column:1/-1;">
+          <h4>A TIER — Historiske Samlerobjekter</h4>
+          <div class="tier-cards">
+            <div class="tier-card-chip"><span class="chip-name">1st Ed. Charizard</span><span class="chip-type">Base Set · Holo Rare</span><span class="chip-price">10.000–70.000 kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">Shadowless Charizard</span><span class="chip-type">Base Set · Holo Rare</span><span class="chip-price">2.000–15.000 kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">Skyridge Charizard (Holo)</span><span class="chip-type">E-Reader Era</span><span class="chip-price">2.000–6.000 kr.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- B Tier -->
+      <div class="tier_wrapper" style="display:contents;">
+        <div class="tier" onclick="toggleTier('b')">
+          <div class="tier-bar">
+            <div class="tier-bar-top">
+              <span class="tier-rank" style="color:#3498db;font-size:2em;">B</span>
+              <div class="tier-icons" style="font-size:1.5em;">🌈 ⚡</div>
+            </div>
+            <span class="tier-name">Eftertragtede Hits</span>
+            <span class="tier-price">Markedsværdi: 350 – 3.500 kr.</span>
+          </div>
+        </div>
+        <div class="tier-detail" id="detail-b" style="grid-column:1/-1;">
+          <h4>B TIER — Populære Chase Cards</h4>
+          <div class="tier-cards">
+            <div class="tier-card-chip"><span class="chip-name">Charizard EX (Special Art)</span><span class="chip-type">Paldean Fates</span><span class="chip-price">600–1.200 kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">Rainbow Rare GX</span><span class="chip-type">Sun & Moon era</span><span class="chip-price">300–1.500 kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">Base Set Holo (God Stand)</span><span class="chip-type">Original 1999</span><span class="chip-price">250–1.000 kr.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- C Tier -->
+      <div class="tier_wrapper" style="display:contents;">
+        <div class="tier" onclick="toggleTier('c')">
+          <div class="tier-bar">
+            <div class="tier-bar-top">
+              <span class="tier-rank" style="color:#2ecc71;font-size:2em;">C</span>
+              <div class="tier-icons" style="font-size:1.5em;">💠 🔮</div>
+            </div>
+            <span class="tier-name">Moderne Holos / Full Art</span>
+            <span class="tier-price">Markedsværdi: 35 – 350 kr.</span>
+          </div>
+        </div>
+        <div class="tier-detail" id="detail-c" style="grid-column:1/-1;">
+          <h4>C TIER — Gode Fund</h4>
+          <div class="tier-cards">
+            <div class="tier-card-chip"><span class="chip-name">Charizard VMAX (Standard)</span><span class="chip-type">Sword & Shield</span><span class="chip-price">150–400 kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">Full Art Trainers</span><span class="chip-type">Diverse serier</span><span class="chip-price">35–600 kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">EX / V / GX Kort</span><span class="chip-type">Standard pulls</span><span class="chip-price">35–150 kr.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- D Tier -->
+      <div class="tier_wrapper" style="display:contents;">
+        <div class="tier" onclick="toggleTier('d')">
+          <div class="tier-bar">
+            <div class="tier-bar-top">
+              <span class="tier-rank" style="color:#95a5a6;font-size:2em;">D</span>
+              <div class="tier-icons" style="font-size:1.5em;">✦ 🃏</div>
+            </div>
+            <span class="tier-name">Reverse Holo / Rare</span>
+            <span class="tier-price">Markedsværdi: 5 – 70 kr.</span>
+          </div>
+        </div>
+        <div class="tier-detail" id="detail-d" style="grid-column:1/-1;">
+          <h4>D TIER — Pænt men typisk</h4>
+          <div class="tier-cards">
+            <div class="tier-card-chip"><span class="chip-name">Holo Rare (Modern)</span><span class="chip-type">Glimmer på billedet</span><span class="chip-price">5–50 kr.</span></div>
+            <div class="tier-card-chip"><span class="chip-name">Tournament Staples</span><span class="chip-type">Spilbare Item kort</span><span class="chip-price">10–100 kr.</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tier-grid -->
+    
+    <!-- tap hint -->
+    <p style="text-align:center;color:rgba(255,255,255,.3);font-size:.72em;letter-spacing:2px;text-transform:uppercase;margin-top:10px;">Tryk på et niveau for at se eksempler</p>
+  </div>
+
+  <!-- CARD ANATOMY -->
+  <div class="anatomy-wrap">
+    <h3 class="anatomy-title">Kort <span style="color:var(--gold);">Anatomi</span></h3>
+    <p class="anatomy-sub">Tjekliste til når du samler et kort op</p>
+    <div class="anatomy-grid">
+      <div class="anatomy-item">
+        <div class="anatomy-num">1</div>
+        <div class="anatomy-text"><h5>Navn på Kortet</h5><p>Øverst. Er det en Pokémon eller Trainer? Hold øje med: EX, GX, V, VMAX, ex, VSTAR.</p></div>
+      </div>
+      <div class="anatomy-item">
+        <div class="anatomy-num">2</div>
+        <div class="anatomy-text"><h5>HP Nummer</h5><p>Øverst til højre. Mere HP = oftest et nyere kort. 300+ HP = moderne VMAX/ex æra.</p></div>
+      </div>
+      <div class="anatomy-item">
+        <div class="anatomy-num">3</div>
+        <div class="anatomy-text"><h5>Set Symbol + Nummer</h5><p>Nederst til højre. f.eks. "4/102". En stjerne betyder sjælden. Symbolet afslører serien.</p></div>
+      </div>
+      <div class="anatomy-item">
+        <div class="anatomy-num">4</div>
+        <div class="anatomy-text"><h5>Årstal</h5><p>Nederst på kortet. 1995, 96, 98, 99 = Base Set æra. (Ældre betyder dog ikke altid dyrere).</p></div>
+      </div>
+      <div class="anatomy-item">
+        <div class="anatomy-num">5</div>
+        <div class="anatomy-text"><h5>Sjældenhed</h5><p>Ved siden af kortnummeret. ● = Almindelig, ◆ = Ualmindelig, ★ = Sjælden, ★★ = Secret Rare.</p></div>
+      </div>
+      <div class="anatomy-item">
+        <div class="anatomy-num">6</div>
+        <div class="anatomy-text"><h5>1st Edition / Frimærke</h5><p>Under billedet til venstre. Sort "1" frimærke = 1st Edition. Guld "STAFF" = turneringskort.</p></div>
+      </div>
+      <div class="anatomy-item">
+        <div class="anatomy-num">7</div>
+        <div class="anatomy-text"><h5>Shadowless Ramme</h5><p>Er der en skygge på højre/bund kant af billedet? Ingen skygge = Shadowless = Værdifuldt.</p></div>
+      </div>
+      <div class="anatomy-item">
+        <div class="anatomy-num">8</div>
+        <div class="anatomy-text"><h5>Finish (Overflade)</h5><p>Er det skinnende? En regnbue? Guld kant? Se overflade-guiden nedenfor.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINISH TYPES -->
+  <div class="finish-wrap">
+    <h3 class="finish-title">Kort <span style="color:var(--gold);">Glimmer</span> Typer</h3>
+    <p class="finish-sub">De typiske typer af skinnende kort (fra mindst til mest værdifuld)</p>
+    <div class="finish-grid">
+      <div class="finish-chip fc-normal"><div class="fc-icon">🃏</div><div class="fc-name">Normal (Bulk)</div><div class="fc-desc">Mat på hele kortet. Ingen værdi uden det er Base Set.</div></div>
+      <div class="finish-chip fc-holo"><div class="fc-icon">✨</div><div class="fc-name">Holo</div><div class="fc-desc">Kun baggrunden bag selve Pokémonen skinner.</div></div>
+      <div class="finish-chip fc-reverse"><div class="fc-icon">✦</div><div class="fc-name">Reverse Holo</div><div class="fc-desc">Alt på kortet skinner, UNDTAGEN selve billedet.</div></div>
+      <div class="finish-chip fc-full"><div class="fc-icon">🖼</div><div class="fc-name">Full Art</div><div class="fc-desc">Billedet dækker hele kortet (ingen grå kanter). Oftest Trainers.</div></div>
+      <div class="finish-chip fc-rainbow"><div class="fc-icon">🌈</div><div class="fc-name">Rainbow Rare</div><div class="fc-desc">Kortet har en vild regnbue textur med streger. Sun & Moon æra.</div></div>
+      <div class="finish-chip fc-gold"><div class="fc-icon">🟡</div><div class="fc-name">Gold Card</div><div class="fc-desc">Rig textur med guldkant. Typisk genstande eller energi fra nye sæt.</div></div>
+      <div class="finish-chip fc-hyper"><div class="fc-icon">💎</div><div class="fc-name">Special Art (SIR)</div><div class="fc-desc">Unik, håndtegnet 'Full art'. Næsten altid det dyreste man kan trække.</div></div>
+    </div>
+  </div>
+
+  <div style="height:60px;"></div>
+</div><!-- /chart-page -->
+</div><!-- /page-chart -->
+
+<!-- ════════════════════════════════
+     PAGE 3: MY COLLECTION (FIREBASE DEX)
+════════════════════════════════ -->
+<div id="page-collection" class="page">
+  <div class="chart-hero" style="border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:30px;">
+    <p style="font-size:.68em;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Din Portefølje</p>
+    <h2>Min <span>Samling</span></h2>
+    
+    <!-- DASHBOARD -->
+    <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:12px; margin:20px auto 0; padding:20px; max-width:400px; display:flex; justify-content:space-around;">
+      <div style="text-align:center;">
+        <span style="display:block; font-size:0.6em; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:2px; margin-bottom:4px;">Samlet Værdi</span>
+        <strong id="portfolio-total-value" style="font-family:'Bebas Neue',cursive; font-size:2em; color:var(--gold);">0 kr.</strong>
+      </div>
+      <div style="width:1px; background:rgba(255,255,255,0.1);"></div>
+      <div style="text-align:center;">
+        <span style="display:block; font-size:0.6em; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:2px; margin-bottom:4px;">Antal Kort</span>
+        <strong id="portfolio-total-cards" style="font-family:'Bebas Neue',cursive; font-size:2em; color:#fff;">0</strong>
+      </div>
+    </div>
+  </div>
+  
+  <div class="container" style="padding-top:30px;min-height:50vh;">
+    <div id="collection-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));gap:12px;">
+      <p style="color:rgba(0,0,0,0.5);width:100%;grid-column:1/-1;text-align:center;padding:40px 0;">Indlæser jeres skatkammer...</p>
+    </div>
+    
+    <!-- GOOGLE ADSENSE SLOT -->
+    <div class="ad-slot" style="grid-column:1/-1; margin:40px auto; width:100%; max-width:720px; height:90px; background:rgba(0,0,0,0.03); border:1px dashed rgba(0,0,0,0.15); display:flex; align-items:center; justify-content:center; color:rgba(0,0,0,0.3); text-transform:uppercase; font-size:0.7em; letter-spacing:1px;">
+      [ Google AdSense Banner Placering ]
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     SCAN MODAL
+════════════════════════════════ -->
+<!-- ════════════════════════════════
+<!-- ════════════════════════════════
+     PROFILE / AUTH MODAL
+════════════════════════════════ -->
+<div class="settings-modal" id="profile-modal" onclick="handleProfileBackdrop(event)" role="dialog">
+  <div class="settings-box">
+    <p class="settings-title" id="profile-modal-title">👤 Min Profil</p>
+    
+    <div id="profile-logged-out">
+      <p class="settings-desc">
+        Log ind med Google for at gemme dine scannede kort i skyen. Det er gratis og kræver ingen yderligere oprettelse.
+      </p>
+      <div class="settings-actions" style="justify-content:flex-start;margin-top:20px;">
+        <button class="settings-btn primary" onclick="firebaseSignIn()">🔵 Log ind med Google</button>
+      </div>
+    </div>
+
+    <div id="profile-logged-in" style="display:none;">
+      <p class="settings-desc">
+        Logget ind som: <br><strong id="profile-user-email" style="color:var(--gold);font-size:1.1em;display:inline-block;margin-top:6px;">...</strong>
+      </p>
+      <div class="settings-actions" style="justify-content:space-between;margin-top:20px;">
+        <button class="settings-btn ghost" onclick="firebaseSignOut()">Log af</button>
+        <button class="settings-btn primary" onclick="closeProfile()">Luk</button>
+      </div>
+    </div>
+
+    <!-- AI API NØGLE SETTINGS -->
+    <div id="settings-ai-section" style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+      <p class="settings-title" style="font-size:1.1em;margin-bottom:12px;">⚙️ AI Scanner Nøgle</p>
+      <p class="settings-desc">Scanneren kræver din egen gratis Gemini API nøgle for at virke. Hent den sikkert & gratis på <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--gold);">Google AI Studio</a>.</p>
+      
+      <label class="settings-label" style="font-size:.7em;letter-spacing:1px;color:rgba(255,255,255,.5);margin-bottom:6px;display:block;text-transform:uppercase;">Din Lokale API Nøgle</label>
+      <input type="password" id="settings-key-input" class="settings-input" placeholder="AIzaSy..." style="width:100%;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);color:#fff;margin-bottom:12px;">
+      
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span id="settings-key-status" class="settings-key-status" style="font-size:.75em;padding:6px 10px;border-radius:4px;background:rgba(192,57,43,.2);color:#f87171;border:1px solid rgba(192,57,43,.3);">❌ Mangler Nøgle</span>
+        <button class="settings-btn primary" onclick="saveApiKey()" style="padding:10px 16px;background:var(--gold);color:#000;border:none;border-radius:6px;font-family:'Bebas Neue',cursive;font-size:1.1em;letter-spacing:1px;cursor:pointer;">GEM NØGLE</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="scan-modal" id="scan-modal">
+  <div class="scan-header">
+    <span class="scan-header-title">📷 SCAN KORT</span>
+    <button class="scan-close-btn" onclick="closeScan()" aria-label="Luk scanner">✕ LUK</button>
+  </div>
+  <div class="scan-body">
+
+    <!-- Step 1: Viewfinder -->
+    <div id="scan-viewfinder-wrap">
+      <p class="scan-hint">Hold kortet stille foran kameraet — <strong>scanneren arbejder automatisk!</strong></p>
+      <div id="auto-scan-status" style="text-align:center;font-size:0.78em;color:var(--gold);letter-spacing:1px;min-height:1.4em;margin-bottom:4px;animation:pulse 1.5s infinite;"></div>
+      <div class="scan-viewfinder">
+        <video id="scan-video" autoplay playsinline muted></video>
+        <div class="scan-frame">
+          <div class="scan-corner tl"></div><div class="scan-corner tr"></div>
+          <div class="scan-corner bl"></div><div class="scan-corner br"></div>
+          <div class="scan-laser"></div>
+        </div>
+      </div>
+      <p id="scan-cam-error" class="scan-hint" style="display:none;color:#e74c3c;"></p>
+    </div>
+    <div id="snap-btn-wrap" style="display:flex;justify-content:center;margin:4px 0;">
+      <button class="scan-snap-btn" onclick="snapCard()"><div class="scan-snap-inner"></div></button>
+    </div>
+
+    <!-- Step 2: Preview -->
+    <div id="scan-preview-wrap" style="display:none;">
+      <p class="scan-hint">Er al tekst på kortet tydelig? Tryk <strong>Analyser</strong> eller tag om.</p>
+      <div class="scan-preview-img-wrap"><img id="scan-preview-img" src="" alt="Preview"></div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;">
+        <button class="scan-action-btn outline" onclick="retakePhoto()">↩ Tag om</button>
+        <button class="scan-action-btn primary" onclick="analyseCard()">🔍 Analyser Kort</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Processing -->
+    <div id="scan-processing" style="display:none;flex-direction:column;align-items:center;padding:30px 0;gap:14px;">
+      <div class="scan-spinner"></div>
+      <p class="scan-hint" style="text-align:center;">AI søger direkte i Cardmarket... vent venligst</p>
+    </div>
+
+    <!-- Step 4: Result -->
+    <div id="scan-result" style="display:none;">
+      <div id="scan-result-found" style="display:none;">
+        <div class="scan-result-card">
+          <p class="scan-result-label">Card identified</p>
+          <p class="scan-result-name" id="scan-result-name"></p>
+          <p class="scan-result-conf" id="scan-result-conf"></p>
+        </div>
+        <div class="scan-search-btns">
+          <a id="scan-tcg-btn" href="#" target="_blank" class="scan-search-btn tcg" style="flex:1;">🔍 TCGplayer</a>
+          <a id="scan-pc-btn" href="#" target="_blank" class="scan-search-btn pc" style="flex:1;">💰 PriceCharting</a>
+        </div>
+        <button id="scan-save-btn" class="scan-action-btn primary" style="width:100%;margin-top:10px;font-size:1em;display:none;" onclick="saveCurrentCard()">💾 GEM I SAMLING</button>
+        <button class="scan-action-btn outline" style="margin:12px auto;display:block;" onclick="retakePhoto()">📷 Scan et nyt kort</button>
+      </div>
+      <div id="scan-result-manual" style="display:none;">
+        <p class="scan-hint" id="scan-manual-msg" style="text-align:center;margin-bottom:14px;"></p>
+        <div class="scan-manual-wrap">
+          <input id="scan-manual-input" class="scan-manual-input" type="text" placeholder="Skriv fuldt navn, eks. Charizard Base Set" oninput="manualSearch()">
+        </div>
+        <div class="scan-search-btns" style="margin-top:10px;">
+          <a id="scan-tcg-btn2" href="#" target="_blank" class="scan-search-btn tcg" style="flex:1;">🔍 TCGplayer</a>
+          <a id="scan-pc-btn2" href="#" target="_blank" class="scan-search-btn pc" style="flex:1;">💰 PriceCharting</a>
+        </div>
+        <button class="scan-action-btn outline" style="margin:14px auto;display:block;" onclick="retakePhoto()">📷 Prøv igen</button>
+      </div>
+    </div>
+
+    <!-- GOOGLE ADSENSE SLOT PÅ SCANNER -->
+    <div class="ad-slot" style="margin:20px auto; width:100%; max-width:320px; height:50px; background:rgba(255,255,255,0.05); border:1px dashed rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.3); text-transform:uppercase; font-size:0.6em; letter-spacing:1px;">
+      [ AdSense Placering ]
+    </div>
+
+    <canvas id="scan-canvas" style="display:none;"></canvas>
+  </div>
+</div>
+
+<!-- Scan FAB -->
+<button class="scan-fab" onclick="openScan()">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h2v2h-2zm4 0h3v3h-3zm0 4h2v3h-2z"/></svg>
+  SCAN CARD
+</button>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lb-inner" onclick="event.stopPropagation()">
+    <button class="lb-btn-close" onclick="closeLightbox()" aria-label="Luk billede">✕</button>
+    <img class="lb-img" id="lb-img" src="" alt="">
+    <p class="lb-caption" id="lb-caption"></p>
+    <div class="lb-actions">
+      <a class="lb-btn lb-btn-tcg" id="lb-tcg" href="#" target="_blank">Search TCGplayer</a>
+      <a class="lb-btn lb-btn-pc" id="lb-pc" href="#" target="_blank">PriceCharting</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ NAVIGATION ══
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  
+  const el = document.getElementById('page-' + id);
+  if (el) el.classList.add('active');
+
+  const tabs = document.querySelectorAll('.nav-tab');
+  const idx = ['guide', 'chart', 'collection'].indexOf(id);
+  if (idx >= 0 && tabs[idx]) tabs[idx].classList.add('active');
+  
+  window.scrollTo(0, 0);
+  if (id === 'collection' && window.loadCollection) window.loadCollection();
+}
+
+// ══ RARITY TIERS ══
+function toggleTier(id) {
+  const el = document.getElementById('detail-' + id);
+  el.classList.toggle('open');
+}
+
+// ══ LIGHTBOX ══
+function openLightbox(src, caption) {
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lb-caption').textContent = caption || '';
+  const q = encodeURIComponent((caption || 'pokemon card').replace(/[#\/]/g,'').trim());
+  document.getElementById('lb-tcg').href = 'https://www.tcgplayer.com/search/pokemon/product?q=' + q;
+  document.getElementById('lb-pc').href  = 'https://www.pricecharting.com/search-products?q=' + q + '+pokemon';
+  lb.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLightbox(); closeScan(); closeProfile(); } });
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.entry-images img, .img-card img').forEach(img => {
+    img.addEventListener('click', () => {
+      const cap = img.closest('.img-card')
+        ? img.closest('.img-card').querySelector('.img-caption')?.textContent
+        : img.nextElementSibling?.textContent || img.alt;
+      openLightbox(img.src, cap || img.alt);
+    });
+  });
+});
+
+// ══ PROFILE MODAL ══
+function saveApiKey() {
+  const val = document.getElementById('settings-key-input').value.trim();
+  if(val) {
+    localStorage.setItem('gemini_api_key', val);
+  } else {
+    localStorage.removeItem('gemini_api_key');
+  }
+  updateKeyStatus();
+}
+
+function updateKeyStatus() {
+  const key = localStorage.getItem('gemini_api_key');
+  const span = document.getElementById('settings-key-status');
+  const inp = document.getElementById('settings-key-input');
+  if(key) {
+    span.style.background = 'rgba(22,163,74,.2)';
+    span.style.color = '#4ade80';
+    span.style.borderColor = 'rgba(22,163,74,.3)';
+    span.textContent = '✅ Nøgle Gemt Lokalt';
+    if(inp) inp.value = key;
+  } else {
+    span.style.background = 'rgba(192,57,43,.2)';
+    span.style.color = '#f87171';
+    span.style.borderColor = 'rgba(192,57,43,.3)';
+    span.textContent = '❌ Mangler Nøgle';
+    if(inp) inp.value = '';
+  }
+}
+
+function openProfile() {
+  document.getElementById('profile-modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  try { updateKeyStatus(); } catch(e){}
+}
+function closeProfile() {
+  document.getElementById('profile-modal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+function handleProfileBackdrop(e) {
+  if (e.target === document.getElementById('profile-modal')) closeProfile();
+}
+
+// ══ SCAN ══
+let stream = null, capturedB64 = null;
+
+function setScanState(s) {
+  document.getElementById('scan-viewfinder-wrap').style.display = s==='viewfinder' ? 'block' : 'none';
+  document.getElementById('snap-btn-wrap').style.display        = s==='viewfinder' ? 'flex'  : 'none';
+  document.getElementById('scan-preview-wrap').style.display    = s==='preview'    ? 'block' : 'none';
+  document.getElementById('scan-processing').style.display      = s==='processing' ? 'flex'  : 'none';
+  document.getElementById('scan-result').style.display          = s==='result'     ? 'block' : 'none';
+}
+
+async function openScan() {
+  document.getElementById('scan-modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  setScanState('viewfinder');
+  await startCamera();
+}
+
+async function startCamera() {
+  const video = document.getElementById('scan-video');
+  const err   = document.getElementById('scan-cam-error');
+  err.style.display = 'none';
+  video.style.display = 'block';
+  document.getElementById('snap-btn-wrap').style.display = 'flex';
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } } });
+    video.srcObject = stream;
+    startAutoScan();
+  } catch(e) {
+    video.style.display = 'none';
+    document.getElementById('snap-btn-wrap').style.display = 'none';
+    err.style.display = 'block';
+    err.textContent = '⚠️ Kameraet kunne ikke åbnes. Giv kameratilladelse i din browser, eller brug manuel søgning nedenfor.';
+    setScanState('result');
+    showManualSearch('', 'Kamera utilgængeligt — søg manuelt:');
+  }
+}
+
+function closeScan() {
+  stopAutoScan();
+  document.getElementById('scan-modal').classList.remove('active');
+  document.body.style.overflow = '';
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  const v = document.getElementById('scan-video');
+  if (v) v.srcObject = null;
+  capturedB64 = null;
+}
+
+// ══ AUTO-SCAN LOOP ══
+let autoScanInterval = null;
+let autoScanning = false;
+
+function startAutoScan() {
+  if (autoScanInterval) return;
+  autoScanning = true;
+  updateAutoScanStatus('🔍 Scanner automatisk...');
+  autoScanInterval = setInterval(async () => {
+    if (!autoScanning) return;
+    const video = document.getElementById('scan-video');
+    if (!video || !video.srcObject || video.readyState < 2) return;
+    const canvas = document.getElementById('scan-canvas');
+    canvas.width  = video.videoWidth  || 640;
+    canvas.height = video.videoHeight || 480;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    const b64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+    const result = await autoAnalyse(b64);
+    if (result && result.confidence === 'high') {
+      stopAutoScan();
+      // Vis et 'bip' og behandl kortet
+      updateAutoScanStatus('✅ Kort fundet!');
+      capturedB64 = b64;
+      await analyseCard();
+    }
+  }, 2000);
+}
+
+function stopAutoScan() {
+  autoScanning = false;
+  if (autoScanInterval) { clearInterval(autoScanInterval); autoScanInterval = null; }
+  updateAutoScanStatus('');
+}
+
+function updateAutoScanStatus(msg) {
+  const el = document.getElementById('auto-scan-status');
+  if (el) el.textContent = msg;
+}
+
+async function autoAnalyse(b64) {
+  const GEMINI_API_KEY = localStorage.getItem('gemini_api_key');
+  if (!GEMINI_API_KEY) return null;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [
+          { text: 'You are a Pokémon TCG scanner. Can you clearly identify a Pokémon card in this image? Return ONLY raw JSON.\nFormat: {"name":"Charizard","set":"Base Set","number":"4/102","confidence":"high"}\nSet confidence=high ONLY if the card name and set are clearly readable. Otherwise set confidence=low.' },
+          { inlineData: { mimeType: 'image/jpeg', data: b64 } }
+        ]}],
+        generationConfig: { temperature: 0.1 }
+      })
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    return JSON.parse(raw.replace(/```json|```/g,'').trim());
+  } catch { return null; }
+}
+
+function snapCard() {
+  const video = document.getElementById('scan-video');
+  const canvas = document.getElementById('scan-canvas');
+  canvas.width  = video.videoWidth  || 1280;
+  canvas.height = video.videoHeight || 720;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+  capturedB64 = dataUrl.split(',')[1];
+  document.getElementById('scan-preview-img').src = dataUrl;
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  setScanState('preview');
+}
+
+function retakePhoto() {
+  capturedB64 = null;
+  setScanState('viewfinder');
+  startCamera();
+}
+
+let currentScannedCard = null;
+
+async function analyseCard() {
+  if (!capturedB64) return;
+  setScanState('processing');
+
+  // Skaler billedet ned til max 800px bredde for lynhurtigt Gemini upload
+  const img = new Image();
+  img.src = 'data:image/jpeg;base64,' + capturedB64;
+  await new Promise(r => { img.onload = r; });
+  const maxW = 800;
+  let w = img.width, h = img.height;
+  if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+  const cvs = document.createElement('canvas');
+  cvs.width = w; cvs.height = h;
+  cvs.getContext('2d').drawImage(img, 0, 0, w, h);
+  const smallB64 = cvs.toDataURL('image/jpeg', 0.8).split(',')[1];
+
+  // Henter brugerens egen API nøgle (så vi slipper for leaked keys på github)
+  const GEMINI_API_KEY = localStorage.getItem('gemini_api_key');
+  if(!GEMINI_API_KEY) {
+    setScanState('viewfinder');
+    closeScan();
+    openProfile();
+    alert("VIGTIGT: For at bruge scanneren skal du indsætte din egen gratis Gemini API Nøgle i profil menuen.");
+    return;
+  }
+  
+  // Brug den nye gemini-2.0-flash model
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { text: "Du er en ekspert Pokémon TCG scanner app. Identificer kortet på billedet så præcist som muligt.\nReturn KUN rå JSON (ingen markdown, ingen forklaringer).\nFormat:\n{\"name\":\"Charizard\",\"set\":\"Base Set\",\"number\":\"4/102\",\"finish\":\"holo\",\"edition\":\"1st\",\"variant\":\"shadowless\",\"confidence\":\"high\"}\n\nRegler:\n- name = Pokémon navn inkl. suffiks (EX, GX, V, VMAX, ex, VSTAR)\n- set = Sæt navn (tom hvis ukendt)\n- number = Kortnummer (tom hvis ukendt)\n- finish = 'normal', 'holo', 'reverse_holo', 'full_art', 'rainbow', 'gold', 'special_art'\n- edition = '1st' hvis der er et '1' stempel/mærke. Ellers 'unlimited'\n- variant = 'shadowless' hvis billedrammen IKKE har en dropskygge. Ellers 'normal'\n- confidence = 'high' kun hvis kortnavn og sæt er 100% tydelige. 'medium' hvis rimelig sikker. 'low' hvis usikker." },
+            { inlineData: { mimeType: "image/jpeg", data: smallB64 } }
+          ]
+        }],
+        generationConfig: { temperature: 0.1 }
+      })
+    });
+    
+    const data = await res.json();
+
+    if (!res.ok || data.error) {
+      const errMsg = data.error?.message || "Fejl fra Gemini API";
+      setScanState('result');
+      showError(`AI Server Fejl: ${errMsg}`);
+      return;
+    }
+
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    let parsed;
+    try { parsed = JSON.parse(raw.replace(/```json|```/g,'').trim()); }
+    catch { parsed = { name: '', confidence: 'low' }; }
+
+    setScanState('result');
+    if (parsed.name && parsed.confidence !== 'low') {
+      let label = parsed.set 
+        ? `${parsed.name} (${parsed.set}${parsed.number ? ' · ' + parsed.number : ''})` 
+        : parsed.name;
+
+      // Vis finish/edition/variant detaljer
+      const finishMap = { normal:'Normal (Mat)', holo:'Holo ✨', reverse_holo:'Reverse Holo ✦', full_art:'Full Art 🖼', rainbow:'Rainbow Rare 🌈', gold:'Gold Card 🟡', special_art:'Special Art 💎' };
+      const finishLabel = finishMap[parsed.finish] || parsed.finish || '';
+      const editionLabel = parsed.edition === '1st' ? '🔖 1st Edition' : '';
+      const variantLabel = parsed.variant === 'shadowless' ? '👁 Shadowless' : '';
+      const badges = [finishLabel, editionLabel, variantLabel].filter(Boolean).join(' · ');
+      if (badges) label += ` — ${badges}`;
+      
+      // 2. SLÅ OP PÅ POKEMON TCG API FOR EUROPEISK CARDMARKET PRIS + HD BILLEDE
+      let priceDKK = null;
+      let finalImageUrl = "data:image/jpeg;base64," + smallB64; // Default kamera hvis der fejles
+      let apiCardUrl = null;
+
+      try {
+        let searchQuery = encodeURIComponent(`name:"${parsed.name}"`);
+        if(parsed.number) searchQuery += encodeURIComponent(` number:"${parsed.number.replace(/\D.*$/,'')}"`); // Extracts just the number part
+        
+        document.getElementById('scan-result-conf').innerHTML = "Søger kortdatabase efter priser... <span class='scan-spinner' style='width:12px;height:12px;display:inline-block;border-width:2px;margin-left:5px;'></span>";
+        document.getElementById('scan-result-conf').style.color = "var(--gold)";
+
+        const dbRes = await fetch(`https://api.pokemontcg.io/v2/cards?q=${searchQuery}&pageSize=5`);
+        const dbData = await dbRes.json();
+
+        if(dbData && dbData.data && dbData.data.length > 0) {
+          // Tag det mest relevante match. Hvis set er angivet, prøv at matche det
+          let bestMatch = dbData.data[0];
+          if(parsed.set) {
+            const setMatch = dbData.data.find(c => c.set && c.set.name && c.set.name.toLowerCase().includes(parsed.set.toLowerCase()));
+            if(setMatch) bestMatch = setMatch;
+          }
+          
+          finalImageUrl = bestMatch.images?.small || finalImageUrl;
+          document.getElementById('scan-preview-img').src = finalImageUrl; // Opdatér skærmen m. flot kort
+          
+          // Udlæs EUR pris på Cardmarket, gang m. ~7.46
+          const eur = bestMatch.cardmarket?.prices?.averageSellPrice || bestMatch.cardmarket?.prices?.trendPrice;
+          if(eur) {
+            priceDKK = Math.round(eur * 7.46);
+          }
+          apiCardUrl = bestMatch.cardmarket?.url;
+        }
+      } catch(err) {
+        console.error("Kunne ikke finde prisen fra databasen:", err);
+      }
+
+      document.getElementById('scan-result-name').textContent = label;
+      
+      if(priceDKK !== null) {
+        document.getElementById('scan-result-conf').innerHTML = `💸 Markedsværdi: <strong style="font-size:1.4em;font-family:'Bebas Neue',cursive;">${priceDKK} kr.</strong> <span style="font-size:0.8em;opacity:0.7;">(Cardmarket)</span>`;
+        document.getElementById('scan-result-conf').style.color = '#fff';
+      } else {
+        const cc = { high:'#27ae60', medium:'#e67e22', low:'#c0392b' }[parsed.confidence] || '#555';
+        const ct = { high:'✅ Identificeret', medium:'🟡 Identificeret (Usikker)', low:'🔴 Prøv Igen' }[parsed.confidence] || '';
+        document.getElementById('scan-result-conf').textContent = `${ct} — Pris ikke fundet`;
+        document.getElementById('scan-result-conf').style.color = cc;
+      }
+      
+      buildLinks(parsed.name);
+      
+      // Gør klar til at gemme porteføljekort i Firebase (med HD kort + pris)
+      currentScannedCard = {  
+        name: parsed.name, 
+        set: parsed.set || '', 
+        number: parsed.number || '', 
+        label: label, 
+        imageBase64: finalImageUrl.startsWith('http') ? null : smallB64, 
+        imageUrl: finalImageUrl.startsWith('http') ? finalImageUrl : null,
+        priceDKK: priceDKK || 0,
+        cardmarketUrl: apiCardUrl,
+        id: Date.now().toString() 
+      };
+      
+      // Vis Gem-knappen hvis bruger er logget ind
+      document.getElementById('scan-save-btn').style.display = window.currentUser ? 'block' : 'none';
+      if(!window.currentUser) {
+        document.getElementById('scan-save-btn').style.display = 'block';
+        document.getElementById('scan-save-btn').textContent = '🔒 LOG IND FOR AT OPRETTE PORTEFØLJE';
+        document.getElementById('scan-save-btn').onclick = () => { closeScan(); openProfile(); };
+      } else {
+        document.getElementById('scan-save-btn').innerHTML = `💾 GEM I PORTEFØLJE <span style="font-size:0.8em;opacity:0.7;">${priceDKK !== null ? '('+priceDKK+' kr.)' : ''}</span>`;
+        document.getElementById('scan-save-btn').onclick = saveCurrentCard;
+      }
+
+      document.getElementById('scan-result-manual').style.display = 'none';
+      document.getElementById('scan-result-found').style.display = 'block';
+    } else {
+      showManualSearch('', '🤔 Kunne ikke helt genkende kortet. Prøv med bedre lys eller beskær baggrunden fra:');
+    }
+
+  } catch(e) {
+    setScanState('result');
+    showError(`Netværksfejl: ${e.message}`);
+  }
+}
+
+async function saveCurrentCard() {
+  if (!currentScannedCard || !window.firebaseSaveCard) return;
+  const btn = document.getElementById('scan-save-btn');
+  btn.textContent = '⏳ Gemmer...';
+  btn.disabled = true;
+  
+  const success = await window.firebaseSaveCard(currentScannedCard);
+  if (success) {
+    btn.textContent = '✅ GEMT!';
+    btn.style.background = '#27ae60';
+    setTimeout(() => {
+      btn.textContent = '💾 GEM I SAMLING';
+      btn.style.background = '';
+      btn.disabled = false;
+      closeScan();
+      showPage('collection');
+    }, 1500);
+  } else {
+    btn.textContent = '❌ Fejl! Prøv igen';
+    btn.disabled = false;
+  }
+}
+
+function showError(msg) {
+  // Show the error message visibly in the result panel so we can debug
+  document.getElementById('scan-result-found').style.display = 'none';
+  document.getElementById('scan-result-manual').style.display = 'block';
+  document.getElementById('scan-manual-msg').innerHTML =
+    `<span style="color:#e74c3c;font-size:.85em;font-family:monospace;word-break:break-all;">${msg}</span><br><br>Search manually while this is being fixed:`;
+  document.getElementById('scan-manual-input').value = '';
+}
+
+function showManualSearch(prefill, msg) {
+  document.getElementById('scan-result-found').style.display = 'none';
+  document.getElementById('scan-result-manual').style.display = 'block';
+  document.getElementById('scan-manual-msg').textContent = msg;
+  document.getElementById('scan-manual-input').value = prefill;
+  if (prefill) buildLinks(prefill);
+}
+
+function buildLinks(q) {
+  const t = encodeURIComponent(q);
+  const p = encodeURIComponent(q + ' pokemon card');
+  const el1 = document.getElementById('scan-tcg-btn');
+  const el2 = document.getElementById('scan-tcg-btn2');
+  const ep1 = document.getElementById('scan-pc-btn');
+  const ep2 = document.getElementById('scan-pc-btn2');
+  if (el1) el1.href = 'https://www.tcgplayer.com/search/pokemon/product?q=' + t;
+  if (el2) el2.href = 'https://www.tcgplayer.com/search/pokemon/product?q=' + t;
+  if (ep1) ep1.href = 'https://www.pricecharting.com/search-products?q=' + p;
+  if (ep2) ep2.href = 'https://www.pricecharting.com/search-products?q=' + p;
+}
+
+// Escape also closes settings/profile
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProfile(); });
+
+function manualSearch() {
+  const q = document.getElementById('scan-manual-input').value.trim();
+  if (q) buildLinks(q);
+}
+</script>
+
+<!-- ════════════════════════════════
+     FIREBASE & AUTH LOGIC (ES MODULE)
+════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, orderBy, getDocs, deleteDoc, doc, Timestamp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD9cKWS5Jjgwyrq6Fq1N-w9ssaXdkY9oQk",
+  authDomain: "pokehelperda.firebaseapp.com",
+  projectId: "pokehelperda",
+  storageBucket: "pokehelperda.firebasestorage.app",
+  messagingSenderId: "170392416464",
+  appId: "1:170392416464:web:24c52dce1b7a8573536ed5",
+  measurementId: "G-YWP9LJ2L8P"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+// Bind global functions from module scope
+window.firebaseSignIn = async () => {
+  try {
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider);
+    closeProfile();
+  } catch(e) { 
+    console.error("Login Fejl:", e); 
+    alert("Kunne ikke logge ind. Fejlkode: " + e.message); 
+  }
+};
+
+window.firebaseSignOut = () => { signOut(auth); closeProfile(); showPage('guide'); };
+
+// Save scanned card
+window.firebaseSaveCard = async (cardData) => {
+  if(!auth.currentUser) return false;
+  try {
+    const userRef = collection(db, "users", auth.currentUser.uid, "cards");
+    await addDoc(userRef, {
+      name: cardData.name,
+      set: cardData.set,
+      number: cardData.number,
+      label: cardData.label,
+      imageUrl: cardData.imageUrl || null,
+      imageBase64: cardData.imageBase64 || null,
+      priceDKK: cardData.priceDKK || 0,
+      cardmarketUrl: cardData.cardmarketUrl || null,
+      timestamp: Timestamp.now()
+    });
+    return true;
+  } catch(e) {
+    console.error("Save Fejl:", e);
+    return false;
+  }
+};
+
+window.firebaseDeleteCard = async (docId) => {
+  if(!auth.currentUser || !confirm('Er du sikker på du vil slette dette kort?')) return;
+  try {
+    await deleteDoc(doc(db, "users", auth.currentUser.uid, "cards", docId));
+    window.loadCollection();
+  } catch(e) { console.error("Fejl v/ sletning:", e); }
+};
+
+window.loadCollection = async () => {
+  const grid = document.getElementById('collection-grid');
+  const dVal = document.getElementById('portfolio-total-value');
+  const dCnt = document.getElementById('portfolio-total-cards');
+  
+  if(!auth.currentUser) {
+    grid.innerHTML = '<div style="text-align:center;grid-column:1/-1;padding:40px;"><p style="margin-bottom:12px;color:rgba(0,0,0,.6);">Du skal være logget ind for at se din portefølje.</p><button class="scan-action-btn primary" onclick="openProfile()">Opret / Log ind gratis</button></div>';
+    dVal.textContent = '0 kr.';
+    dCnt.textContent = '0';
+    return;
+  }
+  
+  grid.innerHTML = '<p style="color:var(--gold);grid-column:1/-1;text-align:center;padding:40px 0;letter-spacing:2px;font-family:\'Bebas Neue\',cursive;font-size:1.2em;">INDLÆSER DATA...</p>';
+  
+  try {
+    const q = query(collection(db, "users", auth.currentUser.uid, "cards"), orderBy("timestamp", "desc"));
+    const snap = await getDocs(q);
+    
+    if(snap.empty) {
+      grid.innerHTML = '<p style="color:rgba(0,0,0,.5);grid-column:1/-1;text-align:center;padding:40px 0;">Ingen kort i din DEX endnu. Scan et kort for at begynde!</p>';
+      dVal.textContent = '0 kr.';
+      dCnt.textContent = '0';
+      return;
+    }
+    
+    let html = '';
+    let totalDkk = 0;
+    let totalCards = 0;
+    
+    snap.forEach((doc, idx) => {
+      const d = doc.data();
+      totalCards++;
+      totalDkk += (d.priceDKK || 0);
+
+      const priceHtml = d.priceDKK ? `<div style="font-family:'Bebas Neue',cursive;font-size:1.2em;color:var(--gold);margin-top:4px;">${d.priceDKK} kr</div>` : '<div style="font-size:0.7em;color:var(--muted);margin-top:4px;">Pris ukendt</div>';
+      const imgData = d.imageUrl ? d.imageUrl : (d.imageBase64 ? `data:image/jpeg;base64,${d.imageBase64}` : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
+      const clickAction = d.cardmarketUrl ? `onclick="window.open('${d.cardmarketUrl}', '_blank')"` : ``;
+      
+      html += `
+        <div class="img-card" style="position:relative;width:100%;max-width:180px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.08);transition:transform 0.15s;cursor:pointer;" ${clickAction}>
+          <!-- Delete knap overskriver klik på kortet -->
+          <button onclick="event.stopPropagation(); firebaseDeleteCard('${doc.id}')" style="position:absolute;top:6px;right:6px;width:26px;height:26px;background:rgba(192,57,43,0.9);color:#fff;border:none;border-radius:50%;font-weight:bold;cursor:pointer;opacity:0.8;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,0.3);">✕</button>
+          
+          <img src="${imgData}" style="width:100%;height:180px;object-fit:contain;padding:12px;background:var(--cream);" alt="${d.name}">
+          
+          <div style="padding:10px;text-align:center;border-top:1px solid var(--border);background:#fff;">
+            <div style="font-family:'DM Serif Display',serif;font-size:0.9em;line-height:1.1;color:var(--ink);">${d.name}</div>
+            <div style="font-size:0.65em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:5px;">${d.set}</div>
+            ${priceHtml}
+          </div>
+        </div>
+      `;
+
+      // Indsæt en AdSense slot automatisk efter 8 kort (for at holde en fin frekvens)
+      if((idx+1) % 8 === 0) {
+        html += `<div class="ad-slot" style="grid-column:1/-1; width:100%; height:90px; background:rgba(0,0,0,0.03); border:1px dashed rgba(0,0,0,0.15); display:flex; align-items:center; justify-content:center; color:rgba(0,0,0,0.3); text-transform:uppercase; font-size:0.7em; letter-spacing:1px;">[ AdSense Banner Placering ]</div>`;
+      }
+    });
+
+    grid.innerHTML = html;
+    
+    // Formatér tal med punktum ved tusinder
+    dVal.textContent = totalDkk.toLocaleString("da-DK") + ' kr.';
+    dCnt.textContent = totalCards.toString();
+
+  } catch(e) {
+    console.error("Load Fejl:", e);
+    grid.innerHTML = '<p style="color:var(--red);grid-column:1/-1;text-align:center;padding:40px 0;">Kunne ikke indlæse samling pga. serverfejl.</p>';
+  }
+};
+
+onAuthStateChanged(auth, user => {
+  window.currentUser = user;
+  const colTab = document.getElementById('nav-collection-tab');
+  const loggedInDiv = document.getElementById('profile-logged-in');
+  const loggedOutDiv = document.getElementById('profile-logged-out');
+  const emailSpan = document.getElementById('profile-user-email');
+  
+  if (user) {
+    colTab.style.display = 'block';
+    loggedInDiv.style.display = 'block';
+    loggedOutDiv.style.display = 'none';
+    emailSpan.textContent = user.email;
+  } else {
+    colTab.style.display = 'none';
+    loggedInDiv.style.display = 'none';
+    loggedOutDiv.style.display = 'block';
+    if(document.getElementById('page-collection') && document.getElementById('page-collection').classList.contains('active')) {
+      showPage('guide');
+    }
+  }
+});
+</script>
+</body>
+</html>
