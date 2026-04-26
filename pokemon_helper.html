@@ -1840,12 +1840,13 @@ async function acSearch() {
       const priceHtml = dkk ? dkk + ' kr.' : '— kr.';
       const img = (card.images && card.images.small) ? card.images.small : '';
       const safe = JSON.stringify(JSON.stringify(card)).replace(/'/g, "&#39;");
-      html += '<div class="ac-result-card" onclick='acSelectCard(' + safe + ')'>'
-            + '<img src="' + img + '" alt="' + card.name + '" loading="lazy">'
-            + '<div class="ac-rc-name">' + card.name + '</div>'
-            + '<div class="ac-rc-set">' + (card.set ? card.set.name : '') + ' · ' + (card.number || '') + '</div>'
-            + '<div class="ac-rc-price">' + priceHtml + '</div>'
-            + '</div>';
+      html += `
+        <div class="ac-result-card" onclick='acSelectCard(${safe})'>
+          <img src="${img}" alt="${card.name.replace(/"/g, '&quot;')}" loading="lazy">
+          <div class="ac-rc-name">${card.name}</div>
+          <div class="ac-rc-set">${card.set ? card.set.name : ''} · ${card.number || ''}</div>
+          <div class="ac-rc-price">${priceHtml}</div>
+        </div>`;
     });
     html += '</div>';
     resultsEl.innerHTML = html;
