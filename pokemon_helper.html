@@ -1484,6 +1484,10 @@ function startAutoScan() {
     canvas.getContext('2d').drawImage(video, 0, 0);
     const b64 = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
     const result = await autoAnalyse(b64);
+    if (result && result.rateLimited) {
+       updateAutoScanStatus('⚠️ API grænse nået. Tryk selv på knappen.');
+       return;
+    }
     if (result && result.confidence === 'high') {
       stopAutoScan();
       // Vis et 'bip' og behandl kortet
@@ -1491,7 +1495,7 @@ function startAutoScan() {
       capturedB64 = b64;
       await analyseCard();
     }
-  }, 2000);
+  }, 4500);
 }
 
 function stopAutoScan() {
@@ -1508,7 +1512,7 @@ function updateAutoScanStatus(msg) {
 async function autoAnalyse(b64) {
   const GEMINI_API_KEY = localStorage.getItem('gemini_api_key');
   if (!GEMINI_API_KEY) return null;
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
   try {
     const res = await fetch(endpoint, {
       method: 'POST',
@@ -1521,6 +1525,7 @@ async function autoAnalyse(b64) {
         generationConfig: { temperature: 0.1 }
       })
     });
+    if (res.status === 429) { stopAutoScan(); return { rateLimited: true }; }
     if (!res.ok) return null;
     const data = await res.json();
     const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -1575,8 +1580,8 @@ async function analyseCard() {
     return;
   }
   
-  // Brug den nye gemini-2.0-flash model
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+  // Tilbage til gemini-1.5-flash da 2.0.flash pt. kræver betalt tier for visse nøgler og giver 'limit: 0' fejl.
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
   try {
     const res = await fetch(endpoint, {
