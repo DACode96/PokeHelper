@@ -1877,41 +1877,49 @@ async function saveCurrentCard() {
   }
   
   const btn = document.getElementById('scan-save-btn');
-  const eur = (scanSelectedCard.cardmarket && scanSelectedCard.cardmarket.prices) ? (scanSelectedCard.cardmarket.prices.averageSellPrice || scanSelectedCard.cardmarket.prices.trendPrice) : null;
-  const dkk = eur ? Math.round(eur * 7.46) : 0;
-  
   btn.textContent = '⏳ Gemmer...';
   btn.disabled = true;
-  
-  const saves = [];
-  for (let i = 0; i < scanQty; i++) {
-    saves.push(window.firebaseSaveCard({
-      name: scanSelectedCard.name,
-      set: scanSelectedCard.set ? scanSelectedCard.set.name : '',
-      number: scanSelectedCard.number || '',
-      label: scanSelectedCard.name + ' (' + (scanSelectedCard.set ? scanSelectedCard.set.name : '') + ')',
-      imageUrl: (scanSelectedCard.images && scanSelectedCard.images.small) ? scanSelectedCard.images.small : null,
-      imageBase64: null,
-      priceDKK: dkk,
-      cardmarketUrl: (scanSelectedCard.cardmarket && scanSelectedCard.cardmarket.url) ? scanSelectedCard.cardmarket.url : null,
-      condition: scanCondition,
-      rarity: scanSelectedCard.rarity || ''
-    }));
-  }
-  
-  const results = await Promise.all(saves);
-  if (results.every(Boolean)) {
-    btn.textContent = '✅ ' + scanQty + ' kort gemt!';
-    btn.style.background = 'var(--green)';
-    setTimeout(() => {
-      btn.textContent = '💾 GEM I PORTEFØLJE';
-      btn.style.background = '';
+
+  try {
+    const eur = (scanSelectedCard.cardmarket && scanSelectedCard.cardmarket.prices) ? (scanSelectedCard.cardmarket.prices.averageSellPrice || scanSelectedCard.cardmarket.prices.trendPrice) : null;
+    const dkk = eur ? Math.round(eur * 7.46) : 0;
+    
+    const saves = [];
+    for (let i = 0; i < scanQty; i++) {
+      saves.push(window.firebaseSaveCard({
+        name: scanSelectedCard.name,
+        set: scanSelectedCard.set ? scanSelectedCard.set.name : '',
+        number: scanSelectedCard.number || '',
+        label: scanSelectedCard.name + ' (' + (scanSelectedCard.set ? scanSelectedCard.set.name : '') + ')',
+        imageUrl: (scanSelectedCard.images && scanSelectedCard.images.small) ? scanSelectedCard.images.small : null,
+        imageBase64: null,
+        priceDKK: dkk,
+        cardmarketUrl: (scanSelectedCard.cardmarket && scanSelectedCard.cardmarket.url) ? scanSelectedCard.cardmarket.url : null,
+        condition: scanCondition,
+        rarity: scanSelectedCard.rarity || ''
+      }));
+    }
+    
+    const results = await Promise.all(saves);
+    if (results.every(Boolean)) {
+      btn.textContent = '✅ ' + scanQty + ' kort gemt!';
+      btn.style.background = 'var(--green)';
+      setTimeout(() => {
+        btn.textContent = '💾 GEM I PORTEFØLJE';
+        btn.style.background = '';
+        btn.disabled = false;
+        closeScan();
+        showPage('collection');
+      }, 1500);
+    } else {
+      btn.textContent = '❌ Fejl! Prøv igen';
+      btn.style.background = 'var(--red)';
       btn.disabled = false;
-      closeScan();
-      showPage('collection');
-    }, 1500);
-  } else {
-    btn.textContent = '❌ Fejl! Prøv igen';
+      setTimeout(() => { btn.style.background = ''; btn.textContent = '💾 GEM I PORTEFØLJE'; }, 2000);
+    }
+  } catch(e) {
+    console.error("Uventet fejl i saveCurrentCard:", e);
+    btn.textContent = '❌ Systemfejl! Prøv igen';
     btn.style.background = 'var(--red)';
     btn.disabled = false;
     setTimeout(() => { btn.style.background = ''; btn.textContent = '💾 GEM I PORTEFØLJE'; }, 2000);
@@ -2056,40 +2064,54 @@ async function acSaveCard() {
   }
   if (!window.firebaseSaveCard) { alert('Firebase ikke klar — prøv igen.'); return; }
   if (!window.currentUser) { closeAddCard(); openProfile(); return; }
+  
   const btn = document.getElementById('ac-save-btn');
-  const eur = (acSelectedCard.cardmarket && acSelectedCard.cardmarket.prices) ? (acSelectedCard.cardmarket.prices.averageSellPrice || acSelectedCard.cardmarket.prices.trendPrice) : null;
-  const dkk = eur ? Math.round(eur * 7.46) : 0;
   btn.textContent = '⏳ Gemmer...';
   btn.disabled = true;
-  const saves = [];
-  for (let i = 0; i < acQty; i++) {
-    saves.push(window.firebaseSaveCard({
-      name: acSelectedCard.name,
-      set: acSelectedCard.set ? acSelectedCard.set.name : '',
-      number: acSelectedCard.number || '',
-      label: acSelectedCard.name + ' (' + (acSelectedCard.set ? acSelectedCard.set.name : '') + ')',
-      imageUrl: (acSelectedCard.images && acSelectedCard.images.small) ? acSelectedCard.images.small : null,
-      imageBase64: null,
-      priceDKK: dkk,
-      cardmarketUrl: (acSelectedCard.cardmarket && acSelectedCard.cardmarket.url) ? acSelectedCard.cardmarket.url : null,
-      condition: acCondition,
-      rarity: acSelectedCard.rarity || '',
-    }));
-  }
-  const results = await Promise.all(saves);
-  if (results.every(Boolean)) {
-    btn.textContent = '✅ ' + acQty + ' kort gemt!';
-    btn.style.background = 'var(--green)';
-    setTimeout(function() {
-      closeAddCard();
-      showPage('collection');
-      btn.textContent = '💾 GEM I SAMLING';
-      btn.style.background = '';
+
+  try {
+    const eur = (acSelectedCard.cardmarket && acSelectedCard.cardmarket.prices) ? (acSelectedCard.cardmarket.prices.averageSellPrice || acSelectedCard.cardmarket.prices.trendPrice) : null;
+    const dkk = eur ? Math.round(eur * 7.46) : 0;
+    
+    const saves = [];
+    for (let i = 0; i < acQty; i++) {
+      saves.push(window.firebaseSaveCard({
+        name: acSelectedCard.name,
+        set: acSelectedCard.set ? acSelectedCard.set.name : '',
+        number: acSelectedCard.number || '',
+        label: acSelectedCard.name + ' (' + (acSelectedCard.set ? acSelectedCard.set.name : '') + ')',
+        imageUrl: (acSelectedCard.images && acSelectedCard.images.small) ? acSelectedCard.images.small : null,
+        imageBase64: null,
+        priceDKK: dkk,
+        cardmarketUrl: (acSelectedCard.cardmarket && acSelectedCard.cardmarket.url) ? acSelectedCard.cardmarket.url : null,
+        condition: acCondition,
+        rarity: acSelectedCard.rarity || '',
+      }));
+    }
+    
+    const results = await Promise.all(saves);
+    if (results.every(Boolean)) {
+      btn.textContent = '✅ ' + acQty + ' kort gemt!';
+      btn.style.background = 'var(--green)';
+      setTimeout(function() {
+        closeAddCard();
+        showPage('collection');
+        btn.textContent = '💾 GEM I SAMLING';
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 1200);
+    } else {
+      btn.textContent = '❌ Fejl — prøv igen';
+      btn.style.background = 'var(--red)';
       btn.disabled = false;
-    }, 1200);
-  } else {
-    btn.textContent = '❌ Fejl — prøv igen';
+      setTimeout(() => { btn.style.background = ''; btn.textContent = '💾 GEM I SAMLING'; }, 2000);
+    }
+  } catch(e) {
+    console.error("Uventet fejl i acSaveCard:", e);
+    btn.textContent = '❌ Systemfejl! Prøv igen';
+    btn.style.background = 'var(--red)';
     btn.disabled = false;
+    setTimeout(() => { btn.style.background = ''; btn.textContent = '💾 GEM I SAMLING'; }, 2000);
   }
 }
 
@@ -2137,17 +2159,25 @@ window.firebaseSaveCard = async (cardData) => {
   if(!auth.currentUser) return false;
   try {
     const userRef = collection(db, "users", auth.currentUser.uid, "cards");
-    await addDoc(userRef, {
-      name: cardData.name,
-      set: cardData.set,
-      number: cardData.number,
-      label: cardData.label,
+    const docData = {
+      name: cardData.name || 'Ukendt',
+      set: cardData.set || '',
+      number: cardData.number || '',
+      label: cardData.label || '',
       imageUrl: cardData.imageUrl || null,
       imageBase64: cardData.imageBase64 || null,
       priceDKK: cardData.priceDKK || 0,
       cardmarketUrl: cardData.cardmarketUrl || null,
+      condition: cardData.condition || 'NM',
+      rarity: cardData.rarity || '',
       timestamp: Timestamp.now()
-    });
+    };
+    
+    // Add timeout to prevent hanging if connection drops
+    const docPromise = addDoc(userRef, docData);
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout: Kunne ikke oprette forbindelse til databasen")), 8000));
+    
+    await Promise.race([docPromise, timeoutPromise]);
     return true;
   } catch(e) {
     console.error("Save Fejl:", e);
