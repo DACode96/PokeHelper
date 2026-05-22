@@ -1088,19 +1088,33 @@ footer strong{color:var(--gold);font-weight:500;}
         <strong id="portfolio-total-cards" style="font-family:'Bebas Neue',cursive; font-size:2em; color:#fff;">0</strong>
       </div>
     </div>
+    <!-- TOP 3 SHOWCASE -->
+    <div id="portfolio-top-showcase" style="display:none;margin:20px auto 0;max-width:400px;text-align:center;">
+      <p style="font-size:0.65em;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;">Dine Mest Værdifulde Kort</p>
+      <div id="portfolio-top-grid" style="display:flex;justify-content:center;gap:12px;"></div>
+    </div>
   </div>
   
-  <div class="container" style="padding-top:30px;min-height:50vh;">
-        <!-- Tilføj Kort knap -->
-    <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+  <div class="container" style="padding-top:20px;min-height:50vh;">
+    <!-- SØGNING OG FILTRERING -->
+    <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.03);padding:12px;border:1px solid rgba(255,255,255,0.08);border-radius:12px;">
+      <div style="display:flex;flex:1;min-width:200px;gap:8px;">
+        <input type="text" id="portfolio-search-input" placeholder="Søg på navn eller sæt..." oninput="applyPortfolioFilters()" style="flex:1;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.3);color:#fff;outline:none;">
+        <select id="portfolio-sort-select" onchange="applyPortfolioFilters()" style="padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.3);color:#fff;outline:none;cursor:pointer;">
+          <option value="newest">Senest tilføjet</option>
+          <option value="priceDesc">Pris (Høj-Lav)</option>
+          <option value="nameAsc">Navn (A-Z)</option>
+        </select>
+      </div>
       <button onclick="openAddCard()" style="
         display:flex;align-items:center;gap:8px;
         background:var(--gold);color:#000;border:none;border-radius:8px;
-        padding:12px 20px;font-family:'Bebas Neue',cursive;font-size:1.1em;letter-spacing:2px;
-        cursor:pointer;box-shadow:0 4px 16px rgba(200,151,58,.3);transition:transform .1s;">
+        padding:10px 16px;font-family:'Bebas Neue',cursive;font-size:1em;letter-spacing:1px;
+        cursor:pointer;box-shadow:0 4px 16px rgba(200,151,58,.2);transition:transform .1s;">
         ➕ TILFØJ KORT
       </button>
     </div>
+    
     <div id="collection-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));gap:12px;">
       <p style="color:rgba(0,0,0,0.5);width:100%;grid-column:1/-1;text-align:center;padding:40px 0;">Indlæser jeres skatkammer...</p>
     </div>
@@ -1214,6 +1228,35 @@ footer strong{color:var(--gold);font-weight:500;}
 .ac-cond-btn{padding:6px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);font-family:'Bebas Neue',cursive;font-size:.9em;letter-spacing:1px;cursor:pointer;transition:background .1s;}
 .ac-cond-btn.active{background:var(--gold);color:#000;border-color:var(--gold);}
 </style>
+
+<!-- ══ CARD INSPECT MODAL ══ -->
+<div class="scan-modal" id="inspect-modal">
+  <div class="scan-header">
+    <span class="scan-header-title">🔍 KORT DETALJER</span>
+    <button class="scan-close-btn" onclick="closeCardInspect()">✕ LUK</button>
+  </div>
+  <div class="scan-body" style="padding:20px;text-align:center;">
+    <img id="inspect-img" src="" style="width:100%;max-width:280px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.6);margin-bottom:15px;background:rgba(255,255,255,0.05);min-height:300px;object-fit:contain;">
+    <div style="font-family:'DM Serif Display',serif;font-size:1.4em;color:#fff;margin-bottom:4px;" id="inspect-name"></div>
+    <div style="font-size:0.75em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;" id="inspect-set"></div>
+    
+    <div style="display:flex;justify-content:center;gap:12px;margin-bottom:20px;">
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:10px;border-radius:8px;flex:1;">
+        <div style="font-size:0.65em;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Markedsværdi</div>
+        <div id="inspect-price" style="font-family:'Bebas Neue',cursive;font-size:1.6em;color:var(--gold);"></div>
+      </div>
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:10px;border-radius:8px;flex:1;">
+        <div style="font-size:0.65em;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Stand</div>
+        <div id="inspect-cond" style="font-family:'Bebas Neue',cursive;font-size:1.6em;color:#fff;"></div>
+      </div>
+    </div>
+    
+    <div style="display:flex;gap:10px;">
+      <button id="inspect-delete-btn" class="scan-action-btn outline" style="flex:1;color:#ff4757;border-color:rgba(255,71,87,0.3);">🗑 SLET</button>
+      <button id="inspect-cm-btn" class="scan-action-btn primary" style="flex:2;">🛍 SE PÅ CARDMARKET</button>
+    </div>
+  </div>
+</div>
 
 <div class="scan-modal" id="scan-modal">
   <div class="scan-header">
@@ -2120,6 +2163,131 @@ window.firebaseDeleteCard = async (docId) => {
   } catch(e) { console.error("Fejl v/ sletning:", e); }
 };
 
+window.portfolioCards = [];
+window.currentInspectCard = null;
+
+window.openCardInspect = (id) => {
+  const card = window.portfolioCards.find(c => c.id === id);
+  if (!card) return;
+  window.currentInspectCard = card;
+  
+  const eur = (card.cardmarket && card.cardmarket.prices) ? (card.cardmarket.prices.averageSellPrice || card.cardmarket.prices.trendPrice) : null;
+  const priceText = card.priceDKK ? card.priceDKK + ' kr.' : 'Ukendt';
+  const imgData = card.imageUrl ? card.imageUrl : (card.imageBase64 ? `data:image/jpeg;base64,${card.imageBase64}` : '');
+  
+  document.getElementById('inspect-img').src = imgData;
+  document.getElementById('inspect-name').textContent = card.name || 'Ukendt Kort';
+  document.getElementById('inspect-set').textContent = (card.set || '') + (card.number ? ' · #' + card.number : '') + (card.rarity ? ' · ' + card.rarity : '');
+  document.getElementById('inspect-price').textContent = priceText;
+  document.getElementById('inspect-cond').textContent = card.condition || 'NM';
+  
+  document.getElementById('inspect-delete-btn').onclick = () => {
+    closeCardInspect();
+    window.firebaseDeleteCard(card.id);
+  };
+  
+  const cmBtn = document.getElementById('inspect-cm-btn');
+  if (card.cardmarketUrl) {
+    cmBtn.style.display = 'block';
+    cmBtn.onclick = () => window.open(card.cardmarketUrl, '_blank');
+  } else {
+    cmBtn.style.display = 'none';
+  }
+  
+  document.getElementById('inspect-modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeCardInspect = () => {
+  document.getElementById('inspect-modal').classList.remove('active');
+  document.body.style.overflow = '';
+  window.currentInspectCard = null;
+};
+
+window.renderPortfolio = (cardsToRender) => {
+  const grid = document.getElementById('collection-grid');
+  if (cardsToRender.length === 0) {
+    grid.innerHTML = '<p style="color:rgba(255,255,255,0.5);grid-column:1/-1;text-align:center;padding:40px 0;">Ingen kort matchede din søgning.</p>';
+    return;
+  }
+  
+  let html = '';
+  cardsToRender.forEach((card, idx) => {
+    const priceHtml = card.priceDKK ? `<div style="font-family:'Bebas Neue',cursive;font-size:1.2em;color:var(--gold);margin-top:4px;">${card.priceDKK} kr</div>` : '<div style="font-size:0.7em;color:var(--muted);margin-top:4px;">Pris ukendt</div>';
+    const imgData = card.imageUrl ? card.imageUrl : (card.imageBase64 ? `data:image/jpeg;base64,${card.imageBase64}` : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
+    
+    html += `
+      <div class="img-card" style="position:relative;width:100%;max-width:180px;margin:0 auto;background:var(--cream);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.3);transition:transform 0.15s;cursor:pointer;" onclick="openCardInspect('${card.id}')">
+        <img src="${imgData}" style="width:100%;height:180px;object-fit:contain;padding:12px;background:rgba(0,0,0,0.15);" alt="${card.name}">
+        <div style="padding:10px;text-align:center;border-top:1px solid var(--border);background:var(--cream);">
+          <div style="font-family:'DM Serif Display',serif;font-size:0.9em;line-height:1.1;color:#fff;">${card.name}</div>
+          <div style="font-size:0.65em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:5px;">${card.set || ''}</div>
+          ${priceHtml}
+        </div>
+      </div>
+    `;
+
+    if((idx+1) % 8 === 0) {
+      html += `<div class="ad-slot" style="grid-column:1/-1; width:100%; height:90px; background:rgba(255,255,255,0.03); border:1px dashed rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.25); text-transform:uppercase; font-size:0.7em; letter-spacing:1px;">[ AdSense Banner Placering ]</div>`;
+    }
+  });
+
+  grid.innerHTML = html;
+};
+
+window.applyPortfolioFilters = () => {
+  const query = (document.getElementById('portfolio-search-input').value || '').toLowerCase().trim();
+  const sort = document.getElementById('portfolio-sort-select').value;
+  
+  let filtered = window.portfolioCards;
+  if (query) {
+    filtered = filtered.filter(c => (c.name || '').toLowerCase().includes(query) || (c.set || '').toLowerCase().includes(query));
+  }
+  
+  if (sort === 'priceDesc') {
+    filtered.sort((a, b) => (b.priceDKK || 0) - (a.priceDKK || 0));
+  } else if (sort === 'nameAsc') {
+    filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  } else {
+    // newest
+    filtered.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+  }
+  
+  window.renderPortfolio(filtered);
+};
+
+window.renderTopShowcase = () => {
+  const showcase = document.getElementById('portfolio-top-showcase');
+  const grid = document.getElementById('portfolio-top-grid');
+  
+  if (window.portfolioCards.length === 0) {
+    showcase.style.display = 'none';
+    return;
+  }
+  
+  // Find top 3 most valuable
+  const sorted = [...window.portfolioCards].sort((a, b) => (b.priceDKK || 0) - (a.priceDKK || 0));
+  const topCards = sorted.slice(0, 3).filter(c => c.priceDKK && c.priceDKK > 0);
+  
+  if (topCards.length === 0) {
+    showcase.style.display = 'none';
+    return;
+  }
+  
+  showcase.style.display = 'block';
+  let html = '';
+  topCards.forEach(card => {
+    const imgData = card.imageUrl ? card.imageUrl : (card.imageBase64 ? `data:image/jpeg;base64,${card.imageBase64}` : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
+    html += `
+      <div onclick="openCardInspect('${card.id}')" style="cursor:pointer;background:var(--cream);border:1px solid var(--gold);border-radius:8px;padding:6px;width:90px;box-shadow:0 4px 12px rgba(200,151,58,0.2);transition:transform 0.15s;">
+        <img src="${imgData}" style="width:100%;height:80px;object-fit:contain;background:rgba(0,0,0,0.2);border-radius:4px;margin-bottom:4px;">
+        <div style="font-family:'Bebas Neue',cursive;font-size:1.1em;color:var(--gold);line-height:1;">${card.priceDKK} kr</div>
+      </div>
+    `;
+  });
+  grid.innerHTML = html;
+};
+
 window.loadCollection = async () => {
   const grid = document.getElementById('collection-grid');
   const dVal = document.getElementById('portfolio-total-value');
@@ -2129,6 +2297,7 @@ window.loadCollection = async () => {
     grid.innerHTML = '<div style="text-align:center;grid-column:1/-1;padding:40px;"><p style="margin-bottom:12px;color:rgba(255,255,255,0.6);">Du skal være logget ind for at se din portefølje.</p><button class="scan-action-btn primary" onclick="openProfile()">Opret / Log ind gratis</button></div>';
     dVal.textContent = '0 kr.';
     dCnt.textContent = '0';
+    document.getElementById('portfolio-top-showcase').style.display = 'none';
     return;
   }
   
@@ -2142,56 +2311,27 @@ window.loadCollection = async () => {
       grid.innerHTML = '<p style="color:rgba(255,255,255,0.5);grid-column:1/-1;text-align:center;padding:40px 0;">Ingen kort i din DEX endnu. Scan et kort for at begynde!</p>';
       dVal.textContent = '0 kr.';
       dCnt.textContent = '0';
+      document.getElementById('portfolio-top-showcase').style.display = 'none';
       return;
     }
     
-    // Sort locally in memory to bypass composite index requirement
-    const cards = [];
+    window.portfolioCards = [];
+    let totalDkk = 0;
+    
     snap.forEach((doc) => {
       const data = doc.data();
-      cards.push({ id: doc.id, ...data });
+      window.portfolioCards.push({ id: doc.id, ...data });
+      totalDkk += (data.priceDKK || 0);
     });
-    cards.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
     
-    let html = '';
-    let totalDkk = 0;
-    let totalCards = 0;
-    
-    cards.forEach((card, idx) => {
-      totalCards++;
-      totalDkk += (card.priceDKK || 0);
-
-      const priceHtml = card.priceDKK ? `<div style="font-family:'Bebas Neue',cursive;font-size:1.2em;color:var(--gold);margin-top:4px;">${card.priceDKK} kr</div>` : '<div style="font-size:0.7em;color:var(--muted);margin-top:4px;">Pris ukendt</div>';
-      const imgData = card.imageUrl ? card.imageUrl : (card.imageBase64 ? `data:image/jpeg;base64,${card.imageBase64}` : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
-      const clickAction = card.cardmarketUrl ? `onclick="window.open('${card.cardmarketUrl}', '_blank')"` : ``;
-      
-      html += `
-        <div class="img-card" style="position:relative;width:100%;max-width:180px;margin:0 auto;background:var(--cream);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.3);transition:transform 0.15s;cursor:pointer;" ${clickAction}>
-          <!-- Delete knap overskriver klik på kortet -->
-          <button onclick="event.stopPropagation(); firebaseDeleteCard('${card.id}')" style="position:absolute;top:6px;right:6px;width:26px;height:26px;background:rgba(192,57,43,0.9);color:#fff;border:none;border-radius:50%;font-weight:bold;cursor:pointer;opacity:0.8;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,0.3);">✕</button>
-          
-          <img src="${imgData}" style="width:100%;height:180px;object-fit:contain;padding:12px;background:rgba(0,0,0,0.15);" alt="${card.name}">
-          
-          <div style="padding:10px;text-align:center;border-top:1px solid var(--border);background:var(--cream);">
-            <div style="font-family:'DM Serif Display',serif;font-size:0.9em;line-height:1.1;color:#fff;">${card.name}</div>
-            <div style="font-size:0.65em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:5px;">${card.set || ''}</div>
-            ${priceHtml}
-          </div>
-        </div>
-      `;
-
-      // Indsæt en AdSense slot automatisk efter 8 kort (for at holde en fin frekvens)
-      if((idx+1) % 8 === 0) {
-        html += `<div class="ad-slot" style="grid-column:1/-1; width:100%; height:90px; background:rgba(255,255,255,0.03); border:1px dashed rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.25); text-transform:uppercase; font-size:0.7em; letter-spacing:1px;">[ AdSense Banner Placering ]</div>`;
-      }
-    });
-
-    grid.innerHTML = html;
-    
-    // Formatér tal med punktum ved tusinder
+    // Update dashboard global stats
     dVal.textContent = totalDkk.toLocaleString("da-DK") + ' kr.';
-    dCnt.textContent = totalCards.toString();
-
+    dCnt.textContent = window.portfolioCards.length.toString();
+    
+    // Render
+    window.renderTopShowcase();
+    window.applyPortfolioFilters();
+    
   } catch(e) {
     console.error("Load Fejl:", e);
     grid.innerHTML = '<p style="color:var(--red);grid-column:1/-1;text-align:center;padding:40px 0;">Kunne ikke indlæse samling pga. serverfejl.</p>';
@@ -2210,6 +2350,7 @@ onAuthStateChanged(auth, user => {
     loggedInDiv.style.display = 'block';
     loggedOutDiv.style.display = 'none';
     emailSpan.textContent = user.email;
+    if (window.loadCollection) window.loadCollection();
   } else {
     colTab.style.display = 'none';
     loggedInDiv.style.display = 'none';
