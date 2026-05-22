@@ -1364,7 +1364,45 @@ function toggleTier(id) {
 
 // ══ LIGHTBOX ══
 function openLightbox(src, caption) {
-  const lb = document.getElement// ══ SCAN ══
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lb-caption').textContent = caption || '';
+  const q = encodeURIComponent((caption || 'pokemon card').replace(/[#\/]/g,'').trim());
+  document.getElementById('lb-tcg').href = 'https://www.tcgplayer.com/search/pokemon/product?q=' + q;
+  document.getElementById('lb-pc').href  = 'https://www.pricecharting.com/search-products?q=' + q + '+pokemon';
+  lb.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLightbox(); closeScan(); closeProfile(); } });
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.entry-images img, .img-card img').forEach(img => {
+    img.addEventListener('click', () => {
+      const cap = img.closest('.img-card')
+        ? img.closest('.img-card').querySelector('.img-caption')?.textContent
+        : img.nextElementSibling?.textContent || img.alt;
+      openLightbox(img.src, cap || img.alt);
+    });
+  });
+});
+
+// ══ PROFILE MODAL ══
+function openProfile() {
+  document.getElementById('profile-modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeProfile() {
+  document.getElementById('profile-modal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+function handleProfileBackdrop(e) {
+  if (e.target === document.getElementById('profile-modal')) closeProfile();
+}
+
+// ══ SCAN ══
 let stream = null, capturedB64 = null;
 let scanSelectedCard = null, scanQty = 1, scanCondition = 'NM';
 
