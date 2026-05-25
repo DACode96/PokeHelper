@@ -1421,7 +1421,21 @@ function closeLightbox() {
   document.body.style.overflow = '';
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLightbox(); closeScan(); closeProfile(); } });
-document.addEventListener('DOMContentLoaded', () => {
+
+let knownPokemonNames = new Set();
+['mr-mime', 'ho-oh', 'porygon-z', 'porygon2', 'type: null', 'jangmo-o', 'hakamo-o', 'kommo-o', 'farfetch\\'d', 'sirfetch\\'d'].forEach(n => knownPokemonNames.add(n));
+
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1500');
+    const data = await res.json();
+    if (data && data.results) {
+      data.results.forEach(p => knownPokemonNames.add(p.name.toLowerCase()));
+    }
+  } catch(e) {
+    console.warn("Kunne ikke hente Pokemon navne:", e);
+  }
+
   document.querySelectorAll('.entry-images img, .img-card img').forEach(img => {
     img.addEventListener('click', () => {
       const cap = img.closest('.img-card')
@@ -1548,11 +1562,11 @@ function preprocessImage(canvas) {
     for (let i = 0; i < data.length; i += 4) {
       let v = ((data[i] - min) / (max - min)) * 255;
       
-      // Apply contrast curve to make text elements sharper
-      if (v < 110) {
-        v = Math.max(0, v - 30);
-      } else if (v > 145) {
-        v = Math.min(255, v + 30);
+      // Skånsom justering for at bevare tekst
+      if (v < 120) {
+        v = Math.max(0, v - 15);
+      } else {
+        v = Math.min(255, v + 15);
       }
       
       data[i] = v;
@@ -1567,11 +1581,17 @@ function preprocessImage(canvas) {
 function parseOCRText(text) {
   const words = [];
   const numberMatches = [];
+  const detectedPokemonNames = [];
   
+  // Pre-clean text for common OCR number errors (O->0, l->1, I->1) before fraction matching
+  const cleanedText = text.replace(/\b([a-z]{0,4})[OlI]+[\/\\][OlI0-9]{2,}\b/gi, (m) => {
+    return m.replace(/[OlI]/g, '0').replace(/l|I/g, '1'); // basic fix
+  });
+
   // Regex for fractions like 12/102, sv1a/078, tg04/tg30, etc.
   const fractionRegex = /\b([a-z0-9\-]+)\s*[\/\\]\s*([a-z0-9\-]+)\b/gi;
   let match;
-  while ((match = fractionRegex.exec(text)) !== null) {
+  while ((match = fractionRegex.exec(cleanedText)) !== null) {
     numberMatches.push({ number: match[1].toLowerCase(), total: match[2].toLowerCase() });
   }
   
@@ -1591,6 +1611,18 @@ function parseOCRText(text) {
   for (const word of rawWords) {
     if (!stopWords.has(word) && !/^\d+$/.test(word)) {
       words.push(word);
+      // Check if word is a known Pokemon
+      if (knownPokemonNames.has(word)) {
+        detectedPokemonNames.push(word);
+      }
+    }
+  }
+  
+  // Try combined names (e.g., "mr mime")
+  for (let i = 0; i < rawWords.length - 1; i++) {
+    const combined = rawWords[i] + '-' + rawWords[i+1];
+    if (knownPokemonNames.has(combined)) {
+      detectedPokemonNames.push(combined);
     }
   }
   
@@ -1602,14 +1634,16 @@ function parseOCRText(text) {
   
   return {
     words: [...new Set(words)],
-    numberMatches: numberMatches
+    numberMatches: numberMatches,
+    detectedPokemonNames: [...new Set(detectedPokemonNames)]
   };
 }
 
 async function searchCards(parsed) {
   let results = [];
+  const pokemonMatch = parsed.detectedPokemonNames.length > 0 ? parsed.detectedPokemonNames[0] : null;
   
-  // Strategy 1: Search by card number first
+  // Strategy 1: Search by pokemon name + card number (Extremely accurate)
   if (parsed.numberMatches.length > 0) {
     for (const numMatch of parsed.numberMatches.slice(0, 2)) {
       const nums = [numMatch.number];
@@ -1618,9 +1652,15 @@ async function searchCards(parsed) {
         const stripped = numMatch.number.replace(/^0+/, '');
         if (stripped && !nums.includes(stripped)) nums.push(stripped);
       }
+      
       for (const numStr of nums) {
         try {
-          const res = await fetch(`https://api.pokemontcg.io/v2/cards?q=number:"${numStr}"&pageSize=250`);
+          // If we found a pokemon name, require it! Otherwise just search number.
+          const query = pokemonMatch 
+            ? `name:"${pokemonMatch}" number:"${numStr}"`
+            : `number:"${numStr}"`;
+            
+          const res = await fetch(`https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(query)}&pageSize=250`);
           const data = await res.json();
           if (data && data.data && data.data.length > 0) {
             results = results.concat(data.data);
@@ -1640,21 +1680,42 @@ async function searchCards(parsed) {
     return true;
   });
   
-  // Strategy 2: If no results, search by name keywords
+  // Strategy 2: If no results, search by detected Pokemon name
+  if (results.length === 0 && pokemonMatch) {
+    try {
+      const res = await fetch(`https://api.pokemontcg.io/v2/cards?q=name:"${pokemonMatch}"&pageSize=50`);
+      const data = await res.json();
+      if (data && data.data && data.data.length > 0) {
+        results = data.data;
+      }
+    } catch (err) {
+      console.error(`Fejl under søgning på ordet "${pokemonMatch}":`, err);
+    }
+  }
+  
+  // Strategy 3: Global fallback search for the longest words
   if (results.length === 0 && parsed.words.length > 0) {
     const sortedWords = [...parsed.words].sort((a, b) => b.length - a.length);
-    for (const word of sortedWords.slice(0, 3)) {
+    for (const word of sortedWords.slice(0, 2)) {
       try {
-        const res = await fetch(`https://api.pokemontcg.io/v2/cards?q=name:"${word}"&pageSize=50`);
+        // Global search instead of strict name search
+        const res = await fetch(`https://api.pokemontcg.io/v2/cards?q="${word}"&pageSize=25`);
         const data = await res.json();
         if (data && data.data && data.data.length > 0) {
-          results = data.data;
-          break;
+          results = results.concat(data.data);
         }
       } catch (err) {
         console.error(`Fejl under søgning på ordet "${word}":`, err);
       }
     }
+    
+    // Deduplicate again for strategy 3
+    const fallbackSeen = new Set();
+    results = results.filter(card => {
+      if (fallbackSeen.has(card.id)) return false;
+      fallbackSeen.add(card.id);
+      return true;
+    });
   }
   
   return results;
