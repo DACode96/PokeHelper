@@ -280,6 +280,38 @@ footer strong{color:var(--gold);font-weight:500;}
 .scan-hint{color:rgba(255,255,255,.6);font-size:.82em;text-align:center;max-width:340px;line-height:1.6;}
 .scan-hint strong{color:rgba(255,255,255,.9);}
 .scan-viewfinder{position:relative;width:100%;max-width:360px;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:3/4;}
+
+/* ═══ CAMERA SELECTOR ═══ */
+.cam-switch-btn{
+  position:absolute;top:10px;right:10px;z-index:10;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.25);border-radius:20px;
+  color:#fff;font-size:.7em;letter-spacing:1px;
+  padding:5px 10px 5px 8px;cursor:pointer;
+  display:flex;align-items:center;gap:5px;
+  transition:background .15s;
+}
+.cam-switch-btn:hover{background:rgba(0,0,0,.75);}
+.cam-switch-btn svg{flex-shrink:0;}
+.cam-selector-wrap{
+  width:100%;max-width:360px;
+  overflow-x:auto;scrollbar-width:none;
+  display:flex;gap:6px;padding:6px 2px 2px;
+  -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x mandatory;
+}
+.cam-selector-wrap::-webkit-scrollbar{display:none;}
+.cam-pill{
+  flex:0 0 auto;scroll-snap-align:start;
+  padding:6px 12px;border-radius:20px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.07);
+  color:rgba(255,255,255,.65);font-size:.7em;letter-spacing:.5px;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+  font-family:'DM Sans',sans-serif;
+}
+.cam-pill.active{background:var(--gold);color:#000;border-color:var(--gold);font-weight:700;}
+.cam-pill:hover:not(.active){background:rgba(255,255,255,.14);color:#fff;}
 #scan-video{width:100%;height:100%;object-fit:cover;display:block;}
 .scan-frame{position:absolute;inset:12px;pointer-events:none;}
 .scan-corner{position:absolute;width:22px;height:22px;border-color:var(--gold);border-style:solid;}
@@ -1198,12 +1230,19 @@ footer strong{color:var(--gold);font-weight:500;}
       <p class="scan-hint">Hold kortet <strong>fladt og i godt lys</strong>, og tryk på knappen for at tage billede.</p>
       <div class="scan-viewfinder">
         <video id="scan-video" autoplay playsinline muted></video>
+        <!-- Camera switch shortcut (top-right overlay) -->
+        <button id="cam-switch-btn" class="cam-switch-btn" onclick="cycleCameras()" style="display:none;" aria-label="Skift kamera">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.5 9A9 9 0 005.2 5.2L1 10M23 14l-4.2 4.8A9 9 0 013.5 15"/></svg>
+          <span id="cam-switch-label">Skift</span>
+        </button>
         <div class="scan-frame">
           <div class="scan-corner tl"></div><div class="scan-corner tr"></div>
           <div class="scan-corner bl"></div><div class="scan-corner br"></div>
           <div class="scan-laser"></div>
         </div>
       </div>
+      <!-- Camera selector pills (shown when multiple cameras detected) -->
+      <div id="cam-selector-wrap" class="cam-selector-wrap" style="display:none;" role="group" aria-label="Vælg kamera"></div>
       <p id="scan-cam-error" class="scan-hint" style="display:none;color:#e74c3c;"></p>
     </div>
     <div id="snap-btn-wrap" style="display:flex;justify-content:center;margin:4px 0;">
@@ -1479,16 +1518,109 @@ async function openScan() {
   await startCamera();
 }
 
-async function startCamera() {
+// ── Multi-camera support ──
+let availableCameras = [];   // { deviceId, label, facing }
+let activeCameraIndex = -1;  // index into availableCameras
+
+// Friendly label for a camera based on its raw label / index
+function friendlyCamLabel(raw, idx, total) {
+  const l = (raw || '').toLowerCase();
+  if (l.includes('ultra') || l.includes('wide'))      return '🔭 Ultravidvinkel';
+  if (l.includes('front') || l.includes('selfie'))    return '🤳 Front';
+  if (l.includes('tele') || l.includes('zoom') || l.includes('periscope')) {
+    const m = l.match(/(\d+(?:\.\d+)?)x/);
+    return m ? `🔍 Zoom ${m[1]}×` : '🔍 Zoom';
+  }
+  if (l.includes('back') || l.includes('rear') || l.includes('environment')) return '📷 Hoved';
+  if (l.includes('macro'))                             return '🔬 Makro';
+  return total > 1 ? `📷 Kamera ${idx + 1}` : '📷 Kamera';
+}
+
+async function enumerateCameras() {
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const videoIn = devices.filter(d => d.kind === 'videoinput');
+    if (!videoIn.length) return;
+
+    // Build list with friendly names
+    availableCameras = videoIn.map((d, i) => ({
+      deviceId: d.deviceId,
+      label: friendlyCamLabel(d.label, i, videoIn.length),
+      raw: d.label
+    }));
+
+    // Find index matching the currently active track
+    if (stream) {
+      const activeId = stream.getVideoTracks()[0]?.getSettings()?.deviceId;
+      const idx = availableCameras.findIndex(c => c.deviceId === activeId);
+      activeCameraIndex = idx !== -1 ? idx : 0;
+    }
+
+    renderCameraSelector();
+  } catch(e) {
+    console.warn('enumerateCameras:', e);
+  }
+}
+
+function renderCameraSelector() {
+  const wrap  = document.getElementById('cam-selector-wrap');
+  const swBtn = document.getElementById('cam-switch-btn');
+  const swLbl = document.getElementById('cam-switch-label');
+  if (!wrap) return;
+
+  if (availableCameras.length <= 1) {
+    wrap.style.display = 'none';
+    if (swBtn) swBtn.style.display = 'none';
+    return;
+  }
+
+  // Show both the pill row and the overlay switch button
+  wrap.style.display = 'flex';
+  if (swBtn) {
+    swBtn.style.display = 'flex';
+    const next = availableCameras[(activeCameraIndex + 1) % availableCameras.length];
+    if (swLbl) swLbl.textContent = next.label;
+  }
+
+  wrap.innerHTML = availableCameras.map((cam, i) =>
+    `<button class="cam-pill${i === activeCameraIndex ? ' active' : ''}" onclick="selectCamera(${i})" aria-pressed="${i === activeCameraIndex}">${cam.label}</button>`
+  ).join('');
+}
+
+async function selectCamera(index) {
+  if (index === activeCameraIndex) return;
+  activeCameraIndex = index;
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  await startCamera(availableCameras[index].deviceId);
+  renderCameraSelector();
+}
+
+function cycleCameras() {
+  if (availableCameras.length <= 1) return;
+  selectCamera((activeCameraIndex + 1) % availableCameras.length);
+}
+
+async function startCamera(deviceId = null) {
   const video = document.getElementById('scan-video');
-  const err = document.getElementById('scan-cam-error');
+  const err   = document.getElementById('scan-cam-error');
   err.style.display = 'none';
   video.style.display = 'block';
+
+  // Build constraints — prefer deviceId if given, else ask for back camera
+  const videoConstraints = deviceId
+    ? { deviceId: { exact: deviceId }, width: { ideal: 1920 }, height: { ideal: 1080 } }
+    : { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } };
+
   try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }
-    });
+    stream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints });
     video.srcObject = stream;
+
+    // First open: enumerate all cameras so the selector can be built
+    if (availableCameras.length === 0) {
+      await enumerateCameras();
+    } else {
+      renderCameraSelector();
+    }
   } catch(e) {
     video.style.display = 'none';
     document.getElementById('snap-btn-wrap').style.display = 'none';
