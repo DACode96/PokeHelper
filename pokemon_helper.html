@@ -313,19 +313,40 @@ footer strong{color:var(--gold);font-weight:500;}
 .cam-pill.active{background:var(--gold);color:#000;border-color:var(--gold);font-weight:700;}
 .cam-pill:hover:not(.active){background:rgba(255,255,255,.14);color:#fff;}
 #scan-video{width:100%;height:100%;object-fit:cover;display:block;}
-.scan-frame{position:absolute;inset:12px;pointer-events:none;}
-.scan-corner{position:absolute;width:22px;height:22px;border-color:var(--gold);border-style:solid;}
-.scan-corner.tl{top:0;left:0;border-width:3px 0 0 3px;border-radius:4px 0 0 0;}
-.scan-corner.tr{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 4px 0 0;}
-.scan-corner.bl{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 4px;}
-.scan-corner.br{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 4px 0;}
-.scan-laser{position:absolute;left:12px;right:12px;height:2px;background:var(--gold);box-shadow:0 0 10px var(--gold);border-radius:50%;animation:laser 2s infinite ease-in-out;pointer-events:none;}
+.scan-frame{
+  position:absolute;inset:5% 7%;pointer-events:none;border:3px solid var(--gold);border-radius:12px;
+  box-shadow:0 0 0 999px rgba(0,0,0,.2),0 0 18px rgba(226,187,113,.45);
+  transition:border-color .2s,box-shadow .2s;
+}
+.scan-frame::after{
+  content:'PLACÉR HELE KORTET I RAMMEN';position:absolute;left:50%;bottom:8px;transform:translateX(-50%);
+  color:#fff;background:rgba(0,0,0,.7);padding:4px 8px;border-radius:4px;font-size:.56em;
+  letter-spacing:1px;white-space:nowrap;font-weight:700;
+}
+.scan-frame.ready{border-color:var(--green);box-shadow:0 0 0 999px rgba(0,0,0,.18),0 0 20px rgba(52,211,153,.5);}
+.scan-frame.ready::after{content:'KAMERA KLAR — HOLD KORTET I RAMMEN';background:rgba(5,90,65,.86);}
+.scan-corner{display:none;}
+.scan-laser{position:absolute;left:3%;right:3%;height:2px;background:var(--gold);box-shadow:0 0 10px var(--gold);border-radius:50%;animation:laser 2s infinite ease-in-out;pointer-events:none;}
 @keyframes laser{0%{top:10%;opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{top:90%;opacity:0;}}
 .scan-snap-btn{background:#fff;border:none;border-radius:50%;width:70px;height:70px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.5);transition:transform .1s;}
 .scan-snap-btn:active{transform:scale(.88);}
 .scan-snap-inner{width:52px;height:52px;border-radius:50%;background:var(--ink);border:3px solid rgba(255,255,255,.6);}
+.scan-source-choice{display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0 2px;}
+.scan-source-choice::before,.scan-source-choice::after{content:'';width:32px;height:1px;background:rgba(255,255,255,.16);}
+.scan-file-btn{
+  background:rgba(255,255,255,.08);color:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.22);
+  border-radius:8px;padding:9px 14px;font-family:'DM Sans',sans-serif;font-size:.74em;cursor:pointer;
+}
+.scan-file-btn:hover{border-color:var(--gold);color:#fff;}
 .scan-preview-img-wrap{width:100%;max-width:360px;border-radius:12px;overflow:hidden;border:2px solid rgba(255,255,255,.15);}
 .scan-preview-img-wrap img{width:100%;display:block;max-height:300px;object-fit:contain;background:#111;}
+.scan-quality{max-width:360px;margin:9px auto 0;padding:8px 10px;border-radius:7px;font-size:.72em;line-height:1.45;text-align:center;}
+.scan-quality.good{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);color:#6ee7b7;}
+.scan-quality.warn{background:rgba(226,187,113,.12);border:1px solid rgba(226,187,113,.3);color:#f5d999;}
+.scan-match-confidence{font-size:.7em;line-height:1.45;padding:8px 10px;border-radius:7px;margin:0 16px 12px;text-align:center;}
+.scan-match-confidence.high{background:rgba(52,211,153,.12);color:#6ee7b7;border:1px solid rgba(52,211,153,.28);}
+.scan-match-confidence.medium{background:rgba(226,187,113,.12);color:#f5d999;border:1px solid rgba(226,187,113,.28);}
+.scan-match-confidence.low{background:rgba(248,113,113,.1);color:#fca5a5;border:1px solid rgba(248,113,113,.25);}
 .scan-action-btn{padding:12px 22px;border-radius:8px;font-family:'Bebas Neue',cursive;font-size:1.05em;letter-spacing:2px;cursor:pointer;border:none;transition:transform .1s,opacity .15s;}
 .scan-action-btn:active{transform:scale(.96);}
 .scan-action-btn.primary{background:var(--gold);color:#fff;}
@@ -397,7 +418,6 @@ footer strong{color:var(--gold);font-weight:500;}
 .scan-search-btn:active{opacity:.8;}
 .scan-search-btn.tcg{background:#e74c3c;color:#fff;}
 .scan-search-btn.cm{background:var(--gold);color:#fff;}
-#scan-canvas{display:none;}
 
 /* ═══ COLLECTION PAGE ═══ */
 .ls-warning{
@@ -739,12 +759,12 @@ footer strong{color:var(--gold);font-weight:500;}
         <div class="entry-value">35–600 kr.<small>afhænger af korttype og popularitet</small></div>
       </div>
       <div class="entry-images">
-        <img src="https://images.pokemontcg.io/bw3/98_hires.png" alt="Full Art N" loading="lazy"><div class="img-caption">N (Full Art)</div>
-        <img src="https://images.pokemontcg.io/bw6/99_hires.png" alt="Full Art Skyla" loading="lazy"><div class="img-caption">Skyla (Full Art)</div>
+        <img src="https://images.pokemontcg.io/bw3/101_hires.png" alt="Full Art N" loading="lazy"><div class="img-caption">N (Full Art)</div>
+        <img src="https://images.pokemontcg.io/bw7/149_hires.png" alt="Full Art Skyla" loading="lazy"><div class="img-caption">Skyla (Full Art)</div>
       </div>
       <div class="entry-images-mobile">
-        <div class="img-card"><img src="https://images.pokemontcg.io/bw3/98_hires.png" alt="Full Art N" loading="lazy"><div class="img-caption">N (Full Art)</div></div>
-        <div class="img-card"><img src="https://images.pokemontcg.io/bw6/99_hires.png" alt="Full Art Skyla" loading="lazy"><div class="img-caption">Skyla (Full Art)</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/bw3/101_hires.png" alt="Full Art N" loading="lazy"><div class="img-caption">N (Full Art)</div></div>
+        <div class="img-card"><img src="https://images.pokemontcg.io/bw7/149_hires.png" alt="Full Art Skyla" loading="lazy"><div class="img-caption">Skyla (Full Art)</div></div>
       </div>
     </div>
   </div>
@@ -866,7 +886,7 @@ footer strong{color:var(--gold);font-weight:500;}
 </div><!-- /container -->
 
 <footer>
-  <p>Kortbilleder via <strong>pokemontcg.io</strong> — officiel åben kort database api.</p>
+  <p>Kortbilleder via <strong>pokemontcg.io</strong> — åben kortdatabase.</p>
   <p>Prisdata via <strong>Cardmarket.com</strong> (EUR → DKK ved fast kurs 7.46).</p>
   <p style="margin-top:10px;font-size:.85em;">Pokémon and related names are trademarks of Nintendo / Creatures Inc. / GAME FREAK inc.</p>
 </footer>
@@ -1207,27 +1227,27 @@ footer strong{color:var(--gold);font-weight:500;}
     <span class="scan-header-title">📷 SCAN KORT</span>
     <!-- OCR Mode Toggle -->
     <div class="ocr-toggle" role="group" aria-label="OCR metode">
-      <button class="ocr-btn active" id="btn-tesseract" onclick="setOcrMode('tesseract')" title="Offline — virker uden internet">🔬 Offline</button>
-      <button class="ocr-btn" id="btn-vision" onclick="setOcrMode('vision')" title="Google Cloud Vision — kræver API-nøgle">☁️ Online</button>
+      <button class="ocr-btn active" id="btn-tesseract" onclick="setOcrMode('tesseract')" title="OCR sker på enheden. Kortopslag kræver internet.">📱 På enheden</button>
+      <button class="ocr-btn" id="btn-vision" onclick="setOcrMode('vision')" title="Google Cloud Vision — kræver API-nøgle">☁️ Cloud OCR</button>
     </div>
     <button class="scan-close-btn" onclick="closeScan()" aria-label="Luk scanner">✕ LUK</button>
   </div>
 
   <!-- Cloud Vision API Key Panel -->
   <div id="cv-key-panel" class="cv-key-panel" style="display:none;">
-    <p>Google Cloud Vision kræver en gratis API-nøgle. <a href="https://cloud.google.com/vision/docs/setup" target="_blank">Hent nøgle her →</a></p>
+    <p>Cloud OCR kræver et Google Cloud-projekt med Vision API og fakturering. Nøglen gemmes kun på denne enhed; begræns den til Vision API og dette website. <a href="https://cloud.google.com/vision/docs/setup" target="_blank">Opsætning →</a></p>
     <div style="display:flex;gap:6px;">
       <input id="cv-api-input" type="password" class="scan-manual-input" placeholder="Indsæt din API-nøgle..." style="flex:1;padding:9px 12px;font-size:.82em;">
       <button onclick="saveCVKey()" class="scan-action-btn primary" style="padding:9px 16px;font-size:.82em;">GEM</button>
     </div>
-    <div id="cv-key-status" style="margin-top:6px;font-size:.7em;color:var(--green);display:none;">✅ Nøgle gemt</div>
+    <div id="cv-key-status" style="margin-top:6px;font-size:.7em;color:var(--green);display:none;">✅ Nøgle gemt på denne enhed</div>
   </div>
 
   <div class="scan-body">
 
     <!-- Step 1: Viewfinder -->
     <div id="scan-viewfinder-wrap">
-      <p class="scan-hint">Hold kortet <strong>fladt og i godt lys</strong>, og tryk på knappen for at tage billede.</p>
+      <p class="scan-hint">Hold kortet <strong>fladt og i godt lys</strong>. Sørg for at alle fire kanter er inde i rammen.</p>
       <div class="scan-viewfinder">
         <video id="scan-video" autoplay playsinline muted></video>
         <!-- Camera switch shortcut (top-right overlay) -->
@@ -1235,7 +1255,7 @@ footer strong{color:var(--gold);font-weight:500;}
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.5 9A9 9 0 005.2 5.2L1 10M23 14l-4.2 4.8A9 9 0 013.5 15"/></svg>
           <span id="cam-switch-label">Skift</span>
         </button>
-        <div class="scan-frame">
+        <div class="scan-frame" id="scan-card-frame">
           <div class="scan-corner tl"></div><div class="scan-corner tr"></div>
           <div class="scan-corner bl"></div><div class="scan-corner br"></div>
           <div class="scan-laser"></div>
@@ -1248,11 +1268,16 @@ footer strong{color:var(--gold);font-weight:500;}
     <div id="snap-btn-wrap" style="display:flex;justify-content:center;margin:4px 0;">
       <button class="scan-snap-btn" onclick="snapCard()" aria-label="Tag billede"><div class="scan-snap-inner"></div></button>
     </div>
+    <div id="scan-upload-wrap" class="scan-source-choice">
+      <input id="scan-file-input" type="file" accept="image/*" capture="environment" style="display:none;" onchange="handleImageUpload(event)">
+      <button class="scan-file-btn" onclick="document.getElementById('scan-file-input').click()">🖼 Vælg et foto</button>
+    </div>
 
     <!-- Step 2: Preview — FIXED (was skipped in old version) -->
     <div id="scan-preview-wrap" style="display:none;">
-      <p class="scan-hint">Er kortet skarpt og godt oplyst? Tryk <strong>Analysér</strong> eller tag om.</p>
+      <p class="scan-hint">Det markerede kortområde er rettet op og bruges til genkendelsen.</p>
       <div class="scan-preview-img-wrap"><img id="scan-preview-img" src="" alt="Preview"></div>
+      <div id="scan-quality" class="scan-quality"></div>
       <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;">
         <button class="scan-action-btn outline" onclick="retakePhoto()">↩ Tag om</button>
         <button class="scan-action-btn primary" id="analyse-btn" onclick="analyseCard()">🔍 Analysér Kort</button>
@@ -1282,6 +1307,7 @@ footer strong{color:var(--gold);font-weight:500;}
             <div id="scan-price-cat" class="price-cat"></div>
           </div>
         </div>
+        <div id="scan-match-confidence" class="scan-match-confidence"></div>
         <div class="scan-result-actions">
           <button class="scan-action-btn primary" id="scan-save-btn" onclick="saveCurrentCard()">💾 Gem i Samling</button>
           <button class="scan-action-btn outline" onclick="toggleAlternatives()" id="show-alts-btn">🔄 Forkert kort? Se andre</button>
@@ -1304,12 +1330,14 @@ footer strong{color:var(--gold);font-weight:500;}
           <a id="scan-tcg-btn" href="#" target="_blank" class="scan-search-btn tcg">🔍 TCGplayer</a>
           <a id="scan-cm-btn" href="#" target="_blank" class="scan-search-btn cm">💰 Cardmarket</a>
         </div>
+        <div class="scan-source-choice">
+          <button class="scan-file-btn" onclick="document.getElementById('scan-file-input').click()">🖼 Prøv med et foto</button>
+        </div>
         <button class="scan-action-btn outline" style="margin:14px auto;display:block;" onclick="retakePhoto()">📷 Prøv igen</button>
       </div>
 
     </div><!-- /scan-result -->
 
-    <canvas id="scan-canvas" style="display:none;"></canvas>
   </div><!-- /scan-body -->
 </div><!-- /scan-modal -->
 
@@ -1496,13 +1524,15 @@ async function loadPokemonNames() {
 // ══════════════════════════════════════════
 //  SCAN FLOW
 // ══════════════════════════════════════════
-let stream = null, capturedB64 = null;
-let scanSelectedCard = null, scanCondition = 'NM';
+let stream = null, capturedB64 = null, capturedCardCanvas = null;
+let scanSelectedCard = null;
 let altCards = [];
+let lastScanConfidence = null;
 
 function setScanState(s) {
   document.getElementById('scan-viewfinder-wrap').style.display = s === 'viewfinder' ? 'block' : 'none';
   document.getElementById('snap-btn-wrap').style.display        = s === 'viewfinder' ? 'flex'  : 'none';
+  document.getElementById('scan-upload-wrap').style.display      = s === 'viewfinder' ? 'flex'  : 'none';
   document.getElementById('scan-preview-wrap').style.display    = s === 'preview'    ? 'block' : 'none';
   document.getElementById('scan-processing').style.display      = s === 'processing' ? 'flex'  : 'none';
   document.getElementById('scan-result').style.display          = s === 'result'     ? 'block' : 'none';
@@ -1515,6 +1545,7 @@ async function openScan() {
   document.getElementById('scan-result-found').style.display = 'none';
   document.getElementById('scan-result-manual').style.display = 'none';
   document.getElementById('scan-alts-wrap').style.display = 'none';
+  document.getElementById('scan-card-frame')?.classList.remove('ready');
   await startCamera();
 }
 
@@ -1613,7 +1644,13 @@ async function startCamera(deviceId = null) {
 
   try {
     stream = await navigator.mediaDevices.getUserMedia({ video: videoConstraints });
+    if (capturedCardCanvas) {
+      stopCamera();
+      return;
+    }
     video.srcObject = stream;
+    await video.play().catch(() => {});
+    document.getElementById('scan-card-frame')?.classList.add('ready');
 
     // First open: enumerate all cameras so the selector can be built
     if (availableCameras.length === 0) {
@@ -1622,99 +1659,336 @@ async function startCamera(deviceId = null) {
       renderCameraSelector();
     }
   } catch(e) {
+    if (capturedCardCanvas) return;
     video.style.display = 'none';
     document.getElementById('snap-btn-wrap').style.display = 'none';
     err.style.display = 'block';
-    err.textContent = '⚠️ Kameraet kunne ikke åbnes. Giv kameratilladelse i din browser, eller brug manuel søgning nedenfor.';
+    err.textContent = '⚠️ Kameraet kunne ikke åbnes. Du kan stadig vælge et foto fra telefonen.';
     setScanState('result');
-    showManualSearch('', 'Kamera utilgængeligt — søg manuelt:');
+    showManualSearch('', 'Kamera utilgængeligt — vælg et foto eller søg manuelt:');
   }
+}
+
+function stopCamera() {
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  const video = document.getElementById('scan-video');
+  if (video) video.srcObject = null;
 }
 
 function closeScan() {
   document.getElementById('scan-modal').classList.remove('active');
   document.body.style.overflow = '';
-  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-  const v = document.getElementById('scan-video');
-  if (v) v.srcObject = null;
+  stopCamera();
   capturedB64 = null;
+  capturedCardCanvas = null;
+  const fileInput = document.getElementById('scan-file-input');
+  if (fileInput) fileInput.value = '';
 }
 
-// FIXED: snapCard now shows preview — does NOT call analyseCard() directly
-function snapCard() {
-  const video = document.getElementById('scan-video');
-  const canvas = document.getElementById('scan-canvas');
-  if (!video || !canvas) return;
-  canvas.width  = video.videoWidth  || 1280;
-  canvas.height = video.videoHeight || 720;
-  canvas.getContext('2d').drawImage(video, 0, 0);
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+function centerCardRect(width, height) {
+  const cardRatio = 63 / 88;
+  let cropW = width, cropH = height;
+  if (width / height > cardRatio) cropW = height * cardRatio;
+  else cropH = width / cardRatio;
+  return { x: (width - cropW) / 2, y: (height - cropH) / 2, width: cropW, height: cropH };
+}
+
+// Find an axis-aligned card on a contrasting background. Camera captures already
+// use the on-screen frame; this primarily helps photos chosen from the gallery.
+function detectCardRect(src) {
+  const cardRatio = 63 / 88;
+  const sourceRatio = src.width / src.height;
+  if (Math.abs(sourceRatio - cardRatio) < 0.018) {
+    return { x: 0, y: 0, width: src.width, height: src.height, detected: true };
+  }
+
+  const maxW = 260;
+  const scale = Math.min(1, maxW / src.width);
+  const w = Math.max(1, Math.round(src.width * scale));
+  const h = Math.max(1, Math.round(src.height * scale));
+  const probe = document.createElement('canvas');
+  probe.width = w; probe.height = h;
+  const pctx = probe.getContext('2d', { willReadFrequently: true });
+  pctx.drawImage(src, 0, 0, w, h);
+  const pixels = pctx.getImageData(0, 0, w, h).data;
+  const colorAt = (x, y) => {
+    x = Math.max(0, Math.min(w - 1, Math.round(x)));
+    y = Math.max(0, Math.min(h - 1, Math.round(y)));
+    const i = (y * w + x) * 4;
+    return [pixels[i], pixels[i + 1], pixels[i + 2]];
+  };
+  const grayAt = (x, y) => {
+    const [r, g, b] = colorAt(x, y);
+    return r * .299 + g * .587 + b * .114;
+  };
+  const cornerPoints = [
+    [w * .04, h * .04], [w * .96, h * .04],
+    [w * .04, h * .96], [w * .96, h * .96]
+  ];
+  const background = [0, 1, 2].map(channel =>
+    cornerPoints.reduce((sum, point) => sum + colorAt(point[0], point[1])[channel], 0) / cornerPoints.length
+  );
+  const rowCounts = new Uint16Array(h);
+  const colCounts = new Uint16Array(w);
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const color = colorAt(x, y);
+      const distance = Math.hypot(
+        color[0] - background[0], color[1] - background[1], color[2] - background[2]
+      );
+      if (distance > 34) {
+        rowCounts[y]++;
+        colCounts[x]++;
+      }
+    }
+  }
+  const activeRows = [...rowCounts.keys()].filter(y => rowCounts[y] > w * .16);
+  const activeCols = [...colCounts.keys()].filter(x => colCounts[x] > h * .16);
+  if (activeRows.length && activeCols.length) {
+    const top = activeRows[0], bottom = activeRows[activeRows.length - 1];
+    const left = activeCols[0], right = activeCols[activeCols.length - 1];
+    const fgW = right - left + 1, fgH = bottom - top + 1;
+    const fgRatio = fgW / fgH;
+    const heightFraction = fgH / h;
+    if (fgRatio > .55 && fgRatio < .86 && heightFraction > .38 && heightFraction < .96) {
+      const pad = Math.max(1, Math.round(fgW * .012));
+      return {
+        x: Math.max(0, (left - pad) / scale),
+        y: Math.max(0, (top - pad) / scale),
+        width: Math.min(w - left + pad, fgW + pad * 2) / scale,
+        height: Math.min(h - top + pad, fgH + pad * 2) / scale,
+        detected: true
+      };
+    }
+  }
+  const foregroundCoverage = (x, y, rw, rh) => {
+    let foreground = 0, count = 0;
+    for (let gy = 1; gy < 14; gy++) {
+      for (let gx = 1; gx < 10; gx++) {
+        const color = colorAt(x + rw * gx / 10, y + rh * gy / 14);
+        const distance = Math.hypot(
+          color[0] - background[0], color[1] - background[1], color[2] - background[2]
+        );
+        if (distance > 34) foreground++;
+        count++;
+      }
+    }
+    return foreground / count;
+  };
+  const edgeScore = (x, y, rw, rh) => {
+    const gap = Math.max(2, Math.round(Math.min(rw, rh) * .025));
+    let score = 0, count = 0;
+    const steps = 28;
+    for (let i = 1; i < steps; i++) {
+      const t = i / steps;
+      const px = x + rw * t, py = y + rh * t;
+      score += Math.abs(grayAt(px, y + gap) - grayAt(px, y - gap));
+      score += Math.abs(grayAt(px, y + rh - gap) - grayAt(px, y + rh + gap));
+      score += Math.abs(grayAt(x + gap, py) - grayAt(x - gap, py));
+      score += Math.abs(grayAt(x + rw - gap, py) - grayAt(x + rw + gap, py));
+      count += 4;
+    }
+    return score / count;
+  };
+
+  let best = null;
+  for (let hf = .52; hf <= .94; hf += .06) {
+    const rh = h * hf;
+    const rw = rh * cardRatio;
+    if (rw > w * .96) continue;
+    for (const xShift of [-.12, -.06, 0, .06, .12]) {
+      for (const yShift of [-.10, -.05, 0, .05, .10]) {
+        const x = (w - rw) / 2 + xShift * w;
+        const y = (h - rh) / 2 + yShift * h;
+        if (x < 3 || y < 3 || x + rw > w - 3 || y + rh > h - 3) continue;
+        const border = edgeScore(x, y, rw, rh);
+        const coverage = foregroundCoverage(x, y, rw, rh);
+        const centrality = 1 - Math.min(1, Math.hypot(xShift, yShift) * 2.5);
+        const candidate = {
+          x, y, width: rw, height: rh,
+          score: border + coverage * 20 + centrality * 2
+        };
+        if (!best || candidate.score > best.score) best = candidate;
+      }
+    }
+  }
+
+  if (!best || best.score < 12) return { ...centerCardRect(src.width, src.height), detected: false };
+  return {
+    x: best.x / scale, y: best.y / scale,
+    width: best.width / scale, height: best.height / scale,
+    detected: true
+  };
+}
+
+function normaliseCardCanvas(src, detectBounds = false) {
+  const rect = detectBounds ? detectCardRect(src) : centerCardRect(src.width, src.height);
+  const dst = document.createElement('canvas');
+  dst.width = 630; dst.height = 880;
+  dst.getContext('2d').drawImage(
+    src, rect.x, rect.y, rect.width, rect.height,
+    0, 0, dst.width, dst.height
+  );
+  dst.dataset.boundsDetected = rect.detected === false ? 'false' : 'true';
+  return dst;
+}
+
+function imageQuality(canvas) {
+  const probe = document.createElement('canvas');
+  probe.width = 180;
+  probe.height = Math.round(180 * canvas.height / canvas.width);
+  const ctx = probe.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(canvas, 0, 0, probe.width, probe.height);
+  const { data } = ctx.getImageData(0, 0, probe.width, probe.height);
+  const lum = new Float32Array(probe.width * probe.height);
+  let mean = 0;
+  for (let p = 0, i = 0; i < data.length; i += 4, p++) {
+    lum[p] = data[i] * .299 + data[i + 1] * .587 + data[i + 2] * .114;
+    mean += lum[p];
+  }
+  mean /= lum.length;
+  let lapMean = 0, lapSq = 0, count = 0;
+  for (let y = 1; y < probe.height - 1; y += 2) {
+    for (let x = 1; x < probe.width - 1; x += 2) {
+      const i = y * probe.width + x;
+      const lap = 4 * lum[i] - lum[i - 1] - lum[i + 1] - lum[i - probe.width] - lum[i + probe.width];
+      lapMean += lap; lapSq += lap * lap; count++;
+    }
+  }
+  const variance = lapSq / count - Math.pow(lapMean / count, 2);
+  const issues = [];
+  if (mean < 45) issues.push('billedet er for mørkt');
+  if (mean > 235) issues.push('billedet er overbelyst');
+  if (variance < 85) issues.push('teksten ser uskarp ud');
+  if (canvas.dataset.boundsDetected === 'false') issues.push('kortets kanter kunne ikke findes sikkert');
+  return { good: issues.length === 0, issues, mean, sharpness: variance };
+}
+
+function useCapturedCanvas(canvas) {
+  capturedCardCanvas = canvas;
+  const dataUrl = canvas.toDataURL('image/jpeg', .94);
   capturedB64 = dataUrl.split(',')[1];
   document.getElementById('scan-preview-img').src = dataUrl;
-  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-  video.srcObject = null;
-  // Show preview for user to verify — DO NOT skip!
+  const quality = imageQuality(canvas);
+  const qualityEl = document.getElementById('scan-quality');
+  qualityEl.className = 'scan-quality ' + (quality.good ? 'good' : 'warn');
+  qualityEl.textContent = quality.good
+    ? '✅ Kortets kanter er fundet, og billedet er klar til analyse.'
+    : '⚠️ Du kan fortsætte, men ' + quality.issues.join(' og ') + '. Et nyt foto vil ofte give et bedre match.';
+  stopCamera();
   setScanState('preview');
+}
+
+function captureFramedVideo(video) {
+  const frame = document.getElementById('scan-card-frame');
+  const viewfinder = video.closest('.scan-viewfinder');
+  const videoRect = viewfinder.getBoundingClientRect();
+  const frameRect = frame.getBoundingClientRect();
+  const vw = video.videoWidth, vh = video.videoHeight;
+  const scale = Math.max(videoRect.width / vw, videoRect.height / vh);
+  const displayedW = vw * scale, displayedH = vh * scale;
+  const hiddenX = (displayedW - videoRect.width) / 2;
+  const hiddenY = (displayedH - videoRect.height) / 2;
+  const sx = (hiddenX + frameRect.left - videoRect.left) / scale;
+  const sy = (hiddenY + frameRect.top - videoRect.top) / scale;
+  const sw = frameRect.width / scale;
+  const sh = frameRect.height / scale;
+  const raw = document.createElement('canvas');
+  raw.width = Math.max(1, Math.round(sw));
+  raw.height = Math.max(1, Math.round(sh));
+  raw.getContext('2d').drawImage(video, sx, sy, sw, sh, 0, 0, raw.width, raw.height);
+  return raw;
+}
+
+function snapCard() {
+  const video = document.getElementById('scan-video');
+  if (!video?.videoWidth || video.readyState < 2) {
+    alert('Kameraet er ikke klar endnu. Vent et øjeblik eller vælg et foto.');
+    return;
+  }
+  const framed = captureFramedVideo(video);
+  useCapturedCanvas(normaliseCardCanvas(framed));
+}
+
+async function handleImageUpload(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    alert('Vælg venligst et billedformat.');
+    event.target.value = '';
+    return;
+  }
+  if (file.size > 18 * 1024 * 1024) {
+    alert('Billedet er for stort. Vælg et billede under 18 MB.');
+    event.target.value = '';
+    return;
+  }
+  try {
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const img = new Image();
+    img.src = dataUrl;
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = () => reject(new Error('Billedet kunne ikke læses'));
+    });
+    const raw = document.createElement('canvas');
+    const maxSide = 2200;
+    const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+    raw.width = Math.max(1, Math.round(img.naturalWidth * scale));
+    raw.height = Math.max(1, Math.round(img.naturalHeight * scale));
+    raw.getContext('2d').drawImage(img, 0, 0, raw.width, raw.height);
+    useCapturedCanvas(normaliseCardCanvas(raw, true));
+  } catch(e) {
+    alert('Billedet kunne ikke åbnes: ' + e.message);
+  } finally {
+    event.target.value = '';
+  }
 }
 
 function retakePhoto() {
   capturedB64 = null;
+  capturedCardCanvas = null;
   scanSelectedCard = null;
   setScanState('viewfinder');
   startCamera();
 }
 
 // ══════════════════════════════════════════
-//  IMAGE PREPROCESSING (improved)
+//  IMAGE PREPROCESSING
 // ══════════════════════════════════════════
 function preprocessImage(canvas) {
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
   const w = canvas.width, h = canvas.height;
   const imgData = ctx.getImageData(0, 0, w, h);
   const d = imgData.data;
 
-  // 1. Grayscale
+  // Grayscale and conservative contrast stretch. The old 3×3 sharpening pass
+  // created halos around the tiny collector number and often changed 1/7/I.
   for (let i = 0; i < d.length; i += 4) {
     const g = Math.round(0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2]);
     d[i] = d[i+1] = d[i+2] = g;
   }
 
-  // 2. Contrast stretch
   let mn = 255, mx = 0;
   for (let i = 0; i < d.length; i += 4) {
     if (d[i] < mn) mn = d[i];
     if (d[i] > mx) mx = d[i];
   }
-  if (mx > mn) {
-    const range = mx - mn;
+  if (mx - mn > 35) {
+    const low = mn + (mx - mn) * .04;
+    const high = mx - (mx - mn) * .04;
+    const range = Math.max(1, high - low);
     for (let i = 0; i < d.length; i += 4) {
-      const v = Math.round(((d[i] - mn) / range) * 255);
+      const v = Math.round(Math.max(0, Math.min(1, (d[i] - low) / range)) * 255);
       d[i] = d[i+1] = d[i+2] = v;
     }
   }
-
   ctx.putImageData(imgData, 0, 0);
-
-  // 3. Sharpening via convolution (3x3 unsharp mask kernel)
-  const sharpened = ctx.getImageData(0, 0, w, h);
-  const s = sharpened.data;
-  const orig = new Uint8ClampedArray(s);
-  const kernel = [0, -1, 0, -1, 5, -1, 0, -1, 0];
-
-  for (let y = 1; y < h - 1; y++) {
-    for (let x = 1; x < w - 1; x++) {
-      let sum = 0;
-      for (let ky = -1; ky <= 1; ky++) {
-        for (let kx = -1; kx <= 1; kx++) {
-          sum += orig[((y + ky) * w + (x + kx)) * 4] * kernel[(ky + 1) * 3 + (kx + 1)];
-        }
-      }
-      const v = Math.min(255, Math.max(0, sum));
-      const idx = (y * w + x) * 4;
-      s[idx] = s[idx+1] = s[idx+2] = v;
-    }
-  }
-  ctx.putImageData(sharpened, 0, 0);
 }
 
 function scaleCanvas(src, targetW = 1400) {
@@ -1738,37 +2012,85 @@ function cropCanvas(src, yStart, yEnd) {
   return dst;
 }
 
+function buildOCRCanvas(src) {
+  const scaled = scaleCanvas(src, 1400);
+  const titleZone = cropCanvas(scaled, 0, .18);
+  const topZone = cropCanvas(scaled, 0, .37);
+  const botZone = cropCanvas(scaled, .70, 1);
+  const gap = 28;
+  const dst = document.createElement('canvas');
+  dst.width = scaled.width;
+  dst.height = titleZone.height + topZone.height + botZone.height + gap * 2;
+  const ctx = dst.getContext('2d');
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, dst.width, dst.height);
+  ctx.drawImage(titleZone, 0, 0);
+  ctx.drawImage(topZone, 0, titleZone.height + gap);
+  ctx.drawImage(botZone, 0, titleZone.height + gap + topZone.height + gap);
+  preprocessImage(dst);
+  return dst;
+}
+
 // ══════════════════════════════════════════
 //  OCR RUNNERS
 // ══════════════════════════════════════════
+let tesseractWorkerPromise = null;
+let activeOcrProgressCallback = null;
+
+function getTesseractWorker() {
+  if (!tesseractWorkerPromise) {
+    tesseractWorkerPromise = Tesseract.createWorker('eng', 1, {
+      logger: message => {
+        if (message.status === 'recognizing text' && activeOcrProgressCallback) {
+          activeOcrProgressCallback(`Læser korttekst: ${Math.round(message.progress * 100)}%`);
+        }
+      }
+    }).catch(error => {
+      tesseractWorkerPromise = null;
+      throw error;
+    });
+  }
+  return tesseractWorkerPromise;
+}
+
 async function runTesseractOCR(canvas, progressCb) {
-  // Run OCR on top zone (card name) and bottom zone (set number)
-  const topZone = cropCanvas(canvas, 0, 0.30);
-  const botZone = cropCanvas(canvas, 0.75, 1.0);
-
-  if (progressCb) progressCb('Læser kortnavn (1/2)...');
-  const topRes = await Tesseract.recognize(topZone, 'eng', {
-    logger: m => { if (m.status === 'recognizing text' && progressCb) progressCb(`Kortnavn: ${Math.round(m.progress*100)}%`); }
+  const ocrCanvas = buildOCRCanvas(canvas);
+  if (progressCb) progressCb('Læser navn og kortnummer...');
+  activeOcrProgressCallback = progressCb || null;
+  const worker = await getTesseractWorker();
+  await worker.setParameters({
+    tessedit_pageseg_mode: Tesseract.PSM.AUTO,
+    tessedit_char_whitelist: ''
   });
+  const result = await worker.recognize(ocrCanvas);
 
-  if (progressCb) progressCb('Læser kortnummer (2/2)...');
-  const botRes = await Tesseract.recognize(botZone, 'eng', {
-    logger: m => { if (m.status === 'recognizing text' && progressCb) progressCb(`Nummer: ${Math.round(m.progress*100)}%`); }
+  // A separate number-only pass makes tiny fractions such as 101/101 legible
+  // without letting HP or attack damage become collector numbers.
+  if (progressCb) progressCb('Kontrollerer kortnummer...');
+  const numberSource = cropCanvas(scaleCanvas(canvas, 1600), .80, 1);
+  preprocessImage(numberSource);
+  await worker.setParameters({
+    tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
+    tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/-'
   });
-
-  return (topRes.data.text || '') + '\n' + (botRes.data.text || '');
+  const numberResult = await worker.recognize(numberSource);
+  activeOcrProgressCallback = null;
+  return (result.data.text || '') + '\n' + (numberResult.data.text || '');
 }
 
 async function runCloudVisionOCR(base64, apiKey) {
   const body = {
     requests: [{
       image: { content: base64 },
-      features: [{ type: 'TEXT_DETECTION', maxResults: 1 }]
+      features: [{ type: 'DOCUMENT_TEXT_DETECTION', maxResults: 1 }]
     }]
   };
-  const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`, {
+  const res = await fetch('https://vision.googleapis.com/v1/images:annotate', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'X-goog-api-key': apiKey
+    },
     body: JSON.stringify(body)
   });
   if (!res.ok) throw new Error(`Cloud Vision fejl: ${res.status}`);
@@ -1791,107 +2113,193 @@ const stopWords = new Set([
   'for','not','can','all','any','you','its','one','two','three','four','five','six'
 ]);
 
+function normaliseCardText(value) {
+  return (value || '')
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[’']/g, '')
+    .replace(/[^a-z0-9æøå]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function editDistanceAtMostOne(a, b) {
+  if (a === b) return true;
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0, j = 0, edits = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { i++; j++; continue; }
+    if (++edits > 1) return false;
+    if (a.length > b.length) i++;
+    else if (b.length > a.length) j++;
+    else { i++; j++; }
+  }
+  return edits + (i < a.length || j < b.length ? 1 : 0) <= 1;
+}
+
+function extractNameCandidates(text) {
+  const candidates = [];
+  const lines = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean).slice(0, 12);
+  for (const originalLine of lines) {
+    let line = originalLine
+      .replace(/\b(?:basic|stage\s*[12]|trainer|supporter|item)\b/gi, ' ')
+      .replace(/\bhp\s*[0-9o]{2,3}\b.*$/i, ' ')
+      .replace(/\b[a-z]{0,4}\d{1,4}\s*[\/\\]\s*[a-z]{0,4}\d{1,4}\b/gi, ' ')
+      .replace(/[©™®•·]/g, ' ');
+    const tokens = normaliseCardText(line).split(' ').filter(token =>
+      token.length >= 2 &&
+      !stopWords.has(token) &&
+      !/^\d+$/.test(token) &&
+      !/^(?:illus|weakness|resistance|retreat)$/.test(token)
+    );
+    if (!tokens.length || tokens.length > 6) continue;
+    const useful = tokens.slice(0, 4);
+    for (const length of [4, 3, 2, 1]) {
+      if (useful.length >= length) candidates.push(useful.slice(0, length).join(' '));
+    }
+  }
+  return [...new Set(candidates)].filter(c => c.length >= 3).slice(0, 8);
+}
+
 function parseOCRText(text) {
-  const words = [];
+  const cleaned = (text || '').replace(/[|]/g, 'I').toLowerCase();
   const numberMatches = [];
-  const detectedPokemonNames = [];
 
-  // Pre-clean common OCR errors
-  const cleaned = text
-    .replace(/[|]/g, 'I')
-    .replace(/0/g, '0') // normalize
-    .toLowerCase();
-
-  // Find card number patterns like 4/102, sv1a/078, TG04/TG30
-  const fractionRegex = /\b([a-z0-9\-]+)\s*[\/\\]\s*([a-z0-9\-]+)\b/gi;
+  // A collector number must contain digits on both sides of the slash. This
+  // deliberately rejects HP, attack damage and copyright years, which were the
+  // main source of unrelated matches in the previous scanner.
+  const fractionRegex = /\b([a-z]{0,4}\s*-?\s*\d{1,4})\s*[\/\\]\s*([a-z]{0,4}\s*-?\s*\d{1,4})\b/gi;
   let match;
   while ((match = fractionRegex.exec(cleaned)) !== null) {
-    const num = match[1].toLowerCase();
-    const total = match[2].toLowerCase();
-    // Filter obvious non-numbers
-    if (num.length <= 6 && total.length <= 6) {
-      numberMatches.push({ number: num, total: total });
+    const number = match[1].replace(/\s+/g, '').replace(/-+/g, '-');
+    const total = match[2].replace(/\s+/g, '').replace(/-+/g, '-');
+    numberMatches.push({ number, total, reliable: true });
+  }
+
+  // Promos often use codes such as SWSH020 without a slash. Never accept a
+  // plain number here; a letter prefix is required.
+  const promoRegex = /\b([a-z]{1,5}\s*-?\s*\d{2,4})\b/gi;
+  while ((match = promoRegex.exec(cleaned)) !== null) {
+    const code = match[1].replace(/\s+/g, '').replace(/-+/g, '-');
+    const knownPromoPrefix = /^(?:swsh|svp|smp|sm|xyp|xy|bwp|bw|dpp|dp|hgss|sv|rc|tg|gg)\d/i.test(code);
+    if (knownPromoPrefix) {
+      numberMatches.push({ number: code, total: '', reliable: false });
     }
   }
 
-  // Standalone numbers (promo/Japanese cards)
-  const standaloneRegex = /\b(\d{1,3})\b/g;
-  const standaloneNums = [];
-  while ((match = standaloneRegex.exec(cleaned)) !== null) {
-    const v = parseInt(match[1], 10);
-    if (v > 0 && v <= 350) standaloneNums.push(match[1]);
-  }
-  if (numberMatches.length === 0 && standaloneNums.length > 0) {
-    standaloneNums.slice(0, 2).forEach(n => numberMatches.push({ number: n, total: '' }));
-  }
+  const rawWords = normaliseCardText(cleaned).split(' ').filter(Boolean);
+  const words = rawWords.filter(word =>
+    word.length >= 3 && !stopWords.has(word) && !/^\d+$/.test(word)
+  );
+  const nameCandidates = extractNameCandidates(text);
+  const detectedPokemonNames = [];
+  const pokemonEntries = [...knownPokemonNames];
 
-  // Extract words
-  const rawWords = cleaned.match(/\b[a-z0-9æøåéíóúüñ\-]{3,}\b/g) || [];
-  for (const word of rawWords) {
-    if (!stopWords.has(word) && !/^\d+$/.test(word)) {
-      words.push(word);
-      if (knownPokemonNames.has(word)) detectedPokemonNames.push(word);
+  for (const candidate of nameCandidates.concat(words.slice(0, 10))) {
+    const slug = candidate.replace(/\s+/g, '-');
+    if (knownPokemonNames.has(slug)) {
+      detectedPokemonNames.push(slug);
+      continue;
     }
-  }
-
-  // Try two-word Pokémon names (e.g. "mr mime")
-  for (let i = 0; i < rawWords.length - 1; i++) {
-    const combined = rawWords[i] + '-' + rawWords[i+1];
-    if (knownPokemonNames.has(combined)) detectedPokemonNames.push(combined);
+    if (candidate.length < 5 || candidate.includes(' ')) continue;
+    const fuzzy = pokemonEntries.find(name =>
+      name.length >= 5 && editDistanceAtMostOne(candidate, name.replace(/-/g, ''))
+    );
+    if (fuzzy) detectedPokemonNames.push(fuzzy);
   }
 
   return {
     words: [...new Set(words)],
-    numberMatches,
-    detectedPokemonNames: [...new Set(detectedPokemonNames)]
+    numberMatches: [...new Map(numberMatches.map(n => [n.number + '/' + n.total, n])).values()].slice(0, 4),
+    detectedPokemonNames: [...new Set(detectedPokemonNames)],
+    nameCandidates
   };
 }
 
 // ══════════════════════════════════════════
-//  CARD SEARCH (Strategy 1 + 2 only — no random fallback)
+//  CARD SEARCH
 // ══════════════════════════════════════════
+async function fetchCardsQuery(query, pageSize = 100) {
+  const url = `https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(query)}&pageSize=${pageSize}`;
+  let lastError = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    try {
+      const res = await fetch(url, { signal: controller.signal });
+      if (res.ok) {
+        const data = await res.json();
+        return data?.data || [];
+      }
+      lastError = new Error(`Kortdatabasen svarede ${res.status}`);
+      if (![429, 500, 502, 503, 504].includes(res.status) || attempt === 2) throw lastError;
+    } catch(e) {
+      lastError = e;
+      if (attempt === 2) throw e;
+    } finally {
+      clearTimeout(timeout);
+    }
+    await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1)));
+  }
+  throw lastError || new Error('Kortdatabasen kunne ikke kontaktes');
+}
+
 async function searchCards(parsed) {
   let results = [];
-  const pokemonName = parsed.detectedPokemonNames[0] || null;
+  const searchNames = [
+    ...parsed.detectedPokemonNames.map(name => name.replace(/-/g, ' ')),
+    ...parsed.nameCandidates
+  ].map(name => name.replace(/"/g, '').trim()).filter(Boolean);
+  const uniqueNames = [...new Set(searchNames)].slice(0, 3);
 
-  // Strategy 1: name + number (most accurate)
-  if (parsed.numberMatches.length > 0) {
-    for (const numMatch of parsed.numberMatches.slice(0, 3)) {
-      const nums = [numMatch.number];
-      if (/^\d+$/.test(numMatch.number) && numMatch.number.startsWith('0')) {
-        const stripped = numMatch.number.replace(/^0+/, '');
-        if (stripped && !nums.includes(stripped)) nums.push(stripped);
+  // Collector number is the strongest lookup key. Search it both with the best
+  // name and alone so a small OCR error in the name cannot hide the right card.
+  for (const numMatch of parsed.numberMatches.slice(0, 3)) {
+    const nums = [numMatch.number];
+    if (/^\d+$/.test(numMatch.number) && numMatch.number.startsWith('0')) {
+      const stripped = numMatch.number.replace(/^0+/, '');
+      if (stripped) nums.push(stripped);
+    }
+    for (const numStr of [...new Set(nums)]) {
+      let numberCards = [];
+      try {
+        numberCards = await fetchCardsQuery(`number:${numStr}`, 150);
+        results.push(...numberCards);
+      } catch(e) {
+        console.warn('Søgefejl (kortnummer):', e);
       }
-      for (const numStr of nums) {
+      if (!numberCards.length && uniqueNames[0]) {
         try {
-          const q = pokemonName
-            ? `name:"${pokemonName}" number:"${numStr}"`
-            : `number:"${numStr}"`;
-          const res = await fetch(`https://api.pokemontcg.io/v2/cards?q=${encodeURIComponent(q)}&pageSize=30`);
-          const data = await res.json();
-          if (data?.data?.length > 0) results = results.concat(data.data);
-        } catch(e) { console.warn('Søgefejl (S1):', e); }
+          results.push(...await fetchCardsQuery(`name:"${uniqueNames[0]}" number:${numStr}`, 60));
+        } catch(e) {
+          console.warn('Søgefejl (navn + nummer):', e);
+        }
       }
     }
   }
 
-  // Deduplicate
-  const seen = new Set();
-  results = results.filter(c => { if (seen.has(c.id)) return false; seen.add(c.id); return true; });
-
-  // Strategy 2: name only (if S1 gave nothing)
-  if (results.length === 0 && pokemonName) {
-    try {
-      const res = await fetch(`https://api.pokemontcg.io/v2/cards?q=name:"${pokemonName}"&pageSize=50`);
-      const data = await res.json();
-      if (data?.data?.length > 0) results = data.data;
-    } catch(e) { console.warn('Søgefejl (S2):', e); }
+  // Name lookups also cover Trainer cards, which were impossible to identify
+  // when the scanner only accepted names from the Pokédex.
+  const hasReliableNumberResult = parsed.numberMatches.some(match => match.reliable) && results.length > 0;
+  if (!hasReliableNumberResult) {
+    for (const name of uniqueNames) {
+      try {
+        const found = await fetchCardsQuery(`name:"${name}"`, 80);
+        results.push(...found);
+        if (found.length) break;
+      } catch(e) {
+        console.warn('Søgefejl (kortnavn):', e);
+      }
+    }
   }
 
-  // NOTE: Strategy 3 (global word search) is intentionally removed.
-  // It was producing too many false matches.
-
-  return results;
+  const seen = new Set();
+  return results.filter(card => {
+    if (!card?.id || seen.has(card.id)) return false;
+    seen.add(card.id);
+    return true;
+  }).slice(0, 220);
 }
 
 // ══════════════════════════════════════════
@@ -1899,33 +2307,97 @@ async function searchCards(parsed) {
 // ══════════════════════════════════════════
 function scoreCardMatch(card, parsed, ocrLower) {
   let score = 0;
-  const cardName = (card.name || '').toLowerCase();
-  const setName  = (card.set?.name || '').toLowerCase();
-  const cardNum  = (card.number || '').toLowerCase();
-  const setTotal = card.set?.printedTotal ? String(card.set.printedTotal) : '';
+  const cardName = normaliseCardText(card.name);
+  const setName  = normaliseCardText(card.set?.name);
+  const cardNum  = normaliseCardText(card.number).replace(/\s/g, '');
+  const setTotal = String(card.set?.printedTotal || card.set?.total || '').replace(/^0+/, '');
 
-  for (const word of parsed.words) {
-    if (cardName.includes(word)) { score += 15; if (cardName === word) score += 20; }
-    if (setName.includes(word))  score += 5;
+  for (const candidate of parsed.nameCandidates) {
+    const name = normaliseCardText(candidate);
+    if (!name) continue;
+    if (cardName === name) score = Math.max(score, 90);
+    else if (cardName.startsWith(name + ' ') || name.startsWith(cardName + ' ')) score = Math.max(score, 72);
+    else if (name.length >= 5 && cardName.includes(name)) score = Math.max(score, 58);
   }
 
   for (const nm of parsed.numberMatches) {
-    const stripped = nm.number.replace(/^0+/, '');
+    const stripped = normaliseCardText(nm.number).replace(/\s/g, '').replace(/^0+/, '');
     const strippedCard = cardNum.replace(/^0+/, '');
     if (cardNum === nm.number || strippedCard === stripped) {
-      score += 50;
-      if (nm.total && (setTotal === nm.total || card.set?.total === nm.total)) score += 30;
+      score += nm.reliable ? 72 : 48;
+      const total = String(nm.total || '').replace(/^0+/, '');
+      if (total && setTotal === total) score += 55;
     }
   }
 
-  if (ocrLower.includes(cardName)) score += 25;
-
-  if (card.set?.releaseDate) {
-    const y = parseInt(card.set.releaseDate.split('/')[0] || '2000', 10);
-    score += (y - 1995) * 0.1;
+  const cardTokens = new Set(cardName.split(' '));
+  for (const word of parsed.words) {
+    const token = normaliseCardText(word);
+    if (token.length >= 3 && cardTokens.has(token)) score += 8;
+    if (token.length >= 4 && setName.split(' ').includes(token)) score += 4;
   }
 
+  if (cardName.length >= 4 && normaliseCardText(ocrLower).includes(cardName)) score += 25;
   return score;
+}
+
+function canvasFingerprint(source) {
+  const width = 24, height = 34;
+  const canvas = document.createElement('canvas');
+  canvas.width = width; canvas.height = height;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  ctx.drawImage(source, 0, 0, width, height);
+  const data = ctx.getImageData(0, 0, width, height).data;
+  const values = new Float32Array(width * height);
+  let mean = 0;
+  for (let p = 0, i = 0; i < data.length; i += 4, p++) {
+    values[p] = data[i] * .299 + data[i + 1] * .587 + data[i + 2] * .114;
+    mean += values[p];
+  }
+  mean /= values.length;
+  let variance = 0;
+  for (const value of values) variance += Math.pow(value - mean, 2);
+  const std = Math.sqrt(variance / values.length) || 1;
+  for (let i = 0; i < values.length; i++) values[i] = (values[i] - mean) / std;
+  return values;
+}
+
+function fingerprintSimilarity(a, b) {
+  if (!a || !b || a.length !== b.length) return null;
+  let dot = 0;
+  for (let i = 0; i < a.length; i++) dot += a[i] * b[i];
+  return Math.max(-1, Math.min(1, dot / a.length));
+}
+
+function loadCardImage(url) {
+  return new Promise((resolve, reject) => {
+    if (!url) { reject(new Error('Intet billede')); return; }
+    const img = new Image();
+    const timeout = setTimeout(() => reject(new Error('Billedtimeout')), 9000);
+    img.crossOrigin = 'anonymous';
+    img.referrerPolicy = 'no-referrer';
+    img.onload = () => { clearTimeout(timeout); resolve(img); };
+    img.onerror = () => { clearTimeout(timeout); reject(new Error('Billedet kunne ikke indlæses')); };
+    img.src = url;
+  });
+}
+
+async function addVisualScores(candidates, sourceCanvas, progressCb) {
+  if (!sourceCanvas || !candidates.length) return candidates;
+  const sourceFingerprint = canvasFingerprint(sourceCanvas);
+  const shortlist = candidates.slice(0, 60);
+  if (progressCb) progressCb(`Sammenligner kortbilledet med ${shortlist.length} kandidater...`);
+  await Promise.all(shortlist.map(async item => {
+    try {
+      const url = item.card.images?.small || item.card.images?.large;
+      const image = await loadCardImage(url);
+      item.visualScore = fingerprintSimilarity(sourceFingerprint, canvasFingerprint(image));
+      if (item.visualScore > .42) item.score += Math.round((item.visualScore - .42) * 115);
+    } catch {
+      item.visualScore = null;
+    }
+  }));
+  return candidates;
 }
 
 // ══════════════════════════════════════════
@@ -1936,8 +2408,10 @@ function getPriceRange(card) {
   if (!cm) return null;
   const avg = cm.averageSellPrice || cm.trendPrice || 0;
   if (!avg) return null;
-  const low  = Math.round((cm.lowPrice || avg * 0.70) * 7.46);
-  const high = Math.round((cm.trendPrice || avg * 1.30) * 7.46);
+  const lowEur = Math.min(cm.lowPrice || avg * .70, avg);
+  const highEur = Math.max(cm.trendPrice || avg * 1.30, avg);
+  const low  = Math.round(lowEur * 7.46);
+  const high = Math.round(highEur * 7.46);
   const mid  = Math.round(avg * 7.46);
   return { low, mid, high };
 }
@@ -1953,7 +2427,7 @@ function getPriceCategory(dkk) {
 //  ANALYSE CARD (full flow)
 // ══════════════════════════════════════════
 async function analyseCard() {
-  if (!capturedB64) return;
+  if (!capturedB64 || !capturedCardCanvas) return;
   setScanState('processing');
   document.getElementById('scan-result-found').style.display = 'none';
   document.getElementById('scan-result-manual').style.display = 'none';
@@ -1962,49 +2436,28 @@ async function analyseCard() {
   const setProgress = t => { if (progress) progress.textContent = t; };
 
   try {
-    // 1. Decode image
     setProgress('Forbereder billede...');
-    const img = new Image();
-    img.src = 'data:image/jpeg;base64,' + capturedB64;
-    await new Promise(r => { img.onload = r; });
-
-    // 2. Scale to at least 1400px for better OCR
-    let cvs = document.createElement('canvas');
-    const maxW = 800; // First resize to keep things manageable
-    let w = img.width, h = img.height;
-    if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
-    cvs.width = w; cvs.height = h;
-    cvs.getContext('2d').drawImage(img, 0, 0, w, h);
-
-    // 3. Preprocess (grayscale + contrast + sharpen)
-    setProgress('Forbedrer billedkvalitet...');
-    preprocessImage(cvs);
-
-    // 4. Scale up for OCR
-    cvs = scaleCanvas(cvs, 1400);
-
-    // 5. Run OCR (Tesseract or Cloud Vision)
     let ocrText = '';
-    if (ocrMode === 'vision' && cvApiKey) {
+    if (ocrMode === 'vision') {
+      if (!cvApiKey) {
+        setScanState('result');
+        showManualSearch('', 'Cloud OCR er valgt, men der mangler en Google Vision-nøgle. Gem en nøgle ovenfor, vælg På enheden eller søg manuelt:');
+        return;
+      }
       setProgress('☁️ Google Cloud Vision analyserer...');
       try {
         ocrText = await runCloudVisionOCR(capturedB64, cvApiKey);
       } catch(e) {
         setProgress('Cloud Vision fejl — prøver offline...');
-        ocrText = await runTesseractOCR(cvs, setProgress);
+        ocrText = await runTesseractOCR(capturedCardCanvas, setProgress);
       }
     } else {
-      ocrText = await runTesseractOCR(cvs, setProgress);
+      ocrText = await runTesseractOCR(capturedCardCanvas, setProgress);
     }
 
-    console.log('OCR tekst:', ocrText);
-
-    // 6. Parse
     const parsed = parseOCRText(ocrText);
-    console.log('Parsed:', parsed);
 
-    // 7. Confidence check — CRITICAL: never show random results
-    const hasName   = parsed.detectedPokemonNames.length > 0;
+    const hasName   = parsed.detectedPokemonNames.length > 0 || parsed.nameCandidates.length > 0;
     const hasNumber = parsed.numberMatches.length > 0;
 
     if (!hasName && !hasNumber) {
@@ -2013,29 +2466,62 @@ async function analyseCard() {
       return;
     }
 
-    // 8. Search API (Strategy 1 + 2 only)
     setProgress('Slår op i Pokémon databasen...');
     const apiCards = await searchCards(parsed);
 
-    setScanState('result');
-
     if (apiCards.length === 0) {
-      const nameHint = parsed.detectedPokemonNames[0] || '';
+      setScanState('result');
+      const nameHint = parsed.detectedPokemonNames[0]?.replace(/-/g, ' ') || parsed.nameCandidates[0] || '';
       showManualSearch(nameHint, '🔍 Fandt ' + (nameHint ? `"${nameHint}"` : 'noget') + ', men ingen kort matchede præcist. Søg manuelt:');
       return;
     }
 
-    // 9. Score and sort
     const ocrLower = ocrText.toLowerCase();
-    const scored = apiCards.map(c => ({ card: c, score: scoreCardMatch(c, parsed, ocrLower) }));
+    const scored = apiCards.map(card => ({
+      card,
+      score: scoreCardMatch(card, parsed, ocrLower),
+      visualScore: null
+    }));
     scored.sort((a, b) => b.score - a.score);
+    const preVisualMargin = scored[1] ? scored[0].score - scored[1].score : scored[0].score;
+    const collectorNumberIsDecisive = scored[0].score >= 120 && preVisualMargin >= 30;
+    if (!collectorNumberIsDecisive) {
+      await addVisualScores(scored, capturedCardCanvas, setProgress);
+      scored.sort((a, b) => b.score - a.score);
+    }
 
-    const best = scored[0].card;
+    const best = scored[0];
+    const second = scored[1];
+    const visual = best.visualScore ?? -1;
+    if (best.score < 52 && visual < .68) {
+      setScanState('result');
+      const hint = parsed.detectedPokemonNames[0]?.replace(/-/g, ' ') || parsed.nameCandidates[0] || '';
+      showManualSearch(hint, '🤔 Scanneren fandt ikke bevis nok til at vælge et kort sikkert. Prøv et skarpere foto eller søg manuelt:');
+      return;
+    }
+
+    const margin = second ? best.score - second.score : best.score;
+    let confidence;
+    if ((best.score >= 120 && margin >= 30) || best.score >= 145 || (visual >= .86 && best.score >= 90)) {
+      confidence = { level: 'high', text: '✅ Høj sikkerhed — navn, nummer eller billede matcher tydeligt.' };
+    } else if (best.score >= 86 || visual >= .68) {
+      confidence = { level: 'medium', text: '🟡 Sandsynligt match — kontrollér sæt og kortnummer før du gemmer.' };
+    } else {
+      confidence = { level: 'low', text: '⚠️ Usikkert match — vælg det rigtige kort blandt alternativerne.' };
+    }
+    if (margin < 14 && confidence.level === 'high') {
+      confidence = { level: 'medium', text: '🟡 Flere kort ligner hinanden — kontrollér sæt og kortnummer.' };
+    }
+
+    setScanState('result');
     altCards = scored.slice(1, 8).map(s => s.card);
-
-    // 10. Display best match
-    showBestMatch(best);
+    showBestMatch(best.card, confidence);
     renderAlts(altCards);
+    if (confidence.level === 'low' || margin < 8) {
+      altsVisible = true;
+      document.getElementById('scan-alts-wrap').style.display = 'block';
+      document.getElementById('show-alts-btn').textContent = '▲ Skjul alternativer';
+    }
 
   } catch(e) {
     console.error('Analysefejl:', e);
@@ -2044,8 +2530,12 @@ async function analyseCard() {
   }
 }
 
-function showBestMatch(card) {
+function showBestMatch(card, confidence = null) {
   scanSelectedCard = card;
+  lastScanConfidence = confidence || lastScanConfidence || {
+    level: 'medium',
+    text: '🟡 Kontrollér sæt og kortnummer før du gemmer.'
+  };
   const range  = getPriceRange(card);
   const midDkk = range ? range.mid : 0;
   const cat    = getPriceCategory(midDkk);
@@ -2069,8 +2559,12 @@ function showBestMatch(card) {
   catEl.textContent = cat.label;
   catEl.className = 'price-cat ' + cat.css;
 
+  const confidenceEl = document.getElementById('scan-match-confidence');
+  confidenceEl.className = 'scan-match-confidence ' + lastScanConfidence.level;
+  confidenceEl.textContent = lastScanConfidence.text;
   document.getElementById('scan-result-found').style.display = 'block';
   document.getElementById('scan-alts-wrap').style.display = 'none';
+  altsVisible = false;
   document.getElementById('show-alts-btn').textContent = '🔄 Forkert kort? Se andre';
 }
 
@@ -2095,7 +2589,7 @@ function selectAlt(cardJson) {
   const card = typeof cardJson === 'string' ? JSON.parse(cardJson) : cardJson;
   document.querySelectorAll('.scan-alt-card').forEach(el => el.classList.remove('selected'));
   document.querySelector(`.scan-alt-card[data-card-id="${card.id}"]`)?.classList.add('selected');
-  showBestMatch(card);
+  showBestMatch(card, { level: 'medium', text: '👆 Du har selv valgt dette kort — kontrollér nummeret før du gemmer.' });
   document.getElementById('scan-alts-wrap').style.display = 'block';
 }
 
@@ -2141,8 +2635,9 @@ async function saveCurrentCard() {
     });
 
     if (ok) {
-      btn.textContent = '✅ Gemt!';
-      btn.style.background = 'var(--green)';
+      const cloudFallback = window.lastSaveLocation === 'local-fallback';
+      btn.textContent = cloudFallback ? '⚠️ Gemt lokalt — afventer sky' : '✅ Gemt!';
+      btn.style.background = cloudFallback ? 'var(--gold)' : 'var(--green)';
       setTimeout(() => {
         btn.textContent = '💾 Gem i Samling';
         btn.style.background = '';
@@ -2292,7 +2787,9 @@ async function acSaveCard() {
       rarity:       acSelectedCard.rarity || ''
     });
     if (ok) {
-      btn.textContent = '✅ Gemt!'; btn.style.background = 'var(--green)';
+      const cloudFallback = window.lastSaveLocation === 'local-fallback';
+      btn.textContent = cloudFallback ? '⚠️ Gemt lokalt — afventer sky' : '✅ Gemt!';
+      btn.style.background = cloudFallback ? 'var(--gold)' : 'var(--green)';
       setTimeout(() => { closeAddCard(); showPage('collection'); btn.textContent = '💾 GEM I SAMLING'; btn.style.background = ''; btn.disabled = false; }, 1200);
     } else {
       btn.textContent = '❌ Fejl'; btn.style.background = 'var(--red)'; btn.disabled = false;
@@ -2327,6 +2824,9 @@ window.renderPortfolio = (cards) => {
     const priceHtml = card.priceDKK
       ? `<div style="font-family:'Bebas Neue',cursive;font-size:1.2em;color:var(--gold);margin-top:4px;">${card.priceDKK} kr</div>`
       : `<div style="font-size:0.7em;color:var(--muted);margin-top:4px;">Pris ukendt</div>`;
+    const syncHtml = card.pendingCloud
+      ? `<div style="font-size:.56em;color:#f5d999;margin-top:5px;">☁ Afventer synkronisering</div>`
+      : '';
     const imgSrc = card.imageUrl || (card.imageBase64 ? `data:image/jpeg;base64,${card.imageBase64}` : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
     const condLabel = { NM: 'God', MP: 'Brugt', HP: 'Dårlig', LP: 'Let brugt', DMG: 'Beskadiget' }[card.condition] || card.condition || '';
     return `<div style="position:relative;width:100%;max-width:180px;margin:0 auto;background:var(--cream);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,0.3);transition:transform 0.15s;cursor:pointer;" onclick="openCardInspect('${card.id}')" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
@@ -2336,6 +2836,7 @@ window.renderPortfolio = (cards) => {
         <div style="font-size:0.6em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;">${card.set || ''}</div>
         ${priceHtml}
         ${condLabel ? `<div style="font-size:0.58em;color:rgba(255,255,255,.35);margin-top:3px;">${condLabel}</div>` : ''}
+        ${syncHtml}
       </div>
     </div>`;
   }).join('');
@@ -2375,7 +2876,7 @@ window.renderTopShowcase = () => {
 ════════════════════════════════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, query, getDocs, deleteDoc, doc, Timestamp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -2392,6 +2893,8 @@ const app      = initializeApp(firebaseConfig);
 const auth     = getAuth(app);
 const db       = getFirestore(app);
 const provider = new GoogleAuthProvider();
+setPersistence(auth, browserLocalPersistence).catch(e => console.warn('Auth persistence:', e));
+getRedirectResult(auth).catch(e => console.error('Redirect login:', e));
 
 // ══ LOCALSTORAGE FALLBACK ══
 const LS_KEY = 'pokehelper_local_cards';
@@ -2419,11 +2922,32 @@ function lsDelete(id) {
 function lsClear() {
   localStorage.removeItem(LS_KEY);
 }
+function lsReplace(cards) {
+  try {
+    if (cards.length) localStorage.setItem(LS_KEY, JSON.stringify(cards));
+    else lsClear();
+    return true;
+  } catch(e) {
+    console.error('localStorage replace:', e);
+    return false;
+  }
+}
 
 // ══ FIREBASE OPERATIONS ══
-window.firebaseSignIn  = async () => {
-  try { await signInWithPopup(auth, new GoogleAuthProvider()); closeProfile(); }
-  catch(e) { alert('Login fejl: ' + e.message); }
+window.firebaseSignIn = async () => {
+  try {
+    await signInWithPopup(auth, provider);
+    closeProfile();
+  } catch(e) {
+    if (['auth/popup-blocked', 'auth/operation-not-supported-in-this-environment'].includes(e.code)) {
+      await signInWithRedirect(auth, provider);
+      return;
+    }
+    const hint = e.code === 'auth/unauthorized-domain'
+      ? 'GitHub-domænet skal tilføjes under Authorized domains i Firebase Authentication.'
+      : (e.message || 'Ukendt loginfejl');
+    alert('Login kunne ikke gennemføres. ' + hint);
+  }
 };
 window.firebaseSignOut = () => { signOut(auth); closeProfile(); showPage('guide'); };
 
@@ -2434,8 +2958,13 @@ async function firebaseSaveCard(cardData) {
     const docP = addDoc(ref, { ...cardData, timestamp: Timestamp.now() });
     const tout = new Promise((_,reject) => setTimeout(() => reject(new Error('timeout')), 8000));
     await Promise.race([docP, tout]);
+    window.lastCloudSaveError = null;
     return true;
-  } catch(e) { console.error('Firebase save:', e); return false; }
+  } catch(e) {
+    window.lastCloudSaveError = e;
+    console.error('Firebase save:', e);
+    return false;
+  }
 }
 
 async function firebaseDeleteCard(id) {
@@ -2449,8 +2978,19 @@ async function firebaseDeleteCard(id) {
 
 // ══ COMBINED SAVE (Firebase or localStorage) ══
 window.combinedSaveCard = async (cardData) => {
-  if (auth.currentUser) return await firebaseSaveCard(cardData);
-  return lsSave(cardData);
+  if (auth.currentUser) {
+    const cloudOk = await firebaseSaveCard(cardData);
+    if (cloudOk) {
+      window.lastSaveLocation = 'cloud';
+      return true;
+    }
+    const localOk = lsSave({ ...cardData, pendingCloud: true });
+    window.lastSaveLocation = localOk ? 'local-fallback' : 'failed';
+    return localOk;
+  }
+  const localOk = lsSave(cardData);
+  window.lastSaveLocation = localOk ? 'local' : 'failed';
+  return localOk;
 };
 
 window.combinedDeleteCard = async (id, source) => {
@@ -2495,20 +3035,23 @@ window.migrateLocalToCloud = async () => {
   const btn = document.querySelector('#cloud-sync-offer button');
   if (btn) { btn.textContent = '⏳ Overfører...'; btn.disabled = true; }
   let ok = 0;
+  const remaining = [];
   for (const card of localCards) {
-    const { id, source, timestamp, ...data } = card;
+    const { id, source, timestamp, pendingCloud, ...data } = card;
     const res = await firebaseSaveCard(data);
     if (res) ok++;
+    else remaining.push(card);
   }
-  if (ok === localCards.length) {
-    lsClear();
+  lsReplace(remaining);
+  if (!remaining.length) {
     document.getElementById('cloud-sync-offer').style.display = 'none';
     document.getElementById('ls-warning-banner').style.display = 'none';
     alert(`✅ ${ok} kort overført til skyen!`);
     window.loadCollection();
   } else {
-    alert(`${ok} af ${localCards.length} kort overført. Prøv igen.`);
+    alert(`${ok} af ${localCards.length} kort overført. De resterende ${remaining.length} kort er stadig gemt sikkert på enheden.`);
     if (btn) { btn.textContent = '✅ Ja, overfør til sky'; btn.disabled = false; }
+    window.loadCollection();
   }
 };
 
@@ -2538,9 +3081,8 @@ window.loadCollection = async () => {
     return;
   }
 
-  // Logged in — use Firebase
+  // Logged in — show cloud cards together with any cards waiting for sync.
   if (lsWarn) lsWarn.style.display = 'none';
-  // Check if there are local cards to migrate
   const localCards = lsLoad();
   if (syncOffer) syncOffer.style.display = localCards.length > 0 ? 'block' : 'none';
 
@@ -2549,25 +3091,32 @@ window.loadCollection = async () => {
   try {
     const q    = query(collection(db, 'users', auth.currentUser.uid, 'cards'));
     const snap = await getDocs(q);
-    if (snap.empty) {
+    const cloudCards = [];
+    snap.forEach(d => cloudCards.push({ id: d.id, source: 'firebase', ...d.data() }));
+    window.portfolioCards = [...localCards, ...cloudCards];
+    if (!window.portfolioCards.length) {
       grid.innerHTML = '<p style="color:rgba(255,255,255,0.5);width:100%;grid-column:1/-1;text-align:center;padding:40px 0;">Ingen kort i din samling endnu.<br>Scan et kort for at begynde! 📷</p>';
       dVal.textContent = '0 kr.'; dCnt.textContent = '0';
       document.getElementById('portfolio-top-showcase').style.display = 'none';
       return;
     }
-    window.portfolioCards = [];
-    let totalDkk = 0;
-    snap.forEach(d => {
-      window.portfolioCards.push({ id: d.id, source: 'firebase', ...d.data() });
-      totalDkk += (d.data().priceDKK || 0);
-    });
+    const totalDkk = window.portfolioCards.reduce((sum, card) => sum + (card.priceDKK || 0), 0);
     dVal.textContent = totalDkk.toLocaleString('da-DK') + ' kr.';
     dCnt.textContent = window.portfolioCards.length.toString();
     window.renderTopShowcase();
     window.applyPortfolioFilters();
   } catch(e) {
     console.error('loadCollection:', e);
-    grid.innerHTML = '<p style="color:var(--red);grid-column:1/-1;text-align:center;padding:40px 0;">Kunne ikke indlæse samling. Tjek din internetforbindelse.</p>';
+    if (localCards.length) {
+      window.portfolioCards = localCards;
+      const totalDkk = localCards.reduce((sum, card) => sum + (card.priceDKK || 0), 0);
+      dVal.textContent = totalDkk.toLocaleString('da-DK') + ' kr.';
+      dCnt.textContent = localCards.length.toString();
+      window.renderTopShowcase();
+      window.applyPortfolioFilters();
+    } else {
+      grid.innerHTML = '<p style="color:var(--red);grid-column:1/-1;text-align:center;padding:40px 0;">Kunne ikke indlæse sky-samlingen. Tjek forbindelsen eller Firebase-reglerne.</p>';
+    }
   }
 };
 
