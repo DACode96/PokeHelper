@@ -100,3 +100,25 @@ test('the displayed price range always contains the saved average price', () => 
   assert.ok(range.low <= range.mid);
   assert.ok(range.mid <= range.high);
 });
+
+test('OCR digit-lookalike fractions such as 4/1O2 and O25/I65 are recovered accurately', () => {
+  const parsed = context.parseOCRText('STAGE 2 Charizard\n4/1O2\nO25/I65');
+  const pairs = parsed.numberMatches.map(m => `${m.number}/${m.total}`);
+  assert.ok(pairs.includes('4/102'));
+  assert.ok(pairs.includes('025/165'));
+});
+
+test('TCGdex pricing.cardmarket format is converted to DKK price range accurately', () => {
+  const range = context.getPriceRange({
+    pricing: {
+      cardmarket: {
+        low: 10,
+        avg: 20,
+        trend: 25
+      }
+    }
+  });
+  assert.ok(range);
+  assert.equal(range.mid, Math.round(20 * 7.46));
+  assert.ok(range.low <= range.mid && range.mid <= range.high);
+});

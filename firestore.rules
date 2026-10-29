@@ -1,10 +1,159 @@
 rules_version = '2';
 
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: /users/{userId}/cards/{cardId}
+// Document ID: Auto-generated card document ID
+// Fields:
+//   - name: string (required, 1..160 chars) - Pokémon card name
+//   - set: string (optional, 0..300 chars) - Card set name
+//   - number: string (optional, 0..300 chars) - Card number in set
+//   - label: string (optional, 0..300 chars) - Display label
+//   - imageUrl: string | null (optional, <= 600 chars) - Card image URL
+//   - priceDKK: int | float (optional, 0..100000000) - Mid estimate in DKK
+//   - priceLowDKK: int | float (optional, 0..100000000) - Low estimate in DKK
+//   - priceHighDKK: int | float (optional, 0..100000000) - High estimate in DKK
+//   - cardmarketUrl: string | null (optional, <= 600 chars) - Cardmarket link
+//   - condition: string (optional, 0..10 chars) - Card condition code (e.g. NM, LP, MP, HP, DMG)
+//   - rarity: string (optional, 0..300 chars) - Card rarity
+//   - cardId: string (optional, 0..300 chars, immutable once set) - External TCG card identifier
+//   - qty: int | float (optional, 1..1000) - Card quantity
+//   - timestamp: timestamp | map (optional) - Creation timestamp
+//   - updatedAt: timestamp | int | float (optional) - Last update timestamp
+//
+// ===============================================================
+
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasOnlyAllowedFields(data, allowedFields) {
+      return data.keys().hasOnly(allowedFields);
+    }
+
+    function hasRequiredFields(data, requiredFields) {
+      return data.keys().hasAll(requiredFields);
+    }
+
+    function isValidRequiredString(data, field, minLen, maxLen) {
+      return (field in data) &&
+        data[field] is string &&
+        data[field].size() >= minLen &&
+        data[field].size() <= maxLen;
+    }
+
+    function isValidOptionalString(data, field, maxLen) {
+      return !(field in data) ||
+        (data[field] is string && data[field].size() <= maxLen);
+    }
+
+    function isValidNullableString(data, field, maxLen) {
+      return !(field in data) ||
+        data[field] == null ||
+        (data[field] is string && data[field].size() <= maxLen);
+    }
+
+    function isValidOptionalNumber(data, field, minVal, maxVal) {
+      return !(field in data) ||
+        ((data[field] is int || data[field] is float) &&
+         data[field] >= minVal &&
+         data[field] <= maxVal);
+    }
+
+    function isValidOptionalTimestamp(data, field) {
+      return !(field in data) ||
+        data[field] is timestamp ||
+        (data[field] is map &&
+         data[field].keys().size() <= 4 &&
+         data[field].keys().hasOnly(['seconds', 'nanoseconds', '_seconds', '_nanoseconds']) &&
+         (!('seconds' in data[field]) || data[field].seconds is int || data[field].seconds is float) &&
+         (!('nanoseconds' in data[field]) || data[field].nanoseconds is int || data[field].nanoseconds is float) &&
+         (!('_seconds' in data[field]) || data[field]._seconds is int || data[field]._seconds is float) &&
+         (!('_nanoseconds' in data[field]) || data[field]._nanoseconds is int || data[field]._nanoseconds is float));
+    }
+
+    function isValidOptionalUpdatedAt(data, field) {
+      return !(field in data) ||
+        data[field] is timestamp ||
+        ((data[field] is int || data[field] is float) && data[field] >= 0);
+    }
+
+    // ===============================================================
+    // Domain Validator (Enforced on both create and update)
+    // ===============================================================
+
+    function isValidCard(data) {
+      let allowedFields = [
+        'name',
+        'set',
+        'number',
+        'label',
+        'imageUrl',
+        'priceDKK',
+        'priceLowDKK',
+        'priceHighDKK',
+        'cardmarketUrl',
+        'condition',
+        'rarity',
+        'cardId',
+        'qty',
+        'timestamp',
+        'updatedAt'
+      ];
+
+      return hasOnlyAllowedFields(data, allowedFields) &&
+        hasRequiredFields(data, ['name']) &&
+        isValidRequiredString(data, 'name', 1, 160) &&
+        isValidOptionalString(data, 'set', 300) &&
+        isValidOptionalString(data, 'number', 300) &&
+        isValidOptionalString(data, 'label', 300) &&
+        isValidOptionalString(data, 'rarity', 300) &&
+        isValidOptionalString(data, 'cardId', 300) &&
+        isValidNullableString(data, 'imageUrl', 600) &&
+        isValidNullableString(data, 'cardmarketUrl', 600) &&
+        isValidOptionalNumber(data, 'priceDKK', 0, 100000000) &&
+        isValidOptionalNumber(data, 'priceLowDKK', 0, 100000000) &&
+        isValidOptionalNumber(data, 'priceHighDKK', 0, 100000000) &&
+        isValidOptionalNumber(data, 'qty', 1, 1000) &&
+        isValidOptionalString(data, 'condition', 10) &&
+        isValidOptionalTimestamp(data, 'timestamp') &&
+        isValidOptionalUpdatedAt(data, 'updatedAt');
+    }
+
+    function isImmutableCardFieldsUnchanged() {
+      return (!('cardId' in resource.data) ||
+              !('cardId' in request.resource.data) ||
+              request.resource.data.cardId == resource.data.cardId);
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
     match /users/{userId}/cards/{cardId} {
-      allow read, create, update, delete:
-        if request.auth != null && request.auth.uid == userId;
+      allow read, delete: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidCard(request.resource.data);
+      allow update: if isOwner(userId) &&
+        isValidCard(request.resource.data) &&
+        isImmutableCardFieldsUnchanged();
+    }
+
+    // Default deny on all other paths
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
